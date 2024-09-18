@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # HKHProject
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.4.
@@ -25,3 +26,7 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+=======
+# .NET-project
+Our's final project at SaiGon University
+>>>>>>> 64d6230a5800f3be8bf77c0285793d56a8576414
