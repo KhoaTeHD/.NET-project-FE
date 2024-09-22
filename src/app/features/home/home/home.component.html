@@ -1,3 +1,42 @@
 <app-header />
-Day la trang home
+  
+<div class="home-container">
+  
+    <section class="slider">
+      <div class="slide-container" #slideContainer>
+        <div class="slide" *ngFor="let slide of slides; let i = index" [ngClass]="{'active': i === currentSlide}">
+          <img [src]="slide.imageUrl" [alt]="slide.caption">
+          <div class="slide-content">
+            <!-- <h2>{{ slide.caption }}</h2>
+            <p>{{ slide.description }}</p> -->
+          </div>
+        </div>
+      </div>
+      <button class="prev" (click)="prevSlide()">&#10094;</button>
+      <button class="next" (click)="nextSlide()">&#10095;</button>
+    </section>
+
+    <section class="featured-products">
+      <h2>Sản phẩm nổi bật</h2>
+      <div class="product-grid">
+        <div class="product-card" *ngFor="let product of featuredProducts">
+          <img [src]="product.imageUrl" [alt]="product.name">
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.price | currency:'VND':'symbol' }}</p>
+          <button>Mua ngay</button>
+        </div>
+      </div>
+    </section>
+  
+    <section class="categories">
+      <h2>Danh mục sản phẩm</h2>
+      <div class="category-grid">
+        <div class="category-card" *ngFor="let category of categories">
+          <img [src]="category.imageUrl" [alt]="category.name">
+          <h3>{{ category.name }}</h3>
+        </div>
+      </div>
+    </section>
+  </div>
+
 <app-footer />
