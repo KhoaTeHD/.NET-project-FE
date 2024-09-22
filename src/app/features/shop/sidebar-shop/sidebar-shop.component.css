@@ -1,0 +1,57 @@
+.danhmucsanpham-shop{
+    max-width: 300px;
+}
+.danhmucsanpham-father button a{
+    text-decoration: none;
+    color: black;
+}
+.danhmucsanpham-father button{
+    position: relative;
+}
+.danhmucsanpham-father button p{
+    position: absolute;
+    right: 50px;
+    margin: 0;
+}
+.danhmucsanpham-childs li{ 
+    list-style-type: none;
+    padding: 8px 0;
+}
+.danhmucsanpham-childs li a{ 
+    text-decoration: none;
+    color: black;
+}
+
+/*Loc theo gia*/
+.slider-loctheogia {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    border: 1px solid #000; /* Viền đen */
+    background-color: #ffffff; /* Màu trắng */
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider-loctheogia::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #000000; /* Nút kéo màu đen */
+    cursor: pointer;
+}
+
+.slider-loctheogia::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #000000; /* Nút kéo màu đen */
+    cursor: pointer;
+}
+
+  
