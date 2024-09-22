@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RevenueComponent } from './features/dashboard/revenue/revenue.component';
+import { RevenueComponent } from './features/admin/dashboard/revenue/revenue.component';
 import { HomeComponent } from './features/home/home/home.component';
 import { RouterOutlet } from '@angular/router';
 
