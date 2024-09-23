@@ -3,6 +3,8 @@ import { HomeComponent } from './features/home/home/home.component';
 import { RevenueComponent } from './features/admin/dashboard/revenue/revenue.component';
 import { ManageCategoryComponent } from './features/admin/manage-category/manage-category.component';
 import { DashboardComponent } from './features/admin/dashboard/dashboard.component';
+import { AdminComponent } from './features/admin/admin.component';
+import { ShopComponent } from './features/shop/shop/shop.component';
 
 export const routes: Routes = [
     {
@@ -10,9 +12,14 @@ export const routes: Routes = [
         component: HomeComponent
     },
     {
-        path: 'admin', 
+        path: 'shop', 
+        component: ShopComponent
+    },
+    {
+        path: 'admin',
+        component: AdminComponent, 
         children: [
-            {path: '', component: DashboardComponent},
+            {path: 'd', component: DashboardComponent},
             {path: 'category', component: ManageCategoryComponent},
         ],
     },
