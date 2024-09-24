@@ -46,16 +46,31 @@
         </div>
     </div>
 
-    <div class="danhmucsanpham-shop">
-        <h5 style="margin: 1rem 0;">LỌC THEO GIÁ</h5>
-        <p>Từ 997.000 đ -  Đến 5.000.000 đ</p>
-        <div>
-            <input id="loctheogia" class="slider-loctheogia" type="range" [(ngModel)]="giaTri" min="997000" max="5000000">
-            <div style="display: flex;justify-content: space-between;align-items: center;">
-                <p style="margin: 0;">Giá cần lọc:</p>
-                <input type="text" style="width: 50%;" [(ngModel)]="giaTri">
-                <button>Lọc</button>
-            </div>
-        </div>
-    </div>
+    <div class="loctheogia-shop">
+      <h5 style="margin: 1rem 0;">LỌC THEO GIÁ</h5>
+      <p>Từ 997.000 đ -  Đến 5.000.000 đ</p>
+      <div>
+          <input id="loctheogia" class="slider-loctheogia" type="range" [(ngModel)]="giaTri" min="997000" max="5000000">
+          <div style="display: flex;justify-content: space-between;align-items: center;">
+              <p style="margin: 0;">Từ:</p>
+              <input type="text" style="width: 30%;" [(ngModel)]="giaTri">
+              <p style="margin: 0;">Đến:</p>
+              <input type="text" style="width: 30%;" [(ngModel)]="giaTri">
+              <button>Lọc</button>
+          </div>
+      </div>
+  </div>
+
+  <div class="loctheomausac-shop">
+    <h5 style="margin: 1rem 0;">LỌC THEO MÀU SẮC</h5>
+  </div>
+
+  <div class="loctheothuonghieu-shop">
+    <h5 style="margin: 1rem 0;">LỌC THEO THƯƠNG HIỆU</h5>
+  </div>
+
+  <div class="loctheosize-shop">
+    <h5 style="margin: 1rem 0;">LỌC THEO KÍCH CỠ</h5>
+  </div>
+  
 </div>

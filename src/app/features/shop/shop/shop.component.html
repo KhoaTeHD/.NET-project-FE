@@ -1,4 +1,18 @@
-<p>shop works!</p>
-<app-sidebar-shop />
-<app-special-item-shop />
-<app-item-shop />
+<app-header />
+<div class="shop-container">
+    <div style="display: flex;padding: 1rem;">
+        <div class="sidebar-shop-container" style="max-width: 300px;width: 300px;padding: 1rem;">
+            <app-sidebar-shop />
+        </div>
+        <div style="display: flex;flex-direction: column;width: calc(100% - 300px);">
+            <div class="specialitem-shop-container">
+                <app-special-item-shop />
+            </div>
+            <div class="item-shop-container" style="margin-top: 1rem;"> 
+                <app-item-shop />
+            </div>
+        </div>
+    </div>
+</div>
+<app-footer />
+
