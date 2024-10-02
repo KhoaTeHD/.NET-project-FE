@@ -1,15 +1,32 @@
 <app-header />
-<div class="shop-container">
-    <div style="display: flex;padding: 1rem;">
-        <div class="sidebar-shop-container" style="max-width: 300px;width: 300px;padding: 1rem;">
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
             <app-sidebar-shop />
         </div>
-        <div style="display: flex;flex-direction: column;width: calc(100% - 300px);">
-            <div class="specialitem-shop-container">
+        <div class="col-lg-9">
+            <div class="row">
                 <app-special-item-shop />
             </div>
-            <div class="item-shop-container" style="margin-top: 1rem;"> 
-                <app-item-shop />
+            <div class="row">
+                <div class="col-md-4">
+                    <app-item-shop />
+                </div>
+                <div class="col-md-4">
+                    <app-item-shop />
+                </div>
+                <div class="col-md-4">
+                    <app-item-shop />
+                </div>
+                <div class="col-md-4">
+                    <app-item-shop />
+                </div>
+                <div class="col-md-4">
+                    <app-item-shop />
+                </div>
+                <div class="col-md-4">
+                    <app-item-shop />
+                </div>
             </div>
         </div>
     </div>
