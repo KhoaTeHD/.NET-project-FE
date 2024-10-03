@@ -5,6 +5,10 @@ import { ManageCategoryComponent } from './features/admin/manage-category/manage
 import { DashboardComponent } from './features/admin/dashboard/dashboard.component';
 import { AdminComponent } from './features/admin/admin.component';
 import { ShopComponent } from './features/shop/shop/shop.component';
+import { SignInComponent } from './features/auth/sign-in/sign-in.component';
+import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
+import { RecordComponent } from './features/personal_information/record/record.component';
+import { ChangePasswordComponent } from './features/personal_information/change-password/change-password.component';
 
 export const routes: Routes = [
     {
@@ -22,5 +26,21 @@ export const routes: Routes = [
             {path: 'd', component: DashboardComponent},
             {path: 'category', component: ManageCategoryComponent},
         ],
+    },
+    {
+        path: 'sign-in', 
+        component: SignInComponent
+    },
+    {
+        path: 'sign-up', 
+        component: SignUpComponent
+    },
+    {
+        path: 'record', 
+        component: RecordComponent
+    },
+    {
+        path: 'change-password', 
+        component: ChangePasswordComponent
     },
 ];
