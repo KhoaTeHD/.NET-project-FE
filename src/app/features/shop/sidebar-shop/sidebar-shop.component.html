@@ -1,117 +1,68 @@
-<!-- <div class="sidebar-shop">
-    <div class="danhmucsanpham-shop">
-        <h5>DANH MỤC SẢN PHẨM</h5>
-        <div class="accordion accordion-flush" id="accordionFlushExample">
-            <div class="danhmucsanpham-item accordion-item">
-              <h2 class="danhmucsanpham-father accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                  <a href="#">Light Stick</a>
-                  <p>(20)</p>
-                </button>
-              </h2>
-              <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                <div class="danhmucsanpham-childs accordion-body">
-                    <li>&nbsp;&nbsp;&nbsp;<a href="#">Light Stick Vip J97</a></li>
-                    <li>&nbsp;&nbsp;&nbsp;<a href="#">Light Stick J97 Version 1</a></li>
-                    <li>&nbsp;&nbsp;&nbsp;<a href="#">Light Stick J97 Version 2</a></li>
-                </div>
-              </div>
-            </div>
-            <div class="danhmucsanpham-item accordion-item">
-              <h2 class="danhmucsanpham-father accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                    <a href="#">Áo J97</a>
-                    <p>(20)</p>
-                </button>
-              </h2>
-              <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                <div class="danhmucsanpham-childs accordion-body">
-                    <li>&nbsp;&nbsp;&nbsp;<a href="#">Áo thun J97</a></li>
-                </div>
-              </div>
-            </div>
-            <div class="danhmucsanpham-item accordion-item">
-              <h2 class="danhmucsanpham-father accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                    <a href="#">Quần J97</a>
-                    <p>(97)</p>
-                </button>
-              </h2>
-              <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                <div class="danhmucsanpham-childs accordion-body">
-                    <li>&nbsp;&nbsp;&nbsp;<a href="#">Quần kỷ niệm J97</a></li>
-                </div>
-              </div>
-            </div>
+<section class="mb-3">
+  <h1 class="h5 pb-4">DANH MỤC SẢN PHẨM</h1>
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item" *ngFor="let category of categories; let i = index">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button"
+          type="button"
+          [attr.data-bs-toggle]="(i === 0) ? 'collapse' : 'collapse'"
+          [attr.data-bs-target]="'#collapse' + (i + 1)"
+          aria-expanded="i === 0"
+          [attr.aria-controls]="'collapse' + (i + 1)"
+        >
+          {{ category.name }} ({{ category.quantity }})
+        </button>
+      </h2>
+      <div
+        [attr.id]="'collapse' + (i + 1)"
+        class="accordion-collapse collapse"
+        [class.show]="i === 0"
+        data-bs-parent="#accordionExample"
+      >
+        <div class="accordion-body">
+          <ul>
+            <li *ngFor="let detail of category.detailsCategory">
+              <a href={{detail.link}}>{{ detail.name }}</a>
+            </li>
+          </ul>
         </div>
-    </div>
-
-    <div class="loctheogia-shop">
-      <h5 style="margin: 1rem 0;">LỌC THEO GIÁ</h5>
-      <p>Từ 997.000 đ -  Đến 5.000.000 đ</p>
-      <div>
-          <input id="loctheogia" class="slider-loctheogia" type="range" [(ngModel)]="giaTri" min="997000" max="5000000">
-          <div style="display: flex;justify-content: space-between;align-items: center;">
-              <p style="margin: 0;">Từ:</p>
-              <input type="text" style="width: 30%;" [(ngModel)]="giaTri">
-              <p style="margin: 0;">Đến:</p>
-              <input type="text" style="width: 30%;" [(ngModel)]="giaTri">
-              <button>Lọc</button>
-          </div>
       </div>
+    </div>
   </div>
+</section>
 
-  <div class="loctheomausac-shop">
-    <h5 style="margin: 1rem 0;">LỌC THEO MÀU SẮC</h5>
-  </div>
-
-  <div class="loctheothuonghieu-shop">
-    <h5 style="margin: 1rem 0;">LỌC THEO THƯƠNG HIỆU</h5>
-  </div>
-
-  <div class="loctheosize-shop">
-    <h5 style="margin: 1rem 0;">LỌC THEO KÍCH CỠ</h5>
+<section class="mb-3">
+  <h1 class="h5 pb-4">LỌC THEO GIÁ</h1>
+  <div class="wrapper container mt-5">
+    <div class="values _sidebar_range-values">
+      <span id="range1">0</span>
+      <span> &dash; </span>
+      <span id="range2">100</span>
+    </div>
+    <div class="_sidebar_range-slider-container">
+      <div class="_sidebar_range-slider-track"></div>
+      <input type="range" min="0" max="100" value="30" id="slider-1" oninput="slideOne()" class="form-range _sidebar_range-slider">
+      <input type="range" min="0" max="100" value="70" id="slider-2" oninput="slideTwo()" class="form-range _sidebar_range-slider">
+    </div>
   </div>
   
-</div> -->
+</section>
 
-
-  <h1 class="h2 pb-4">Categories</h1>
-  <div class="accordion" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Accordion Item #1
-        </button>
-      </h2>
-      <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Accordion Item #2
-        </button>
-      </h2>
-      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Accordion Item #3
-        </button>
-      </h2>
-      <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-        </div>
-      </div>
-    </div>
+<section class="mb-3">
+  <h1 class="h5 pb-4">LỌC THEO MÀU SẮC</h1>
+  <div class="form-check" *ngFor="let color of colors">
+    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+    <label class="form-check-label" for="flexCheckDefault">
+      {{color.name}}
+    </label>
   </div>
+</section>
+
+<section class="mb-3">
+  <h1 class="h5 pb-4">LỌC THEO THƯƠNG HIỆU</h1>
+</section>
+
+<section class="mb-3">
+  <h1 class="h5 pb-4">LỌC THEO SIZE</h1>
+</section>

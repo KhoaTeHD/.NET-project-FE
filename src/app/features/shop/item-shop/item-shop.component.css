@@ -18,3 +18,8 @@
     display: flex;
     font-size: 14px;
 }
+.square-img {
+    width: 100%; /* Chiều rộng đầy đủ của container */
+    height: 300px; /* Cố định chiều cao, tỷ lệ vuông sẽ dựa vào chiều rộng của container */
+    object-fit: cover; /* Đảm bảo ảnh được cắt nhưng không bị méo */
+}

@@ -5,6 +5,8 @@ import { ManageCategoryComponent } from './features/admin/manage-category/manage
 import { DashboardComponent } from './features/admin/dashboard/dashboard.component';
 import { AdminComponent } from './features/admin/admin.component';
 import { ShopComponent } from './features/shop/shop/shop.component';
+import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
+import { CartComponent } from './features/cart/cart.component';
 
 export const routes: Routes = [
     {
@@ -13,7 +15,15 @@ export const routes: Routes = [
     },
     {
         path: 'shop', 
-        component: ShopComponent
+        component: ShopComponent,
+    },
+    {
+        path: 'shop/details', 
+        component: ProductDetailsComponent,
+    },
+    {
+        path: 'cart', 
+        component: CartComponent,
     },
     {
         path: 'admin', 
