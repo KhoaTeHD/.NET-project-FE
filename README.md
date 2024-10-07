@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # HKHProject
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.4.
@@ -29,4 +28,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 =======
 # .NET-project
 Our's final project at SaiGon University
->>>>>>> 64d6230a5800f3be8bf77c0285793d56a8576414
+
