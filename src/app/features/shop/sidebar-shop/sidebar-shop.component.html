@@ -34,19 +34,7 @@
 
 <section class="mb-3">
   <h1 class="h5 pb-4">LỌC THEO GIÁ</h1>
-  <div class="wrapper container mt-5">
-    <div class="values _sidebar_range-values">
-      <span id="range1">0</span>
-      <span> &dash; </span>
-      <span id="range2">100</span>
-    </div>
-    <div class="_sidebar_range-slider-container">
-      <div class="_sidebar_range-slider-track"></div>
-      <input type="range" min="0" max="100" value="30" id="slider-1" oninput="slideOne()" class="form-range _sidebar_range-slider">
-      <input type="range" min="0" max="100" value="70" id="slider-2" oninput="slideTwo()" class="form-range _sidebar_range-slider">
-    </div>
-  </div>
-  
+  <app-range-slider [minValue]="10" [maxValue]="90"></app-range-slider>
 </section>
 
 <section class="mb-3">
@@ -61,8 +49,20 @@
 
 <section class="mb-3">
   <h1 class="h5 pb-4">LỌC THEO THƯƠNG HIỆU</h1>
+  <div class="form-check" *ngFor="let brand of brands">
+    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+    <label class="form-check-label" for="flexCheckDefault">
+      {{brand.name}}
+    </label>
+  </div>
 </section>
 
 <section class="mb-3">
   <h1 class="h5 pb-4">LỌC THEO SIZE</h1>
+  <div class="form-check" *ngFor="let size of sizes">
+    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+    <label class="form-check-label" for="flexCheckDefault">
+      {{size.name}}
+    </label>
+  </div>
 </section>

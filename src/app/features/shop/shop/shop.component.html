@@ -1,5 +1,5 @@
 <app-header />
-<div class="container py-5">
+<div class="container-fluid container-shop-page">
     <div class="row">
         <div class="col-lg-3">
             <app-sidebar-shop />
@@ -9,21 +9,10 @@
                 <app-special-item-shop />
             </div>
             <div class="row">
-                <div class="col-md-4">
-                    <app-item-shop />
-                </div>
-                <div class="col-md-4">
-                    <app-item-shop />
-                </div>
-                <div class="col-md-4">
-                    <app-item-shop />
-                </div>
-                <div class="col-md-4">
-                    <app-item-shop />
-                </div>
-                <div class="col-md-4">
-                    <app-item-shop />
-                </div>
+                <app-filter-price />
+            </div>
+            <div>
+                <app-item-shop class="row col-lg"/>
             </div>
         </div>
     </div>

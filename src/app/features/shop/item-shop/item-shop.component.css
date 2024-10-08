@@ -1,25 +1,13 @@
-.shop-item{
-    max-width: 250px;
-    background-color: #ccc;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
+.custom-css-item a{
+    text-decoration: none;
 }
-.shop-item img{
-    width: 180px;
-    height: 180px;
-    border-radius: 12px;
-    object-fit: cover;
+
+.price-item-custom{
+    color: red !important;
+    font-weight: bold;
 }
-.price-shop-item{
-    display: flex;
-}
-.btn-shop-item{
-    display: flex;
-    font-size: 14px;
-}
-.square-img {
-    width: 100%; /* Chiều rộng đầy đủ của container */
-    height: 300px; /* Cố định chiều cao, tỷ lệ vuông sẽ dựa vào chiều rộng của container */
-    object-fit: cover; /* Đảm bảo ảnh được cắt nhưng không bị méo */
+
+.btn-add-to-cart{
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
 }
