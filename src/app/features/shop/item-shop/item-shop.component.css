@@ -1,0 +1,13 @@
+.custom-css-item a{
+    text-decoration: none;
+}
+
+.price-item-custom{
+    color: red !important;
+    font-weight: bold;
+}
+
+.btn-add-to-cart{
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+}

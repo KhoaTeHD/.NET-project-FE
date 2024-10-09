@@ -13,6 +13,8 @@ import { ManageSupplierComponent } from './features/admin/manage-supplier/manage
 import { ManageColorComponent } from './features/admin/manage-color/manage-color.component';
 import { ManageCountryComponent } from './features/admin/manage-country/manage-country.component';
 import { ManageProductComponent } from './features/admin/manage-product/manage-product.component';
+import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
+import { CartComponent } from './features/cart/cart.component';
 
 export const routes: Routes = [
     {
@@ -21,10 +23,18 @@ export const routes: Routes = [
     },
     {
         path: 'shop', 
-        component: ShopComponent
+        component: ShopComponent,
     },
     {
-        path: 'admin',
+        path: 'shop/details', 
+        component: ProductDetailsComponent,
+    },
+    {
+        path: 'cart', 
+        component: CartComponent,
+    },
+    {
+        path: 'admin', 
         component: AdminComponent, 
         children: [
             {path: 'dashboard', component: DashboardComponent},
