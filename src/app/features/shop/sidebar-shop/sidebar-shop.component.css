@@ -12,3 +12,10 @@ a{
     color: black;
 }
 
+.custom-sidebar-css{
+    border: none;
+}
+
+.accordion {
+    --bs-accordion-active-color: none !important;
+}
