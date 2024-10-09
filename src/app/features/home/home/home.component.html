@@ -19,11 +19,19 @@
     <section class="featured-products">
       <h2>Sản phẩm nổi bật</h2>
       <div class="product-grid">
-        <div class="product-card" *ngFor="let product of featuredProducts">
-          <img [src]="product.imageUrl" [alt]="product.name">
-          <h3>{{ product.name }}</h3>
-          <p>{{ product.price | currency:'VND':'symbol' }}</p>
-          <button>Mua ngay</button>
+        <div class="product-card p-2" *ngFor="let product of featuredProducts" style="border-radius: 8px;">
+          <img [src]="product.imageUrl" [alt]="product.name" style="border-radius: 12px;">
+          <h3 style="text-align: left;">{{ product.name }}</h3>
+          <div class="d-flex justify-content-between">
+            <p><a href="#!" class="text-dark price-item-custom" style="color: red !important; text-decoration: none;font-weight: bold;">{{ product.price| currency:'VND':'symbol' }}</a></p>
+            <p style="text-decoration: line-through;">{{ product.price*2 | currency:'VND':'symbol'}} <span class="badge bg-danger">{{- 50 }}%</span></p>
+          </div>
+          <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
+            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-add-to-cart">
+              <img src="../../../../assets/images/icons8-add-shopping-cart-32.png" alt="" style="width: 24px !important;height: 24px !important;margin: 0 !important;">
+            </button>
+            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark">Mua ngay</button>
+          </div>
         </div>
       </div>
     </section>
@@ -33,10 +41,12 @@
       <div class="category-grid">
         <div class="category-card" *ngFor="let category of categories">
           <img [src]="category.imageUrl" [alt]="category.name">
-          <h3>{{ category.name }}</h3>
+          <h3 style="filter: drop-shadow(0 0 0.75rem #000);">{{ category.name }}</h3>
         </div>
       </div>
     </section>
+
+
   </div>
 
 <app-footer />

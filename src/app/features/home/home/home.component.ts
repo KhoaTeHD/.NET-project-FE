@@ -33,41 +33,41 @@ export class HomeComponent implements OnInit {
     {
       name: "Áo thun Y2",
       price: 97000,
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995309/demowebHKH/vch9vtlp03npmuumpis2.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     },
     {
       name: "Áo khoác Z",
       price: 97000,
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995309/demowebHKH/vch9vtlp03npmuumpis2.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     },
     {
       name: "Quần LV",
       price: 97000,
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995309/demowebHKH/vch9vtlp03npmuumpis2.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     },
     {
       name: "Giày XX",
       price: 97000,
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995309/demowebHKH/vch9vtlp03npmuumpis2.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     }
   ];
 
   categories: Category[] = [
-    {
+    { 
       name: "Áo thun",
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995414/demowebHKH/loh2khhaupzacfomnl88.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     },
     {
       name: "Áo khoác",
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995414/demowebHKH/loh2khhaupzacfomnl88.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     },
     {
       name: "Quần",
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995414/demowebHKH/loh2khhaupzacfomnl88.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     },
     {
       name: "Phụ kiện",
-      imageUrl: "https://res.cloudinary.com/dt46dvdeu/image/upload/v1726995414/demowebHKH/loh2khhaupzacfomnl88.jpg"
+      imageUrl: "../../../../assets/images/yor-spy-x-family.avif"
     }
   ];
 

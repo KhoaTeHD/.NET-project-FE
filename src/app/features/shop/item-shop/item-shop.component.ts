@@ -23,12 +23,13 @@ export class ItemShopComponent implements OnInit {
 
   navigateToProductDetail(productId: string) {
     this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
+    window.scrollTo(0, 0);
   }
 
   items: Item[] = [
     {
       id: 1,
-      name: "Quấn thun Lavi",
+      name: "Quần thun Lavi",
       price: 120000,
       pricesale: 10
     },
