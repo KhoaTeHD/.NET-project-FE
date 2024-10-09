@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Chi tiết đơn hàng</h2>
+<mat-dialog-content class="p-4">
+    <p>Mã đơn hàng: {{ order.id }}</p>
+    <p>Ngày đặt hàng: {{ order.date }}</p>
+    <p>Khách hàng: {{ order.customerName }}</p>
+    <p>Tổng tiền: {{ order.total | currency:'VND' }}</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã sản phẩm</th>
+                <th>Tên sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let product of order.products">
+                <td>{{ product.id }}</td>
+                <td  class=" text-truncate" style="max-width: 270px;">{{ product.name }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.price | currency }}</td>
+                <td>{{ product.quantity * product.price | currency }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <button mat-button mat-dialog-close>Đóng</button>
+</mat-dialog-content>

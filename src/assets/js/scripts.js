@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', event => {
                 pageTitle: "Trang {page}",
                 perPage: "Số dòng mỗi trang",
                 noRows: "Không tìm thấy",
-                info: "Dòng {start} đến {end} trong {rows} dòng",
+                info: "",
                 noResults: "Không tìm thấy kết quả phù hợp",
             }
         });
