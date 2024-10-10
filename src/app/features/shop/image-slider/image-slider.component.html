@@ -1,0 +1,15 @@
+<div class="container mt-5">
+    <div class="row" style="height: 100%;">
+        <div class="col-12">
+            <div id="mainImage" class="mb-5 border p-2">
+                <img id="currentImage" [src]="currentImage" class="img-fluid" alt="Main Image">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-2" *ngFor="let img of images">
+            <img [src]="img" class="img-fluid small-img" alt="Thumbnail" (click)="changeImage(img)">
+        </div>
+    </div>
+</div>
