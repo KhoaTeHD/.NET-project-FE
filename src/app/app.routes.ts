@@ -15,6 +15,7 @@ import { ManageCountryComponent } from './features/admin/manage-country/manage-c
 import { ManageProductComponent } from './features/admin/manage-product/manage-product.component';
 import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
 import { CartComponent } from './features/cart/cart.component';
+import { ManageGoodsReceiptComponent } from './features/admin/manage-goods-receipt/manage-goods-receipt.component';
 
 export const routes: Routes = [
     {
@@ -47,7 +48,8 @@ export const routes: Routes = [
             {path: 'supplier', component: ManageSupplierComponent},
             {path: 'color', component: ManageColorComponent},
             {path: 'country', component: ManageCountryComponent},
-            {path: 'product', component: ManageProductComponent}
+            {path: 'product', component: ManageProductComponent},
+            {path: 'goods-receipt', component: ManageGoodsReceiptComponent}
         ],
     },
 ];

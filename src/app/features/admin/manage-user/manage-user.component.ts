@@ -27,6 +27,7 @@ export class ManageUserComponent {
       action: 'Add'
     }
     dialogConfig.width = "850px";
+    dialogConfig.maxHeight = "80vh";
     const dialogRef = this.dialog.open(UserComponent, dialogConfig);
     this.router.events.subscribe(()=>{
       dialogRef.close();
