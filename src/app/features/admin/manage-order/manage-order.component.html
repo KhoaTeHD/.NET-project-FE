@@ -67,7 +67,7 @@
                                 <td>{{ order.orderDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                                 <td>{{ order.discount | currency }}</td>
                                 <td>{{ order.totalAmount | currency }}</td>
-                                <td>{{ order.status }}</td> <!-- Hàm getStatus để hiển thị trạng thái -->
+                                <td>{{ order.status }}</td> 
                                 <td>
                                     <button class="btn btn-primary btn-sm viewOrder"
                                         (click)="handleViewDetailAction()">Xem</button>
