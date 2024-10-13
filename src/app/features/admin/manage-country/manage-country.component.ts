@@ -3,18 +3,25 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CountryComponent } from '../dialog/country/country.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-manage-country',
   standalone: true,
-  imports: [AdminFooterComponent],
+  imports: [AdminFooterComponent, CommonModule],
   templateUrl: './manage-country.component.html',
   styleUrl: './manage-country.component.css'
 })
 export class ManageCountryComponent {
-  displayedColumns:string[] = ['name', 'edit'];
   dataSource:any;
   responseMessage:any;
+  nations = [
+    { Nat_ID: 1, Nat_Name: 'Việt Nam', Nat_Status: 1 },
+    { Nat_ID: 2, Nat_Name: 'Hoa Kỳ', Nat_Status: 1 },
+    { Nat_ID: 3, Nat_Name: 'Nhật Bản', Nat_Status: 1 },
+    { Nat_ID: 4, Nat_Name: 'Hàn Quốc', Nat_Status: 1 },
+    { Nat_ID: 5, Nat_Name: 'Pháp', Nat_Status: 0 }
+  ];
 
   constructor(
     private dialog: MatDialog,

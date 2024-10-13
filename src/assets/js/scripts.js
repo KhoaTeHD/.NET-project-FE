@@ -24,28 +24,39 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
 });
-window.addEventListener('DOMContentLoaded', event => {
-    // Simple-DataTables
-    // https://github.com/fiduswriter/Simple-DataTables/wiki
 
-    const datatablesSimple = document.getElementById('datatablesSimple');
-    if (datatablesSimple) {
-        new simpleDatatables.DataTable(datatablesSimple, {
-            labels: {
-                placeholder: "Tìm kiếm...",
-                searchTitle: "Tìm trong bảng",
-                pageTitle: "Trang {page}",
-                perPage: "Số dòng mỗi trang",
-                noRows: "Không tìm thấy",
-                info: "",
-                noResults: "Không tìm thấy kết quả phù hợp",
-            }
-        });
+// window.addEventListener('DOMContentLoaded', event => {
+//   // Simple-DataTables
+//   // https://github.com/fiduswriter/Simple-DataTables/wiki
 
+//   const datatablesSimple = document.getElementById('datatablesSimple');
+//   if (datatablesSimple) {
+//       new simpleDatatables.DataTable(datatablesSimple, {
+//           labels: {
+//               placeholder: "Tìm kiếm...",
+//               searchTitle: "Tìm trong bảng",
+//               pageTitle: "Trang {page}",
+//               perPage: "Số dòng mỗi trang",
+//               noRows: "Không tìm thấy",
+//               info: "",
+//               noResults: "Không tìm thấy kết quả phù hợp",
+//           }
+//       });
+
+//   }
+// });
+
+// $(document).ready(function() {
+//   $('#dataTable').DataTable();
+// });
+
+
+
+function statusFormatter(value) {
+    console.log("Status Formatter called with value:", value); 
+    if (value == 1) {
+      return '<span class="text-success">Hoạt động</span>';
+    } else {
+      return '<span class="text-danger">Không hoạt động</span>';
     }
-});
-
-$(document).ready(function() {
-    $('#dataTable').DataTable();
-  });
-  
+  }
