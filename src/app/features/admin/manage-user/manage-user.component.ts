@@ -3,11 +3,12 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { UserComponent } from '../dialog/user/user.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-manage-user',
   standalone: true,
-  imports: [AdminFooterComponent],
+  imports: [AdminFooterComponent, TableModule],
   templateUrl: './manage-user.component.html',
   styleUrl: './manage-user.component.css'
 })

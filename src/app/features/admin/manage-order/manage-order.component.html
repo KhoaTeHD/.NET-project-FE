@@ -36,30 +36,22 @@
             <div class="card mb-4">
 
                 <div class="card-body">
-                    <table class="table table-striped table-bordered" data-toggle="table" data-locale="vi-VN"
-                        data-search="true" data-pagination="true" data-height="800"
-                        data-page-list="[10, 20, 30, 50, all]">
-                        <thead>
+                    <p-table [value]="orders" [paginator]="true" [rows]="10"  [globalFilterFields]="['orderId', 'customerId', 'discountCode', 'address']"  dataKey="orderId" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
                             <tr>
-                                <th data-field="orderId" data-halign="center" data-align="center" data-width="4"
-                                    data-width-unit="%">
-                                    Mã đơn hàng
-                                </th>
-                                <th data-field="customerId">Mã khách hàng</th>
-                                <th data-field="discountCode">Mã giảm giá</th>
-                                <th data-field="address">Địa chỉ</th>
-                                <th data-field="orderDate">Ngày đặt</th>
-                                <th data-field="discount" data-align="center">Khuyến mãi</th>
-                                <th data-field="totalAmount" data-align="center">Thành tiền</th>
-                                <th data-field="status" data-align="center" data-width="200" data-width-unit="px"
-                                    data-formatter="statusFormatter">
-                                    Tình trạng
-                                </th>
-                                <th data-align="center" data-width="100">Chi tiết</th>
+                                <th pResizableColumn>Mã đơn hàng</th>
+                                <th pResizableColumn>Mã khách hàng</th>
+                                <th pResizableColumn>Mã giảm giá</th>
+                                <th pResizableColumn>Địa chỉ</th>
+                                <th pResizableColumn>Ngày đặt</th>
+                                <th pResizableColumn>Khuyến mãi</th>
+                                <th pResizableColumn>Thành tiền</th>
+                                <th pResizableColumn>Tình trạng</th>
+                                <th pResizableColumn>Chi tiết</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let order of orders">
+                        </ng-template>
+                        <ng-template pTemplate="body" let-order>
+                            <tr>
                                 <td>{{ order.orderId }}</td>
                                 <td>{{ order.customerId }}</td>
                                 <td>{{ order.discountCode }}</td>
@@ -67,14 +59,13 @@
                                 <td>{{ order.orderDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                                 <td>{{ order.discount | currency }}</td>
                                 <td>{{ order.totalAmount | currency }}</td>
-                                <td>{{ order.status }}</td> 
+                                <td>{{ order.status }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm viewOrder"
-                                        (click)="handleViewDetailAction()">Xem</button>
+                                    <button pButton type="button" label="Xem" class="p-button-sm p-button-primary" (click)="handleViewDetailAction()">Xem</button>
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
+                        </ng-template>
+                    </p-table>
 
                     <!-- <table id="datatablesSimple">
                         <thead>

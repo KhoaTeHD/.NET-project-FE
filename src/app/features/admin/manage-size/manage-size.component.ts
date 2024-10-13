@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { SizeComponent } from '../dialog/size/size.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-manage-size',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule],
   templateUrl: './manage-size.component.html',
   styleUrl: './manage-size.component.css'
 })

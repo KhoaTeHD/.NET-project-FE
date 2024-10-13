@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { CountryComponent } from '../dialog/country/country.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-manage-country',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule],
   templateUrl: './manage-country.component.html',
   styleUrl: './manage-country.component.css'
 })

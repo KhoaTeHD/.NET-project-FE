@@ -4,11 +4,12 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BrandComponent } from '../dialog/brand/brand.component';
 import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-manage-brand',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule],
   templateUrl: './manage-brand.component.html',
   styleUrl: './manage-brand.component.css'
 })

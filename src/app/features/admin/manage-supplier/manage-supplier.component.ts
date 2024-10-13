@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { SupplierComponent } from '../dialog/supplier/supplier.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-manage-supplier',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule],
   templateUrl: './manage-supplier.component.html',
   styleUrl: './manage-supplier.component.css'
 })

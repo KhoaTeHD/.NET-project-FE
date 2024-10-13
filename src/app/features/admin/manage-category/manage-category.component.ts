@@ -4,11 +4,12 @@ import { CategoryComponent } from '../dialog/category/category.component';
 import { Router } from '@angular/router';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-manage-category',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule],
   templateUrl: './manage-category.component.html',
   styleUrl: './manage-category.component.css'
 })

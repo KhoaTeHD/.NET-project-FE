@@ -4,10 +4,11 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { OrderComponent } from '../dialog/order/order.component';
 import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
 @Component({
   selector: 'app-manage-order',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule],
   templateUrl: './manage-order.component.html',
   styleUrl: './manage-order.component.css'
 })
