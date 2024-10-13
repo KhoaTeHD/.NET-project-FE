@@ -8,11 +8,11 @@
     <a class="text-decoration-none text-dark">Thông tin cá nhân</a>
 </div>
 
-<a class="text-decoration-none text-dark d-block sub-nav-item mb-2">Hồ sơ</a>
-<a class="text-decoration-none text-dark d-block sub-nav-item mb-2">Địa chỉ</a>
-<a class="text-decoration-none text-dark d-block sub-nav-item mb-3">Đổi mật khẩu</a>
+<a class="text-decoration-none text-dark d-block sub-nav-item mb-2" [routerLink]="['/record']">Hồ sơ</a>
+<a class="text-decoration-none text-dark d-block sub-nav-item mb-2" [routerLink]="['/address-book']">Sổ địa chỉ</a>
+<a class="text-decoration-none text-dark d-block sub-nav-item mb-3" [routerLink]="['/change-password']">Đổi mật khẩu</a>
 
 <div class="d-flex align-items-center">
     <i width="50px" style="font-size: 18px;" class="fa-solid fa-receipt me-4"></i>
-    <a class="text-decoration-none text-dark">Đơn hàng của tôi</a>
+    <a class="text-decoration-none text-dark" [routerLink]="['/my-orders']">Đơn hàng của tôi</a>
 </div>

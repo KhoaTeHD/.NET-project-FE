@@ -1,15 +1,29 @@
 <div class="header bg-dark"></div>
 <div class="row personal-info-container mt-5 mb-5 mx-auto">
-    <div class="col-3">
+    <div class="col-lg-3 d-none d-lg-block">
         <app-sidebar-personal-info/>
     </div>
-    <div class="col-9">
+    <div class="d-block d-lg-none">
+        <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
+            <div class="offcanvas-header">
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <app-sidebar-personal-info/>
+            </div> 
+        </div>
+        <!-- Button to open the offcanvas sidebar -->
+        <button class="btn btn-primary btn-option" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
+            Tùy chọn
+        </button>
+    </div>
+    <div class="col-lg-9">
         <div class="record-container p-4">
             <p class="record-title fw-bold record-title mb-1">Hồ sơ của tôi</p>
             <p class="record-sec-title record-notice mb-4">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
             <div class="divided-section-top mx-auto"></div>
             <div class="row mt-4">
-                <div class="col-7">
+                <div class="col-md-7 col-infor">
                     <form action="">
                         
                         <!-- Field: Name -->
@@ -81,8 +95,8 @@
                         <button type="submit" class="btn btn-dark w-100 mt-3">Lưu thay đổi</button>
                     </form>
                 </div>
-                <div class="col-1 divided-section"></div>
-                <div class="ms-4 col-4 d-flex align-items-center justify-content-center">
+                <div class="col-1 divided-section d-none d-md-block"></div>
+                <div class="ms-4 col-md-4 d-flex align-items-center justify-content-center col-avatar">
                     <div class="d-flex align-items-center flex-column">
                         <div class="avatar">
                             <img width="100%" src="../../../../assets/images/record/avtar_temp.webp" alt="avatar"

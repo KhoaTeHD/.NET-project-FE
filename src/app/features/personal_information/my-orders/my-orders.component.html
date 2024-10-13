@@ -1,0 +1,106 @@
+<div class="header bg-dark"></div>
+<div class="row personal-info-container mt-5 mb-5 mx-auto">
+    <div class="col-lg-2 d-none d-lg-block">
+        <app-sidebar-personal-info />
+    </div>
+    <div class="d-block d-lg-none">
+        <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
+            <div class="offcanvas-header">
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <app-sidebar-personal-info />
+            </div>
+        </div>
+        <!-- Button to open the offcanvas sidebar -->
+        <button class="btn btn-primary btn-option" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
+            Tùy chọn
+        </button>
+    </div>
+    <div class="col-lg-10">
+        <div class="record-container p-4">
+            <div class="row align-items-center mb-3">
+                <div class="col-lg-10">
+                    <p class="record-title fw-bold record-title mb-0">Đơn hàng của tôi ({{total_order}})</p>
+                </div>
+                <div class="col-lg-2">
+                    <select class="form-select filter-order-status">
+                        <option>Tất cả</option>
+                        <option>Đang xử lý</option>
+                        <option>Đang giao hàng</option>
+                        <option>Đã giao</option>
+                        <option>Đã hủy</option>
+                    </select>
+                </div>
+            </div>
+            <div class="divided-section-top mx-auto"></div>
+            <div class="row mt-4 scrollable-div">
+                <div class="" *ngFor="let order of orders">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex">
+                                <button type="button" class="btn-order-action detail" data-bs-toggle="modal"
+                                    data-bs-target="#myModal">
+                                    Xem chi tiết
+                                </button>
+
+                                <!-- The Modal -->
+                                <div class="modal" id="myModal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+
+                                            <!-- Modal Header -->
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Modal Heading</h4>
+                                                <button type="button" class="btn-close"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <!-- Modal body -->
+                                            <div class="modal-body">
+                                                Modal body..
+                                            </div>
+
+                                            <!-- Modal footer -->
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger"
+                                                    data-bs-dismiss="modal">Close</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-end mx-2"></div>
+                                <button class="btn-order-action cancel">Hủy đơn</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-end" style="font-style: italic;">
+                            <p>Mã đơn hàng: {{order.order_id}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Thời gian</div>
+                        <div class="d-none d-lg-block col-lg-2 order-title">Phí vận chuyển</div>
+                        <div class="d-none d-lg-block col-lg-2 order-title">Giảm giá</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Tổng tiền</div>
+                        <div class="d-none d-sm-block col-md-3 col-lg-2 order-title">Thanh toán</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Trạng thái</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.order_date}}</div>
+                        <div class="d-none d-lg-block col-lg-2">{{order.shipping_charge | currency:" "}} đ</div>
+                        <div class="d-none d-lg-block col-lg-2">{{order.discount | currency:" "}} đ</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.estimated_price - order.shipping_charge -
+                            order.discount | currency:" "}} đ</div>
+                        <div class="d-none d-sm-block col-md-3 col-lg-2">{{order.form_of_payment}}</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.order_status}}</div>
+                    </div>
+
+                    <div class="divided-section-top mx-auto my-3"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

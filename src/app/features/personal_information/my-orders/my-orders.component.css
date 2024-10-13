@@ -2,6 +2,10 @@
     height: 50px;
 }
 
+.personal-info-container {
+    width: 95% !important;
+}
+
 .record-container {
     border: none;
     border-radius: 16px;
@@ -38,10 +42,36 @@
     background-color: #212529;
 }
 
+.order-title {
+    font-weight: 500;
+}
+
+.btn-order-action {
+    background-color: #fff;
+    border: none;
+}
+
+.btn-order-action.detail {
+    color: #184AFA;
+}
+
+.btn-order-action.cancel {
+    color: #F03B13;
+}
+
+.scrollable-div {
+    max-height: 480px; /* Đặt chiều cao tối đa cho div */
+    overflow-y: auto;  /* Kích hoạt thanh cuộn dọc */
+    overflow-x: hidden; /* Ẩn thanh cuộn ngang nếu không cần thiết */
+    padding-right: 15px; /* Để tránh nội dung bị ẩn sau thanh cuộn */
+    background-color: #fff; /* Tùy chọn: Màu nền cho div */
+}
+
 /* DT */
 @media (max-width: 767px) {
     .record-container {
         box-shadow: none;
+        padding: 0 !important;
     }
 
     .btn-option {
@@ -52,17 +82,17 @@
         padding: 10px;
     }
 
-    .col-infor {
-        order: 2;
+    .scrollable-div {
+        max-height: 390px; /* Đặt chiều cao tối đa cho div */
     }
 
-    .col-avatar {
-        order: 1;
-        margin-left: 0 !important;
+    .btn-option {
+        margin: 0 !important;
+        margin-bottom: 8px !important;
     }
 
-    .label-name {
-        margin-bottom: 30px;
+    .filter-order-status {
+        margin: 8px 0;
     }
 }
 
@@ -79,6 +109,16 @@
 
     .offfcanvas-option {
         padding: 10px;
+    }
+
+    .filter-order-status {
+        margin-top: 6px;
+        width: 120px; /* Điều chỉnh độ rộng tùy ý */
+        font-size: 14px; /* Điều chỉnh cỡ chữ tùy ý */
+    }
+
+    .scrollable-div {
+        max-height: 600px; /* Đặt chiều cao tối đa cho div */
     }
 }
 

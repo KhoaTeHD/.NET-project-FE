@@ -1,0 +1,215 @@
+<div class="header bg-dark"></div>
+<div class="row personal-info-container mt-5 mb-5 mx-auto">
+    <div class="col-lg-3 d-none d-lg-block">
+        <app-sidebar-personal-info />
+    </div>
+    <div class="d-block d-lg-none">
+        <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
+            <div class="offcanvas-header">
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <app-sidebar-personal-info />
+            </div>
+        </div>
+        <!-- Button to open the offcanvas sidebar -->
+        <button class="btn btn-primary btn-option" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
+            Tùy chọn
+        </button>
+    </div>
+    <div class="col-lg-9">
+        <div class="record-container p-4">
+            <div class="row align-items-center">
+                <div class="col-4 col-sm-4 col-md-6">
+                    <p class="record-title fw-bold record-title mb-1">Sổ địa chỉ</p>
+                </div>
+                <div class="col-8 col-sm-8 col-md-6">
+                    <!-- Button to Open the Modal -->
+                    <button type="button" class="btn btn-primary bg-dark border-none btn-address-modal float-end"
+                        data-bs-toggle="modal" data-bs-target="#myModal">
+                        + Thêm địa chỉ mới
+                    </button>
+
+                    <!-- The Modal -->
+                    <div class="modal" id="myModal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Thêm địa chỉ mới</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    <form action="">
+                                        <!-- input name and phone -->
+                                        <div class="row mt-2">
+                                            <div class="col-6">
+                                                <input type="text" id="name" placeholder="Họ và tên" name="name"
+                                                    class="input-text">
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="text" id="phone" placeholder="Số điện thoại" name="phone"
+                                                    class="input-text">
+                                            </div>
+                                        </div>
+
+                                        <!-- input province/city -->
+                                        <select class="form-select">
+                                            <option>Tỉnh/Thành phố</option>
+                                            <option>Thành phố Hồ Chí Minh</option>
+                                            <option>Tỉnh Long An</option>
+                                            <option>Tỉnh An Giang</option>
+                                        </select>
+
+                                        <!-- input district -->
+                                        <select class="form-select">
+                                            <option>Quận/Huyện</option>
+                                            <option>Quận 1</option>
+                                            <option>Quận 2</option>
+                                            <option>Quận 3</option>
+                                        </select>
+
+                                        <!-- input town -->
+                                        <select class="form-select">
+                                            <option>Phường/Xã</option>
+                                            <option>Phường 1</option>
+                                            <option>Phường 2</option>
+                                            <option>Phường 3</option>
+                                        </select>
+
+                                        <!-- input: home number, street name -->
+                                        <input type="text" id="home-number" placeholder="Số nhà, tên đường"
+                                            name="home-number" class="input-text">
+
+                                        <!-- set address default -->
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="radio1"
+                                                name="set-address-default" value="option1">
+                                            <label class="form-check-label" for="radio1">Đặt làm địa chỉ mặc
+                                                định</label>
+                                        </div>
+
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer mt-4">
+                                            <button type="button" class="btn" data-bs-dismiss="modal">Trở lại</button>
+                                            <button type="submit" class="btn bg-dark text-light">Hoàn thành</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="divided-section-top mx-auto mt-2"></div>
+            <div class="mt-4">
+                <div class="row mb-4" *ngFor="let address of address_book">
+                    <div class="col-md-6">
+                        <div class="d-flex mb-2">
+                            <p class="name-infor mb-0">{{address.full_name}}</p>
+                            <p class="border-end mb-0 mx-2 separation"></p>
+                            <p class="mb-0">{{address.phone}}</p>
+                        </div>
+                        <p class="mb-1">{{address.address_line}}</p>
+                        <p class="mb-1">{{address.ward}}, {{address.district}}, {{address.province}}</p>
+                        <p class="mb-1 default-label" *ngIf="address.is_default === 1">Mặc định</p>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center justify-content-end area-edit-btn-address">
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-end">
+                                <button type="button" class="btn btn-update" (click)="openModal(address.id)"
+                                    data-bs-toggle="modal" data-bs-target="#updateModal">
+                                    Cập nhật
+                                </button>
+                                <button class="btn-update btn-delete" *ngIf="address.is_default !== 1">Xóa</button>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end mt-2">
+                                <button class="btn-set-default" [disabled]="address.is_default === 1"
+                                    [ngClass]="{'btn-disabled': address.is_default === 1}"
+                                    (click)="setDefaultAddress(address.id)">Thiết lập mặc định</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divided-section-top mx-auto mt-2"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal update dùng chung cho tất cả các address -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title">Cập nhật địa chỉ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="">
+                    <!-- input name and phone -->
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <input type="text" id="name" placeholder="Họ và tên" name="name" class="input-text"
+                                [(ngModel)]="selectedAddress.full_name">
+                        </div>
+                        <div class="col-6">
+                            <input type="text" id="phone" placeholder="Số điện thoại" name="phone" class="input-text"
+                                [(ngModel)]="selectedAddress.phone">
+                        </div>
+                    </div>
+
+                    <!-- input province/city -->
+                    <select class="form-select">
+                        <option value="">Tỉnh/Thành phố</option>
+                        <option value="Thành phố Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
+                        <option value="Tỉnh Long An">Tỉnh Long An</option>
+                        <option value="Tỉnh An Giang">Tỉnh An Giang</option>
+                    </select>
+
+                    <!-- input district -->
+                    <select class="form-select">
+                        <option>Quận/Huyện</option>
+                        <option>Quận 1</option>
+                        <option>Quận 2</option>
+                        <option>Quận 3</option>
+                    </select>
+
+                    <!-- input town -->
+                    <select class="form-select">
+                        <option>Phường/Xã</option>
+                        <option>Phường 1</option>
+                        <option>Phường 2</option>
+                        <option>Phường 3</option>
+                    </select>
+
+                    <!-- input: home number, street name -->
+                    <input type="text" id="home-number" placeholder="Số nhà, tên đường" name="home-number"
+                        class="input-text" [(ngModel)]="selectedAddress.address_line">
+
+                    <!-- set address default -->
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="radio1" name="set-address-default"
+                            value="option1" [checked]="selectedAddress.is_default === 1">
+                        <label class="form-check-label" for="radio1">Đặt làm địa chỉ mặc
+                            định</label>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer mt-4">
+                        <button type="button" class="btn" data-bs-dismiss="modal">Trở lại</button>
+                        <button type="submit" class="btn bg-dark text-light">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

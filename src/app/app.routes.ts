@@ -9,6 +9,8 @@ import { SignInComponent } from './features/auth/sign-in/sign-in.component';
 import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
 import { RecordComponent } from './features/personal_information/record/record.component';
 import { ChangePasswordComponent } from './features/personal_information/change-password/change-password.component';
+import { AddressBookComponent } from './features/personal_information/address-book/address-book.component';
+import { MyOrdersComponent } from './features/personal_information/my-orders/my-orders.component';
 
 export const routes: Routes = [
     {
@@ -42,5 +44,13 @@ export const routes: Routes = [
     {
         path: 'change-password', 
         component: ChangePasswordComponent
+    },
+    {
+        path: 'address-book', 
+        component: AddressBookComponent
+    },
+    {
+        path: 'my-orders', 
+        component: MyOrdersComponent
     },
 ];

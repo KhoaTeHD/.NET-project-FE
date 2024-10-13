@@ -1,0 +1,150 @@
+.header {
+    height: 50px;
+}
+
+.record-container {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.divided-section {
+    width: 1px;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 0;
+    margin-left: 20px;
+}
+
+.record-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.divided-section-top {
+    height: 1px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.right-hand-side-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.btn-option {
+    border: none;
+    background-color: #212529;
+}
+
+.btn-address-modal {
+    border: none;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.modal-body .input-text, select {
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    padding: 8px 16px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    margin-bottom: 24px;
+}
+
+.name-infor {
+    font-weight: 500;
+}
+
+.default-label {
+    margin-top: 3px;
+    display: inline-block;
+    color: #F03B13;
+    border: 1px solid #F03B13;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+.btn-set-default {
+    background-color: #fff;
+    color: #212529;
+    border: 1px solid #212529;
+    border-radius: 4px;
+    padding: 2px 14px;
+    font-size: 14px;
+}
+
+.btn-update {
+    background-color: #fff;
+    color: #184AFA;
+    border: none;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.btn-disabled {
+    opacity: 0.6; /* Giảm độ mờ */
+    pointer-events: none; /* Ngăn chặn các sự kiện chuột */
+}
+
+/* DT */
+@media (max-width: 767px) {
+    .record-container {
+        box-shadow: none;
+    }
+
+    .btn-option {
+        margin-left: 20px;
+    }
+
+    .offfcanvas-option {
+        padding: 10px;
+    }
+
+    .area-edit-btn-address {
+        justify-content: start !important;
+    }
+    
+    .area-edit-btn-address div div {
+        justify-content: start !important;
+    }
+
+    .btn-update {
+        margin-top: 6px !important;
+        padding: 0 !important;
+    }
+
+    .btn-set-default {
+        margin-bottom: 12px;
+    }
+
+    .btn-delete {
+        margin-left: 16px !important;
+    }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 992px){
+    .record-container {
+        margin: 0 20px;
+    }
+
+    .btn-option {
+        margin-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    .offfcanvas-option {
+        padding: 10px;
+    }
+}
+
+/* DT */
+@media (min-width: 993px) {
+    .personal-info-container {
+        width: 80%;
+    }
+}
