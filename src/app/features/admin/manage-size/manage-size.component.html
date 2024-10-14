@@ -1,0 +1,86 @@
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Kích thước</h1>
+            <div class="mb-3 d-flex flex-row-reverse">
+                <button type="button" class="btn btn-dark" (click)="handleAddAction()">Thêm kích thước</button>
+            </div>
+            <div class="card mb-4">
+                <p-toast></p-toast>
+                <div class="card-body">
+                    <div class="card-body">
+                        <p-table editMode="row" dataKey="Siz_ID" [value]="sizes" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên Kích Thước</th>
+                                    <th>Mô Tả</th>
+                                    <th>Trạng Thái</th>
+                                    <th></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-size let-editing="editing" let-ri="rowIndex">
+                                <tr [pEditableRow]="size">
+                                    <td>{{ size.Siz_ID }}</td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input 
+                                                    pInputText type="text" 
+                                                    [(ngModel)]="size.Siz_Name" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{ size.Siz_Name }}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input 
+                                                    pInputText type="text" 
+                                                    [(ngModel)]="size.Siz_Desc" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{ size.Siz_Desc }}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <p-dropdown [options]="statuses" appendTo="body"
+                                                    [(ngModel)]="size.Siz_Status" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                <p-tag [value]="size.Siz_Status ? 'Hoạt động' : 'Ngừng bán' "
+                                                    [severity]="getSeverity(size.Siz_Status)" />
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <div class="flex align-items-center justify-content-center gap-2">
+                                            <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                                icon="pi pi-pencil" (click)="onRowEditInit(size)"
+                                                class="p-button-rounded p-button-text">
+                                            </button>
+                                            <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                                icon="pi pi-check" (click)="onRowEditSave(size, ri)"
+                                                class="p-button-rounded p-button-text p-button-success mr-2">
+                                            </button>
+                                            <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                                icon="pi pi-times" (click)="onRowEditCancel(size, ri)"
+                                                class="p-button-rounded p-button-text p-button-danger">
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <app-admin-footer></app-admin-footer>
+</div>

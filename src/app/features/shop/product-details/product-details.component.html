@@ -1,0 +1,56 @@
+<app-header />
+<section class="bg-light">
+    <div class="container pb-5">
+        <div class="row">
+            <div class="col-lg-7 mt-5">
+                <app-image-slider></app-image-slider>
+            </div>
+            <!-- col end -->
+            <div class="col-lg-5 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="h2">{{product.name}}</h1>
+                        <p>Thương hiệu: </p>
+                        <p>Xuất xứ: </p>
+                        <p>Giá bán: {{product.price | currency:'VND':'symbol'}}</p>
+                        <div class="d-flex">
+                            <p class="me-2">Còn lại: </p>
+                            <p style="color: green;">52</p>
+                        </div>
+                        <div>
+                            <p>Kích thước:</p>
+                        </div>
+                        <div>
+                            <p>Màu sắc:</p>
+                        </div>
+
+                        <a href="#">Hướng dẫn chọn Size</a>
+
+                        <div class="d-flex align-items-center pb-2 mb-2 mt-3">
+                            <button type="button" data-mdb-button-init data-mdb-ripple-init
+                                class="btn btn-dark btn-add-to-cart">
+                                Thêm vào giỏ hàng
+                            </button>
+                            <button type="button" data-mdb-button-init data-mdb-ripple-init
+                                class="btn btn-dark ms-3">Mua ngay</button>
+                        </div>
+
+                        <p>Mô tả:</p>
+                        <p>Áo dành cho người thích Cosplay.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row text-left p-2 pb-3">
+            <h4>Sản phẩm liên quan</h4>
+        </div>
+    </div>
+</section>
+
+<app-footer />

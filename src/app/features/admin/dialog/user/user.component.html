@@ -1,0 +1,58 @@
+<div mat-dialog-content class="container-fluid p-5 overflow-auto">
+    <div class="mb-3">
+        <h3 class="text-center">Thêm khách hàng</h3>
+    </div>
+    <form>
+        <!-- Customer Name -->
+        <div class="mb-3">
+            <label for="Cus_Name" class="form-label">Tên khách hàng:</label>
+            <input type="text" class="form-control" id="Cus_Name" placeholder="Nhập tên khách hàng" name="Cus_Name">
+        </div>
+
+        <!-- Customer Avatar -->
+        <div class="mb-3">
+            <label for="Cus_Avatar" class="form-label">Ảnh đại diện:</label>
+            <input type="file" class="form-control" id="Cus_Avatar" name="Cus_Avatar">
+        </div>
+
+        <!-- Customer Email -->
+        <div class="mb-3">
+            <label for="Cus_Email" class="form-label">Email:</label>
+            <input type="email" class="form-control" id="Cus_Email" placeholder="Nhập email" name="Cus_Email">
+        </div>
+
+        <!-- Customer Password -->
+        <div class="mb-3">
+            <label for="Cus_PassWord" class="form-label">Mật khẩu:</label>
+            <input type="password" class="form-control" id="Cus_PassWord" placeholder="Nhập mật khẩu" name="Cus_PassWord">
+        </div>
+
+        <!-- Customer Gender -->
+        <div class="mb-3">
+            <label for="Cus_Gender" class="form-label">Giới tính:</label>
+            <input type="text" class="form-control" id="Cus_Gender" placeholder="Nhập giới tính (Nam/Nữ)" name="Cus_Gender">
+        </div>
+
+        <!-- Customer Phone -->
+        <div class="mb-3">
+            <label for="Cus_Phone" class="form-label">Số điện thoại:</label>
+            <input type="tel" class="form-control" id="Cus_Phone" placeholder="Nhập số điện thoại" name="Cus_Phone">
+        </div>
+
+        <!-- Customer Birthday -->
+        <div class="mb-3">
+            <label for="Cus_Birthday" class="form-label">Ngày sinh:</label>
+            <input type="date" class="form-control" id="Cus_Birthday" name="Cus_Birthday">
+        </div>
+
+        <!-- Customer Status -->
+        <div class="mb-3">
+            <label class="form-check-label me-2" for="Cus_Status">Trạng thái:</label>
+            <input class="form-check-input" type="radio" name="Cus_Status" id="active"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="Cus_Status" id="inactive"> Ẩn
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success w-100 mt-2">Xác nhận</button>
+    </form>
+</div>

@@ -1,20 +1,36 @@
-.shop-item{
-    max-width: 250px;
-    background-color: #ccc;
-    padding: 1rem;
+.custom-css-item a{
+    text-decoration: none;
+}
+
+.price-item-custom{
+    color: red !important;
+    font-weight: bold;
+}
+
+.btn-add-to-cart{
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+}
+
+.pagination-controls {
     display: flex;
-    flex-direction: column;
-}
-.shop-item img{
-    width: 180px;
-    height: 180px;
-    border-radius: 12px;
-    object-fit: cover;
-}
-.price-shop-item{
-    display: flex;
-}
-.btn-shop-item{
-    display: flex;
-    font-size: 14px;
-}
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-controls button {
+    margin: 0 10px;
+  }
+  
+  .pagination-controls span {
+    font-weight: bold;
+  }
+  
+  .placeholder-item {
+    opacity: 0;
+    pointer-events: none;  /* Đảm bảo không thể nhấp vào */
+    visibility: hidden;
+    height: 100%;          /* Đảm bảo item có chiều cao đầy đủ */
+  }
+  

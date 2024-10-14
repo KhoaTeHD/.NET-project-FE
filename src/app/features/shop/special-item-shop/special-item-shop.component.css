@@ -1,31 +1,21 @@
-.specialitem-shop{
+.card-custom {
     width: 100%;
-    height: fit-content;
-    padding: 1rem 1.5rem;
-    display: flex;
-    background-color: #ccc;
-    align-items: center;
+    margin: 10px 0;
+    padding: 1rem;
+    border: none;
+    filter: drop-shadow(0 0 0.75rem #ccc);
 }
-.img-specialitem{
-    width: 200px;
-    margin-right: 1.5rem;
+.img-container {
+    max-width: 200px;
+    max-height: 200px;
+    overflow: hidden;
+    margin: auto;
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    filter: drop-shadow(0 0 0.75rem #ccc);
 }
-.img-specialitem img{
-    width: 200px;
-    height: 200px;
+.img-container img {
+    width: 100%;
+    height: revert-layer;
     object-fit: cover;
-    border-radius: 12px;
-}
-.info-specialitem{
-
-}
-.info-specialitem .title-info-specialitem{
-    font-size: 24px;
-    font-weight: 700;
-}
-.info-specialitem .mota-info-specialitem{
-
-}
-.color-info-specialitem{
-    display: flex;
 }

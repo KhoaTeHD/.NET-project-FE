@@ -1,0 +1,188 @@
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Đơn hàng</h1>
+            <div class="mb-3 mt-4 d-flex align-items-center">
+                <label for="date-from">Ngày Lọc</label>
+                <input name="date-from" type="date" class="ms-3 me-3 w-auto form-control">
+                <i class="fa-solid fa-arrow-right"></i>
+                <input name="date-to" type="date" class="ms-3 me-3 w-auto form-control">
+            </div>
+            <div class="mb-3 d-flex align-items-center">
+                <label for="province">Tỉnh (Thành)</label>
+                <select id="order-province" name="province" class="ms-3 me-3 w-auto form-select">
+                    <option disable value="">-- Chọn --</option>
+                </select>
+
+                <label for="">Quận (Huyện)</label>
+                <select id="order-district" name="district" class="ms-3 me-3 w-auto form-select">
+                    <option disable value="">-- Chọn --</option>
+                </select>
+
+                <label for="">Xã (Phường, Thị Trấn)</label>
+                <select id="order-ward" name="ward" class="ms-3 me-3 w-auto form-select">
+                    <option disable value="">-- Chọn --</option>
+                </select>
+            </div>
+            <div class="mb-4 d-flex align-items-center">
+                <label for="">Tình Trạng</label>
+
+                <select name="order-status" id="status" class="ms-3 me-3 w-auto form-select">
+                    <option value="">-- Tất cả --</option>
+                </select>
+
+                <button type="submit" name="submit" class="btn btn-dark">Lọc</button>
+            </div>
+            <div class="card mb-4">
+
+                <div class="card-body">
+                    <p-table [value]="orders" [paginator]="true" [rows]="10"  [globalFilterFields]="['orderId', 'customerId', 'discountCode', 'address']"  dataKey="orderId" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th pResizableColumn>Mã đơn hàng</th>
+                                <th pResizableColumn>Mã khách hàng</th>
+                                <th pResizableColumn>Mã giảm giá</th>
+                                <th pResizableColumn>Địa chỉ</th>
+                                <th pResizableColumn>Ngày đặt</th>
+                                <th pResizableColumn>Khuyến mãi</th>
+                                <th pResizableColumn>Thành tiền</th>
+                                <th pResizableColumn>Tình trạng</th>
+                                <th pResizableColumn>Chi tiết</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-order>
+                            <tr>
+                                <td>{{ order.orderId }}</td>
+                                <td>{{ order.customerId }}</td>
+                                <td>{{ order.discountCode }}</td>
+                                <td>{{ order.address }}</td>
+                                <td>{{ order.orderDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td>{{ order.discount | currency }}</td>
+                                <td>{{ order.totalAmount | currency }}</td>
+                                <td>{{ order.status }}</td>
+                                <td>
+                                    <button pButton type="button" label="Xem" class="p-button-sm p-button-primary" (click)="handleViewDetailAction()">Xem</button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+                    <!-- <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Mã khách hàng</th>
+                                <th>Mã giảm giá</th>
+                                <th>Địa chỉ</th>
+                                <th>Ngày đặt</th>
+                                <th>Khuyến mãi</th>
+                                <th>Thành tiền</th>
+                                <th>Tình trạng</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>000001</td>
+                                <td>00001</td>
+                                <td>Mã giảm giá</td>
+                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
+                                <td>2024-05-19 05:04:42</td>
+                                <td>-20,000đ</td>
+                                <td>7,605,000</td>
+                                <td>
+                                    <select class="form-select-sm">
+                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
+                                        <option value="Đã xác nhận">Đã xác nhận</option>
+                                        <option value="Đang giao hàng">Đang giao hàng</option>
+                                        <option value="Đã giao hàng">Đã giao hàng</option>
+                                        <option value="Đã hủy">Đã hủy</option>
+                                    </select>
+                                </td>
+                                <td><button (click)="handleViewDetailAction()">Xem</button></td>
+                            </tr>
+                            <tr>
+                                <td>000001</td>
+                                <td>00001</td>
+                                <td>Mã giảm giá</td>
+                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
+                                <td>2024-05-19 05:04:42</td>
+                                <td>-20,000đ</td>
+                                <td>7,605,000</td>
+                                <td>
+                                    <select class="form-select-sm">
+                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
+                                        <option value="Đã xác nhận">Đã xác nhận</option>
+                                        <option value="Đang giao hàng">Đang giao hàng</option>
+                                        <option value="Đã giao hàng">Đã giao hàng</option>
+                                        <option value="Đã hủy">Đã hủy</option>
+                                    </select>
+                                </td>
+                                <td>Xem</td>
+                            </tr>
+                            <tr>
+                                <td>000001</td>
+                                <td>00001</td>
+                                <td>Mã giảm giá</td>
+                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
+                                <td>2024-05-19 05:04:42</td>
+                                <td>-20,000đ</td>
+                                <td>7,605,000</td>
+                                <td>
+                                    <select class="form-select-sm">
+                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
+                                        <option value="Đã xác nhận">Đã xác nhận</option>
+                                        <option value="Đang giao hàng">Đang giao hàng</option>
+                                        <option value="Đã giao hàng">Đã giao hàng</option>
+                                        <option value="Đã hủy">Đã hủy</option>
+                                    </select>
+                                </td>
+                                <td>Xem</td>
+                            </tr>
+                            <tr>
+                                <td>000001</td>
+                                <td>00001</td>
+                                <td>Mã giảm giá</td>
+                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
+                                <td>2024-05-19 05:04:42</td>
+                                <td>-20,000đ</td>
+                                <td>7,605,000</td>
+                                <td>
+                                    <select class="form-select-sm">
+                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
+                                        <option value="Đã xác nhận">Đã xác nhận</option>
+                                        <option value="Đang giao hàng">Đang giao hàng</option>
+                                        <option value="Đã giao hàng">Đã giao hàng</option>
+                                        <option value="Đã hủy">Đã hủy</option>
+                                    </select>
+                                </td>
+                                <td>Xem</td>
+                            </tr>
+                            <tr>
+                                <td>000001</td>
+                                <td>00001</td>
+                                <td>Mã giảm giá</td>
+                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
+                                <td>2024-05-19 05:04:42</td>
+                                <td>-20,000đ</td>
+                                <td>7,605,000</td>
+                                <td>
+                                    <select class="form-select-sm">
+                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
+                                        <option value="Đã xác nhận">Đã xác nhận</option>
+                                        <option value="Đang giao hàng">Đang giao hàng</option>
+                                        <option value="Đã giao hàng">Đã giao hàng</option>
+                                        <option value="Đã hủy">Đã hủy</option>
+                                    </select>
+                                </td>
+                                <td>Xem</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table> -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <app-admin-footer></app-admin-footer>
+</div>

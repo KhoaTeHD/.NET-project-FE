@@ -1,36 +1,46 @@
-<!-- <div class="shop-item">
-    <div style="display: flex;align-items: center;justify-content: center;">
-        <img src="https://res.cloudinary.com/dt46dvdeu/image/upload/v1702747356/albums/vux.thuy.trangg/h65cfqysy0ollzbzkwnk.jpg" alt="">
-    </div>
-    <p>Light Stick J97 Version 3</p>
-    <div class="price-shop-item">
-        <p>997.000 đ</p>
-        <p>997.000 đ</p>
-        <p>(-10%)</p>
-    </div>
-    <div class="btn-shop-item">
-        <button>Thêm vào giỏ hàng</button>
-        <button>Mua ngay</button>
-    </div>
-</div> -->
-
-
-    <div class="card mb-4 product-wap rounded-0">
-        <div class="card rounded-0">
-            <img class="card-img rounded-0 img-fluid" src="https://res.cloudinary.com/dt46dvdeu/image/upload/v1702747356/albums/vux.thuy.trangg/h65cfqysy0ollzbzkwnk.jpg">
+<div class="col-md-4 mb-4" *ngFor="let item of pagedItems">
+    <!-- Nếu item không phải là placeholder -->
+    <div *ngIf="!item.isPlaceholder" class="card custom-css-item" style="border-radius: 15px;">
+      <div class="bg-image hover-overlay ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+        <div style="display: flex;width: 100%; height: 200px;">
+          <img src="../../../../assets/images/yor-spy-x-family.avif"
+               style="border-top-left-radius: 15px; border-top-right-radius: 15px;width: 100%;object-fit: cover;"
+               class="img-fluid" alt="Laptop" />
         </div>
-        <div class="card-body">
-            <a href="shop-single.html" class="h3 text-decoration-none">Oupidatat non</a>
-            <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                <li>M/L/X/XL</li>
-                <li class="pt-2">
-                    <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
-                    <span class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
-                    <span class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
-                    <span class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
-                    <span class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
-                </li>
-            </ul>
-            <p class="text-center mb-0">$250.00</p>
+      </div>
+      <div class="card-body pb-0">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5><a (click)="navigateToProductDetail(item.id)" class="text-dark">{{ item.name }}</a></h5>
+          </div>
         </div>
+      </div>
+      <hr class="my-0" />
+      <div class="card-body pb-0">
+        <div class="d-flex justify-content-between">
+          <p><a href="#!" class="text-dark price-item-custom">{{ item.price - (item.price * item.pricesale / 100) | currency:'VND':'symbol' }}</a></p>
+          <p style="text-decoration: line-through;">{{ item.price | currency:'VND':'symbol'}} <span class="badge bg-danger">{{- item.pricesale }}%</span></p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
+          <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-add-to-cart">
+            <img src="../../../../assets/images/icons8-add-shopping-cart-32.png" alt="" >
+          </button>
+          <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark">Mua ngay</button>
+        </div>
+      </div>
     </div>
+  
+    <!-- Nếu item là placeholder, sử dụng class để ẩn item nhưng vẫn giữ chiều cao -->
+    <div *ngIf="item.isPlaceholder" class="card placeholder-item" style="border-radius: 15px;">
+      <!-- Các thành phần bên trong cũng có thể để trống -->
+    </div>
+  </div>
+  
+<!-- Phân trang -->
+<div class="pagination-controls">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Trước</button>
+    <span>Trang {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Sau</button>
+</div>

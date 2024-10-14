@@ -5,7 +5,6 @@
     */
     // 
 // Scripts
-// 
 
 window.addEventListener('DOMContentLoaded', event => {
 
@@ -24,28 +23,3 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
 });
-window.addEventListener('DOMContentLoaded', event => {
-    // Simple-DataTables
-    // https://github.com/fiduswriter/Simple-DataTables/wiki
-
-    const datatablesSimple = document.getElementById('datatablesSimple');
-    if (datatablesSimple) {
-        new simpleDatatables.DataTable(datatablesSimple, {
-            labels: {
-                placeholder: "Tìm kiếm...",
-                searchTitle: "Tìm trong bảng",
-                pageTitle: "Trang {page}",
-                perPage: "Số dòng mỗi trang",
-                noRows: "Không tìm thấy",
-                info: "Dòng {start} đến {end} trong {rows} dòng",
-                noResults: "Không tìm thấy kết quả phù hợp",
-            }
-        });
-
-    }
-});
-
-$(document).ready(function() {
-    $('#dataTable').DataTable();
-  });
-  
