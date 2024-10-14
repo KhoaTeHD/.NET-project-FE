@@ -24,7 +24,7 @@
                     <p class="record-title fw-bold record-title mb-0">Đơn hàng của tôi ({{total_order}})</p>
                 </div>
                 <div class="col-lg-2">
-                    <select class="form-select filter-order-status">
+                    <select class="form-select filter-order-status" (change)="filterOrders($event)">
                         <option>Tất cả</option>
                         <option>Đang xử lý</option>
                         <option>Đang giao hàng</option>
@@ -34,42 +34,16 @@
                 </div>
             </div>
             <div class="divided-section-top mx-auto"></div>
-            <div class="row mt-4 scrollable-div">
-                <div class="" *ngFor="let order of orders">
+            <div class="row mt-4 scrollable-order">
+                <div class="" *ngFor="let order of filteredOrders">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="d-flex">
-                                <button type="button" class="btn-order-action detail" data-bs-toggle="modal"
-                                    data-bs-target="#myModal">
+                                <button type="button" class="btn-order-action detail ps-0" data-bs-toggle="modal"
+                                    data-bs-target="#myModal" (click)="openModal(order)">
                                     Xem chi tiết
                                 </button>
 
-                                <!-- The Modal -->
-                                <div class="modal" id="myModal">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-
-                                            <!-- Modal Header -->
-                                            <div class="modal-header">
-                                                <h4 class="modal-title">Modal Heading</h4>
-                                                <button type="button" class="btn-close"
-                                                    data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <!-- Modal body -->
-                                            <div class="modal-body">
-                                                Modal body..
-                                            </div>
-
-                                            <!-- Modal footer -->
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger"
-                                                    data-bs-dismiss="modal">Close</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="border-end mx-2"></div>
                                 <button class="btn-order-action cancel">Hủy đơn</button>
                             </div>
@@ -87,7 +61,7 @@
                         <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Trạng thái</div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.order_date}}</div>
                         <div class="d-none d-lg-block col-lg-2">{{order.shipping_charge | currency:" "}} đ</div>
                         <div class="d-none d-lg-block col-lg-2">{{order.discount | currency:" "}} đ</div>
@@ -101,6 +75,95 @@
                 </div>
 
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal For Order Details -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog custom-width">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h6 class="modal-title" style="font-style: italic;">Mã đơn hàng: {{selectedOrder.order_id}}</h6>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="detail-order-container scrollable-order-details">
+                    <div class="card mb-3 p-2" *ngFor="let o_detail of selectedOrder.orderDetails">
+                        <div class="row">
+                            <p class="col-2 text-center order-title">Ảnh</p>
+                            <p class="col-2 order-title">Tên sản phẩm</p>
+                            <p class="col-2 order-title">Màu sắc</p>
+                            <p class="col-2 order-title">Kích thước</p>
+                            <p class="col-2 order-title">Đơn giá</p>
+                            <p class="col-2 order-title">Số lượng</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-2 text-center">
+                                <img width="60px" height="60px" class="" src="../../../../assets/images/record/{{o_detail.product_pic}}" alt="ảnh quần áo"/>
+                            </div>
+                            
+                            <p class="col-2 mt-2">{{o_detail.product_name}}</p>
+                            <p class="col-2 mt-2">{{o_detail.product_color}}</p>
+                            <p class="col-2 mt-2">{{o_detail.product_size}}</p>
+                            <p class="col-2 mt-2">{{o_detail.unit_price}}</p>
+                            <p class="col-2 mt-2">{{o_detail.quantity}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divided-section-top mx-auto"></div>
+
+                <div class="order-details-common-infor1 card my-3 p-2">
+                    <p>Đặt ngày: {{selectedOrder.order_date}}</p>
+                    <p class="mb-0">Hình thức thanh toán: {{selectedOrder.form_of_payment}}</p>
+                </div>
+                <div class="order-details-common-infor2 d-flex">
+                    <div class="flex-fill card p-2 me-2">
+                        <p>Người nhận: {{selectedOrder.customer_name}}</p>
+                        <p>Địa chỉ: {{selectedOrder.order_address}}</p>
+                        <p class="mb-0">Số điện thoại: {{selectedOrder.customer_phone}}</p>
+                    </div>
+                    <div class="flex-fill card p-2 ms-2">
+                        <div class="row">
+                            <p class="col-6">Tạm tính ({{selectedOrder.orderDetails.length}} sản phẩm)</p>
+                            <p class="col-6 text-end">{{selectedOrder.estimated_price | currency:" "}} đ</p>
+                        </div>
+                        <div class="row">
+                            <p class="col-6">Phí vận chuyển</p>
+                            <p class="col-6 text-end" style="color: #184AFA !important">+ {{selectedOrder.shipping_charge | currency:" "}} đ</p>
+                        </div>
+                        <div class="row">
+                            <p class="col-6">Giảm giá</p>
+                            <p class="col-6 text-end" style="color: #F03B13 !important;">- {{selectedOrder.discount | currency:" "}} đ</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="border-bottom border-bottom-custom"></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border-bottom border-bottom-custom"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p class="col-6 mt-3">Tổng cộng</p>
+                            <p class="col-6 mt-3 text-end">{{selectedOrder.estimated_price - selectedOrder.discount - selectedOrder.shipping_charge | currency:" "}} đ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark px-3 py-1"
+                    data-bs-dismiss="modal">Thoát</button>
+            </div>
+
         </div>
     </div>
 </div>

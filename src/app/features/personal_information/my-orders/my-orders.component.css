@@ -59,12 +59,30 @@
     color: #F03B13;
 }
 
-.scrollable-div {
+.scrollable-order {
     max-height: 480px; /* Đặt chiều cao tối đa cho div */
     overflow-y: auto;  /* Kích hoạt thanh cuộn dọc */
     overflow-x: hidden; /* Ẩn thanh cuộn ngang nếu không cần thiết */
     padding-right: 15px; /* Để tránh nội dung bị ẩn sau thanh cuộn */
     background-color: #fff; /* Tùy chọn: Màu nền cho div */
+}
+
+.scrollable-order-details {
+    max-height: 380px; /* Đặt chiều cao tối đa cho div */
+    overflow-y: auto;  /* Kích hoạt thanh cuộn dọc */
+    overflow-x: auto; /* Kích hoạt thanh cuộn ngang */
+    padding-right: 15px; /* Để tránh nội dung bị ẩn sau thanh cuộn */
+    background-color: #fff; /* Tùy chọn: Màu nền cho div */
+}
+
+.order-details-common-infor2 .card {
+    flex-basis: 40% !important; /* Mỗi thẻ div chiếm 50% chiều rộng */
+    min-width: 0 !important; /* Ngăn chặn mở rộng quá mức nếu nội dung nhiều */
+}
+
+.order-details-common-infor1 p, .order-details-common-infor2 p{
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.8) !important;
 }
 
 /* DT */
@@ -82,7 +100,7 @@
         padding: 10px;
     }
 
-    .scrollable-div {
+    .scrollable-order {
         max-height: 390px; /* Đặt chiều cao tối đa cho div */
     }
 
@@ -94,6 +112,24 @@
     .filter-order-status {
         margin: 8px 0;
     }
+
+    .detail-order-container .card {
+        width: 500px;
+    }
+
+    .order-details-common-infor2 {
+        flex-direction: column;
+    }
+
+    .order-details-common-infor2 div {
+        margin: 0 !important;
+    }
+
+    .order-details-common-infor2 div.border-bottom {
+        height: 1px !important;
+        margin-top: 0 !important;
+    }
+    
 }
 
 /* Tablet */
@@ -117,8 +153,26 @@
         font-size: 14px; /* Điều chỉnh cỡ chữ tùy ý */
     }
 
-    .scrollable-div {
+    .scrollable-order {
         max-height: 600px; /* Đặt chiều cao tối đa cho div */
+    }
+
+    .modal-dialog.custom-width {
+        max-width: 80%;
+        width: auto;
+    }
+
+    .order-details-common-infor2 {
+        flex-direction: column;
+    }
+
+    .order-details-common-infor2 div {
+        margin: 0 !important;
+    }
+
+    .order-details-common-infor2 div.border-bottom {
+        height: 1px !important;
+        margin-top: 0 !important;
     }
 }
 
@@ -126,5 +180,10 @@
 @media (min-width: 993px) {
     .personal-info-container {
         width: 80%;
+    }
+
+    .modal-dialog.custom-width {
+        max-width: 65%;
+        width: auto;
     }
 }
