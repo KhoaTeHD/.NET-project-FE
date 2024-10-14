@@ -5,12 +5,14 @@ import { ProductComponent } from '../dialog/product/product.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
 
 
 @Component({
   selector: 'app-manage-product',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, ButtonModule],
   templateUrl: './manage-product.component.html',
   styleUrl: './manage-product.component.css'
 })
@@ -66,5 +68,16 @@ export class ManageProductComponent {
     this.router.events.subscribe(()=>{
       dialogRef.close();
     })
+  }
+
+  getSeverity(status: number) {
+    switch (status) {
+        case 1:
+            return 'success';
+        case 0:
+            return 'danger';
+        default:
+            return undefined;
+    }
   }
 }

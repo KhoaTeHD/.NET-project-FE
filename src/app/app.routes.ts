@@ -49,7 +49,8 @@ export const routes: Routes = [
             {path: 'color', component: ManageColorComponent},
             {path: 'country', component: ManageCountryComponent},
             {path: 'product', component: ManageProductComponent},
-            {path: 'goods-receipt', component: ManageGoodsReceiptComponent}
+            {path: 'goods-receipt', component: ManageGoodsReceiptComponent},
+            {path: '**', component: DashboardComponent}
         ],
     },
 ];

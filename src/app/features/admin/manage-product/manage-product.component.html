@@ -3,7 +3,7 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4">Sản phẩm</h1>
             <div class="mb-3 d-flex flex-row-reverse">
-                <button type="button" class="btn btn-success" (click)="handleAddAction()">Thêm sản phẩm</button>
+                <button type="button" class="btn btn-dark" (click)="handleAddAction()">Thêm sản phẩm</button>
             </div>
             <div class="card mb-4">
                 <div class="card-body">
@@ -13,16 +13,17 @@
                             <th>Mã sản phẩm</th>
                             <th>Tên sản phẩm</th>
                             <th>Trạng thái</th>
-                            <th>Chi tiết</th>
+                            <th>Biến thể</th>
                           </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-product>
+                        <ng-template pTemplate="body" let-product let-expanded="expanded">
                           <tr>
                             <td>{{ product.Pro_ID }}</td>
                             <td>{{ product.Pro_name }}</td>
                             <td>{{ product.Pro_status ? 'Hoạt động' : 'Ngừng bán' }}</td>
                             <td>
-                              <button type="button" pButton icon="pi pi-chevron-down" (click)="table.toggleRow(product)">Xem</button>
+                              <p-button type="button" pRipple [pRowToggler]="product" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                              <!-- <button type="button" pButton icon="pi pi-chevron-down" (click)="table.toggleRow(product)">Xem</button> -->
                             </td>
                           </tr>
                         </ng-template>

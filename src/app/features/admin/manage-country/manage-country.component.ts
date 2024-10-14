@@ -5,11 +5,12 @@ import { CountryComponent } from '../dialog/country/country.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-manage-country',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule],
   templateUrl: './manage-country.component.html',
   styleUrl: './manage-country.component.css'
 })
@@ -52,5 +53,16 @@ export class ManageCountryComponent {
     this.router.events.subscribe(()=>{
       dialogRef.close();
     })
+  }
+
+  getSeverity(status: number) {
+    switch (status) {
+        case 1:
+            return 'success';
+        case 0:
+            return 'danger';
+        default:
+            return undefined;
+    }
   }
 }

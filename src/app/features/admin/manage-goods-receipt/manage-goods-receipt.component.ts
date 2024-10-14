@@ -31,4 +31,15 @@ export class ManageGoodsReceiptComponent {
       dialogRef.close();
     });
   }
+
+  getSeverity(status: number) {
+    switch (status) {
+        case 1:
+            return 'success';
+        case 0:
+            return 'danger';
+        default:
+            return undefined;
+    }
+  }
 }
