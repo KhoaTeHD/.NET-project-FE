@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 interface Item {
   id: number;
@@ -9,21 +11,28 @@ interface Item {
   pricesale: number;
 }
 
+
 @Component({
   selector: 'app-item-shop',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './item-shop.component.html',
   styleUrl: './item-shop.component.css'
 })
 
 export class ItemShopComponent implements OnInit {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private messageService: MessageService) {}
 
   navigateToProductDetail(productId: string) {
     this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
     window.scrollTo(0, 0);
+  }
+
+  handleCartBtnClicked(item: Item) {
+    console.log(item);
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' +item.name+ ' vào giỏ hàng!' });
   }
 
   items: Item[] = [
