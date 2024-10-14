@@ -1,0 +1,67 @@
+/* Common */
+.sign-in-modal {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.image-man-korea {
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+}
+
+.title-sign-in {
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.title-sign-up {
+    font-weight: 500;
+    text-decoration: none;
+    color: #F03B13;
+}
+
+.form-label {
+    color: rgba(0, 0, 0, 0.7);
+    font-weight: 500;
+}
+
+.password-container {
+    position: relative;
+}
+
+.eye-icon-password {
+    position: absolute;
+    top: 10px;
+    right: 13px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.forget-password {
+    text-decoration: none;
+    color: #F03B13;
+    font-size: 14px;
+}
+
+/* DT */
+@media (max-width: 767px) {
+    .sign-in-modal {
+        width: 90%;
+        box-shadow: none;
+    }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 992px){
+    .sign-in-modal {
+        width: 60%;
+    }
+}
+
+/* DT */
+@media (min-width: 993px) {
+    .sign-in-modal {
+        width: 50%;
+    }
+}

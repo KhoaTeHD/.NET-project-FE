@@ -1,0 +1,113 @@
+<app-header />
+<div class="row personal-info-container mt-3 mb-5 mx-auto">
+    <div class="col-lg-3 d-none d-lg-block">
+        <app-sidebar-personal-info/>
+    </div>
+    <div class="d-block d-lg-none">
+        <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
+            <div class="offcanvas-header">
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <app-sidebar-personal-info/>
+            </div> 
+        </div>
+        <!-- Button to open the offcanvas sidebar -->
+        <button class="btn btn-primary btn-option" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
+            Tùy chọn
+        </button>
+    </div>
+    <div class="col-lg-9">
+        <div class="record-container p-4">
+            <p class="record-title fw-bold record-title mb-1">Hồ sơ của tôi</p>
+            <p class="record-sec-title record-notice mb-3">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+            <div class="divided-section-top mx-auto"></div>
+            <div class="row mt-4">
+                <div class="col-md-7 col-infor">
+                    <form action="">
+                        
+                        <!-- Field: Name -->
+                        <div class="row mb-4">
+                            <div class="col-3 d-flex align-items-center">
+                                <label for="name" class="form-label d-block m-0">Họ tên</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+                        </div>
+
+                        <!-- Field: Email -->
+                        <div class="row mb-4">
+                            <div class="col-3 d-flex align-items-center">
+                                <label for="email" class="form-label">Email</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+
+                        <!-- Field: Phone -->
+                        <div class="row mb-4">
+                            <div class="col-3 d-flex align-items-center">
+                                <label for="phone" class="form-label">Điện thoại</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="number" class="form-control" id="phone" name="phone">
+                            </div>
+                        </div>
+
+                        <!-- Field: Birthday -->
+                        <div class="row mb-4">
+                            <div class="col-3 d-flex align-items-center">
+                                <label for="birthday" class="form-label">Ngày sinh</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="date" class="form-control" id="birthday" name="birthday"
+                                    value="2000-01-01">
+                            </div>
+                        </div>
+
+                        <!-- Field: Gender -->
+                        <div class="mb-3 row">
+                            <div class="col-3">
+                                <label for="gender" class="form-label">Giới tính</label>
+                            </div>
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="man" name="gender_radio"
+                                                value="nam" checked>Nam
+                                            <label class="form-check-label" for="man"></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="woman" name="gender_radio"
+                                                value="nữ">Nữ
+                                            <label class="form-check-label" for="woman"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100 mt-3">Lưu thay đổi</button>
+                    </form>
+                </div>
+                <div class="col-1 divided-section d-none d-md-block"></div>
+                <div class="ms-4 col-md-4 d-flex align-items-center justify-content-center col-avatar">
+                    <div class="d-flex align-items-center flex-column">
+                        <div class="avatar">
+                            <img width="100%" src="../../../../assets/images/record/avtar_temp.webp" alt="avatar"
+                                class="right-hand-side-avatar">
+                        </div>
+                        <label for="choose-pic" class="border p-1 mt-3 mb-2 rounded-2" style="cursor: pointer;">Chọn Ảnh</label>
+                        <input type="file" name="choose-pic" id="choose-pic" value="Chọn Ảnh" hidden>
+                        <p class="format-pic-title">Định dạng: .JPEG, .PNG</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

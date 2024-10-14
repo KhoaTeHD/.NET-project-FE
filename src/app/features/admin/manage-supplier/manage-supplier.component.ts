@@ -5,11 +5,12 @@ import { SupplierComponent } from '../dialog/supplier/supplier.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-manage-supplier',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule],
   templateUrl: './manage-supplier.component.html',
   styleUrl: './manage-supplier.component.css'
 })
@@ -52,5 +53,16 @@ export class ManageSupplierComponent {
     this.router.events.subscribe(()=>{
       dialogRef.close();
     })
+  }
+
+  getSeverity(status: number) {
+    switch (status) {
+        case 1:
+            return 'success';
+        case 0:
+            return 'danger';
+        default:
+            return undefined;
+    }
   }
 }

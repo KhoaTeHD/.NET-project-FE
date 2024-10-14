@@ -2,7 +2,71 @@
 <div class="sb-nav-fixed">
     <app-admin-header></app-admin-header>
     <div id="layoutSidenav">
-        <app-sidebar></app-sidebar>
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <a class="nav-link" routerLink="/admin/dashboard">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Thống kê
+                        </a>
+                        <a class="nav-link" routerLink="/admin/order">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-receipt"></i></div>
+                            Đơn hàng
+                        </a>
+                        <a class="nav-link" routerLink="/admin/brand">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-certificate"></i></div>
+                            Thương hiệu
+                        </a>
+                        <a class="nav-link" routerLink="/admin/product">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-shirt"></i></div>
+                            Sản phẩm
+                        </a>
+                        <a class="nav-link" routerLink="/admin/category">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-list"></i></div>
+                            Danh mục
+                        </a>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Các thuộc tính
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" routerLink="/admin/color">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-palette"></i></div>
+                                    Màu sắc
+                                </a>
+                                <a class="nav-link" routerLink="/admin/size">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-tag"></i></div>
+                                    Kích thước
+                                </a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" routerLink="/admin/country">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                            Quốc gia
+                        </a>
+                        <a class="nav-link" routerLink="/admin/supplier">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-truck-field"></i></div>
+                            Nhà cung cấp
+                        </a>
+                        <a class="nav-link" routerLink="/admin/goods-receipt">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-truck-field"></i></div>
+                            Phiếu nhập
+                        </a>
+                        <a class="nav-link" routerLink="/admin/user">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                            Người dùng
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Tài khoản:</div>
+                    Võ Quang Đăng Khoa
+                </div>
+            </nav>
+        </div>
         <router-outlet></router-outlet>
     </div>
 </div>

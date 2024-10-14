@@ -5,6 +5,12 @@ import { ManageCategoryComponent } from './features/admin/manage-category/manage
 import { DashboardComponent } from './features/admin/dashboard/dashboard.component';
 import { AdminComponent } from './features/admin/admin.component';
 import { ShopComponent } from './features/shop/shop/shop.component';
+import { SignInComponent } from './features/auth/sign-in/sign-in.component';
+import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
+import { RecordComponent } from './features/personal_information/record/record.component';
+import { ChangePasswordComponent } from './features/personal_information/change-password/change-password.component';
+import { AddressBookComponent } from './features/personal_information/address-book/address-book.component';
+import { MyOrdersComponent } from './features/personal_information/my-orders/my-orders.component';
 import { ManageBrandComponent } from './features/admin/manage-brand/manage-brand.component';
 import { ManageOrderComponent } from './features/admin/manage-order/manage-order.component';
 import { ManageSizeComponent } from './features/admin/manage-size/manage-size.component';
@@ -49,7 +55,32 @@ export const routes: Routes = [
             {path: 'color', component: ManageColorComponent},
             {path: 'country', component: ManageCountryComponent},
             {path: 'product', component: ManageProductComponent},
-            {path: 'goods-receipt', component: ManageGoodsReceiptComponent}
+            {path: 'goods-receipt', component: ManageGoodsReceiptComponent},
+            {path: '**', component: DashboardComponent}
         ],
+    },
+    {
+        path: 'sign-in', 
+        component: SignInComponent
+    },
+    {
+        path: 'sign-up', 
+        component: SignUpComponent
+    },
+    {
+        path: 'record', 
+        component: RecordComponent
+    },
+    {
+        path: 'change-password', 
+        component: ChangePasswordComponent
+    },
+    {
+        path: 'address-book', 
+        component: AddressBookComponent
+    },
+    {
+        path: 'my-orders', 
+        component: MyOrdersComponent
     },
 ];
