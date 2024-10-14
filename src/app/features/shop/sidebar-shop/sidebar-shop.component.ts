@@ -22,6 +22,8 @@ interface Size {
   name: String;
 }
 
+
+
 @Component({
   selector: 'app-sidebar-shop',
   standalone: true,
@@ -118,4 +120,10 @@ export class SidebarShopComponent {
       name: 'Over Size',
     }
   ];
+  
+  onCategoryChange(event: any) {
+    const selectedCategory = event.target.value;
+    console.log('Selected category:', selectedCategory);
+    // Xử lý logic sau khi chọn category
+  }
 }

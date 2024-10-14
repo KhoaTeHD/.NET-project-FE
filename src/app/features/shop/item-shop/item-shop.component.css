@@ -2,6 +2,14 @@
     text-decoration: none;
 }
 
+.custom-css-item h5{
+  cursor: pointer;
+}
+
+.item-container img{
+  cursor: pointer; 
+}
+
 .price-item-custom{
     color: red !important;
     font-weight: bold;
@@ -34,3 +42,9 @@
     height: 100%;          /* Đảm bảo item có chiều cao đầy đủ */
   }
   
+  .pagination {
+    --bs-pagination-color: #000 !important;
+    --bs-pagination-active-bg: #000 !important;
+    --bs-pagination-active-border-color: none !important;
+    cursor: pointer !important;
+  }

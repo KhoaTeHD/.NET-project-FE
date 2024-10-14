@@ -1,27 +1,11 @@
 <div class="custom-sidebar-css">
   <section class="mb-3">
     <h1 class="h5 pb-4">DANH MỤC SẢN PHẨM</h1>
-    <div class="accordion" id="accordionExample">
-      <div class="accordion-item" *ngFor="let category of categories; let i = index">
-        <h2 class="accordion-header">
-          <button class="accordion-button" type="button" [attr.data-bs-toggle]="(i === 0) ? 'collapse' : 'collapse'"
-            [attr.data-bs-target]="'#collapse' + (i + 1)" aria-expanded="i === 0"
-            [attr.aria-controls]="'collapse' + (i + 1)">
-            {{ category.name }} ({{ category.quantity }})
-          </button>
-        </h2>
-        <div [attr.id]="'collapse' + (i + 1)" class="accordion-collapse collapse" [class.show]="i === 0"
-          data-bs-parent="#accordionExample">
-          <div class="accordion-body">
-            <ul>
-              <li *ngFor="let detail of category.detailsCategory">
-                <a href={{detail.link}}>{{ detail.name }}</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <select class="form-select" aria-label="Default select example" (change)="onCategoryChange($event)">
+      <option value="all" selected>Tất cả</option>
+      <option *ngFor="let category of categories" [value]="category.name">{{ category.name }} ({{ category.quantity }})</option>
+    </select>
+    
   </section>
 
   <section class="mb-3">

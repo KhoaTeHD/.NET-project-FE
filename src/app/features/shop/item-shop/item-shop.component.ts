@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
@@ -23,7 +23,15 @@ interface Item {
 
 export class ItemShopComponent implements OnInit {
 
-  constructor(private router: Router, private messageService: MessageService) {}
+  constructor(private router: Router, private messageService: MessageService, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      const page = +params['page'];
+      if (page) {
+        this.currentPage = page;
+        this.updatePage();
+      }
+    });
+  }
 
   navigateToProductDetail(productId: string) {
     this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
@@ -112,17 +120,26 @@ export class ItemShopComponent implements OnInit {
 
   }
 
+  goToPage(currentPage: number): void {
+    if (currentPage >= 1 && currentPage <= this.items.length) {
+      this.currentPage = currentPage;
+      this.router.navigate([], {
+        queryParams: { page: currentPage },
+        queryParamsHandling: 'merge' // Giữ lại các tham số khác trong URL
+      });
+      this.updatePage(); // Gọi hàm để tải dữ liệu cho trang
+    }
+  }
+
   nextPage() {
     if (this.currentPage < Math.ceil(this.items.length / this.itemsPerPage)) {
-      this.currentPage++;
-      this.updatePage();
+        this.goToPage(this.currentPage + 1);
     }
   }
 
   previousPage() {
     if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePage();
+        this.goToPage(this.currentPage - 1);
     }
   }
 
