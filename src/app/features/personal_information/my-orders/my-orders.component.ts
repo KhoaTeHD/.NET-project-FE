@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { SidebarPersonalInfoComponent } from '../../../shared/components/sidebar-personal-info/sidebar-personal-info.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-my-orders',
   standalone: true,
-  imports: [SidebarPersonalInfoComponent, CommonModule, FormsModule],
+  imports: [SidebarPersonalInfoComponent, CommonModule, FormsModule, HeaderComponent],
   templateUrl: './my-orders.component.html',
   styleUrl: './my-orders.component.css'
 })

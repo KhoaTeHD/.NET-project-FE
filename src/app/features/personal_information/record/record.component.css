@@ -1,7 +1,3 @@
-.header {
-    height: 50px;
-}
-
 .record-container {
     border: none;
     border-radius: 16px;
@@ -92,5 +88,6 @@
 @media (min-width: 993px) {
     .personal-info-container {
         width: 80%;
+        margin-top: 36px !important;
     }
 }

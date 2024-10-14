@@ -1,7 +1,3 @@
-.header {
-    height: 50px;
-}
-
 .personal-info-container {
     width: 95% !important;
 }
@@ -180,6 +176,7 @@
 @media (min-width: 993px) {
     .personal-info-container {
         width: 80%;
+        margin-top: 36px !important;
     }
 
     .modal-dialog.custom-width {
