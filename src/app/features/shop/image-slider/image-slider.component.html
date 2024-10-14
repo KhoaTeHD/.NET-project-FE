@@ -1,15 +1,21 @@
-<div class="container mt-5">
-    <div class="row" style="height: 100%;">
+<div class="container">
+    <div class="row" style="min-height: 490px;height: fit-content;">
         <div class="col-12">
-            <div id="mainImage" class="mb-5 border p-2">
+            <div id="mainImage" class="border p-2" style="position: relative;">
+                <button style="position: absolute;top: 50%;transform: translateY(-50%);width: auto;left: 16px;" (click)="prevImage()">
+                    <p style="margin: 0;"><</p>
+                </button>
                 <img id="currentImage" [src]="currentImage" class="img-fluid" alt="Main Image">
+                <button style="position: absolute;top: 50%;transform: translateY(-50%);width: auto;right: 16px;" (click)="nextImage()">
+                    <p style="margin: 0;">></p>
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-2" *ngFor="let img of images">
-            <img [src]="img" class="img-fluid small-img" alt="Thumbnail" (click)="changeImage(img)">
+            <img [src]="img" class="img-fluid small-img" alt="Thumbnail" (click)="currentImageIndex = images.indexOf(img)">
         </div>
     </div>
 </div>

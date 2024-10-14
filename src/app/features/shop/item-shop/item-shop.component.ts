@@ -9,6 +9,7 @@ interface Item {
   name: String;
   price: number;
   pricesale: number;
+  type: String;
 }
 
 
@@ -48,47 +49,52 @@ export class ItemShopComponent implements OnInit {
       id: 1,
       name: "Quần thun Lavi",
       price: 120000,
-      pricesale: 10
+      pricesale: 10,
+      type: 'Thời trang'
     },
     {
       id: 2,
       name: "Áo Tanjiro Cosplay",
       price: 300000,
-      pricesale: 12
+      pricesale: 12,
+      type: 'Thời trang'
     },
     {
       id: 3,
       name: "Áo Hokage",
       price: 120000,
-      pricesale: 15
+      pricesale: 15,
+      type: 'Thời trang'
     },
     {
       id: 4,
       name: "Balo J97",
       price: 120000,
-      pricesale: 20
+      pricesale: 20,
+      type: 'Thời trang'
     },
     {
       id: 5,
       name: "Áo khoác Mitsuri",
       price: 120000,
-      pricesale: 20
+      pricesale: 20,
+      type: 'Thời trang'
     },
-    { id: 6, name: 'Item 6', price: 1600, pricesale: 15 },
-    { id: 7, name: 'Item 7', price: 1700, pricesale: 10 },
-    { id: 8, name: 'Item 8', price: 1800, pricesale: 20 },
-    { id: 9, name: 'Item 9', price: 1900, pricesale: 25 },
-    { id: 10, name: 'Item 10', price: 2000, pricesale: 30 },
-    { id: 11, name: 'Item 11', price: 2100, pricesale: 35 },
-    { id: 12, name: 'Item 12', price: 2200, pricesale: 5 },
-    { id: 13, name: 'Item 13', price: 2300, pricesale: 15 },
-    { id: 14, name: 'Item 14', price: 2400, pricesale: 10 },
-    { id: 15, name: 'Item 15', price: 2500, pricesale: 25 },
-    { id: 16, name: 'Item 16', price: 2600, pricesale: 20 },
-    { id: 17, name: 'Item 17', price: 2700, pricesale: 30 },
-    { id: 18, name: 'Item 18', price: 2800, pricesale: 35 },
-    { id: 19, name: 'Item 19', price: 2900, pricesale: 40 },
-    { id: 20, name: 'Item 20', price: 3000, pricesale: 50 }
+    { id: 6, name: 'Item 6', price: 1600, pricesale: 15, type: 'Trang sức' },
+    { id: 7, name: 'Item 7', price: 1700, pricesale: 10, type: 'Trang sức' },
+    { id: 8, name: 'Item 8', price: 1800, pricesale: 20, type: 'Trang sức' },
+    { id: 9, name: 'Item 9', price: 1900, pricesale: 25, type: 'Trang sức' },
+    { id: 10, name: 'Item 10', price: 2000, pricesale: 30, type: 'Trang sức' },
+    { id: 11, name: 'Item 11', price: 2100, pricesale: 35, type: 'Trang sức' },
+    { id: 12, name: 'Item 12', price: 2200, pricesale: 5, type: 'Trang sức' },
+    { id: 13, name: 'Item 13', price: 2300, pricesale: 15, type: 'Trang sức' },
+    { id: 14, name: 'Item 14', price: 2400, pricesale: 10, type: 'Trang sức' },
+    { id: 15, name: 'Item 15', price: 2500, pricesale: 25, type: 'Trang sức' },
+    { id: 16, name: 'Item 16', price: 2600, pricesale: 20, type: 'Trang sức' },
+    { id: 17, name: 'Item 17', price: 2700, pricesale: 30, type: 'Trang sức' },
+    { id: 18, name: 'Item 18', price: 2800, pricesale: 35, type: 'Trang sức' },
+    { id: 19, name: 'Item 19', price: 2900, pricesale: 40, type: 'Trang sức' },
+    { id: 20, name: 'Item 20', price: 3000, pricesale: 50, type: 'Trang sức' },
   ];
 
   currentPage: number = 1;

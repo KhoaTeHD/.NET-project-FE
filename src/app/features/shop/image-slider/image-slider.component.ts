@@ -1,4 +1,4 @@
-import { Component, Renderer2, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -6,24 +6,29 @@ import { CommonModule } from '@angular/common';
   templateUrl: './image-slider.component.html',
   styleUrls: ['./image-slider.component.css'],
   standalone: true,
-  imports:[CommonModule],
+  imports: [CommonModule],
 })
 export class ImageSliderComponent {
-  currentImage: string = '../../../../assets/images/yor-spy-x-family.avif';
-
+  currentImageIndex: number = 0;
   images: string[] = [
-    '../../../../assets/images/yor-spy-x-family.avif',
-    '../../../../assets/images/j97.jpg',
-    'https://via.placeholder.com/800x400/7f7fff',
-    'https://via.placeholder.com/800x400/7fff7f',
-    'https://via.placeholder.com/800x400/ffff7f'
+    '../../../../assets/images/vn-11134207-7r98o-lxtcujiemg9nbe.webp',
+    'https://placehold.co/500x500/orange/white',
+    'https://placehold.co/500x500/blue/white',
+    'https://placehold.co/500x500/red/white',
+    'https://placehold.co/500x500/green/white'
   ];
 
-  constructor(private renderer: Renderer2, private el: ElementRef) {}
+  constructor() {}
 
-  changeImage(image: string) {
-    this.currentImage = image;
-    const imgElement = this.el.nativeElement.querySelector('#currentImage');
-    this.renderer.setAttribute(imgElement, 'src', image);
+  get currentImage() {
+    return this.images[this.currentImageIndex];
+  }
+
+  nextImage() {
+    this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
+  }
+
+  prevImage() {
+    this.currentImageIndex = (this.currentImageIndex - 1 + this.images.length) % this.images.length;
   }
 }
