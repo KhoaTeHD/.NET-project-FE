@@ -38,6 +38,21 @@
     color: rgba(0, 0, 0, 0.7);
 }
 
+.password-container {
+    position: relative;
+}
+
+.eye-icon-password {
+    position: absolute;
+    top: 10px;
+    right: 13px;
+    font-size: 14px;
+    color: #184AFA;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
 /* DT */
 @media (max-width: 767px) {
     .sign-up-modal {

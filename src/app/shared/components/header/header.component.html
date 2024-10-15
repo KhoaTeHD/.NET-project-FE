@@ -1,5 +1,5 @@
 <div class="container-fluid bg-dark">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 fixed-top">
         <div class="container">
             <div style="margin-right:  30px !important;">
                 <img width="100%" src="../../../../assets/images/logo/logo.png" alt="Logo" />
@@ -10,14 +10,14 @@
             <div class="collapse navbar-collapse" id="mynavbar">
                 <div class="d-flex justify-content-between ms-auto nav-hidden">
                     <form class="d-flex me-4 search-area">
-                        <input class="form-control me-2 input-search" type="text" placeholder="Tên sản phẩm">
-                        <button class="btn btn-primary px-3" type="button" style="background-color: #184AFA; border: none;">
+                        <input class="form-control me-2 input-search my-1 " type="text" placeholder="Tên sản phẩm">
+                        <button class="btn btn-primary px-3 my-1" type="button" style="background-color: #184AFA; border: none;">
                             <i class="fa-solid fa-magnifying-glass" style="font-size: 18px;"></i>
                         </button>
                     </form>
                     <ul class="navbar-nav navbar-menu-header">
                         <li class="nav-item">
-                            <a class="nav-link" href="javascript:void(0)" style="color: #fff;">Sản phẩm</a>
+                            <a class="nav-link" [routerLink]="['/shop']" style="color: #fff;">Sản phẩm</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="javascript:void(0)" style="color: #fff;">Khuyến mãi</a>
@@ -37,7 +37,12 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="javascript:void(0)" style="color: #fff;">
-                                <i class="fa-solid fa-cart-shopping"></i>
+                                <div class="" style="position: relative; display: inline-flex;">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    <div class="cart-number-notify">
+                                        <span>2</span>
+                                    </div>
+                                </div>
                             </a>
                         </li>
                         <li class="nav-item">
