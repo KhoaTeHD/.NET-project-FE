@@ -1,7 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { SizeComponent } from '../dialog/size/size.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -10,20 +7,20 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { MessageService, SelectItem } from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-manage-size',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule],
-  providers: [MessageService],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, ConfirmDialogModule, DialogModule],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './manage-size.component.html',
   styleUrl: './manage-size.component.css'
 })
 export class ManageSizeComponent implements OnInit {
-  dataSource: any;
-  responseMessage: any;
   sizes = [
     { Siz_ID: 1, Siz_Name: 'S', Siz_Desc: 'Size nhỏ', Siz_Status: 1 },
     { Siz_ID: 2, Siz_Name: 'M', Siz_Desc: 'Size trung bình', Siz_Status: 1 },
@@ -36,6 +33,8 @@ export class ManageSizeComponent implements OnInit {
 
   clonedSizes: { [id: number]: Size } = {};
 
+  visible: boolean = false;
+
   ngOnInit(): void {
     this.statuses = [
       { label: 'Hoạt động', value: 1 },
@@ -44,33 +43,18 @@ export class ManageSizeComponent implements OnInit {
   }
 
   constructor(
-    private dialog: MatDialog,
-    private router: Router,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService) { }
 
-  handleAddAction() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      action: 'Add'
+    showDialog() {
+      this.visible = true;
     }
-    dialogConfig.width = "850px";
-    const dialogRef = this.dialog.open(SizeComponent, dialogConfig);
-    this.router.events.subscribe(() => {
-      dialogRef.close();
-    })
-  }
 
-  handleEditAction(values: string) {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      action: 'Edit',
-      data: values
+  handleInput(event: Event, dt: any): void {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement) {
+        dt.filterGlobal(inputElement.value, 'contains');
     }
-    dialogConfig.width = "850px";
-    const dialogRef = this.dialog.open(SizeComponent, dialogConfig);
-    this.router.events.subscribe(() => {
-      dialogRef.close();
-    })
   }
 
   onRowEditInit(size: Size) {
@@ -92,14 +76,26 @@ export class ManageSizeComponent implements OnInit {
     delete this.clonedSizes[size.Siz_ID as number];
   }
 
+  deleteSize(size: Size) {
+    this.confirmationService.confirm({
+        message: 'Bạn có chắc xóa ' + size.Siz_Name + ' không?',
+        header: 'Xác nhận',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            this.sizes = this.sizes.filter((val) => val.Siz_ID !== size.Siz_ID);
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa kích thước', life: 3000 });
+        }
+    });
+  }
+
   getSeverity(status: number) {
     switch (status) {
-      case 1:
-        return 'success';
-      case 0:
-        return 'danger';
-      default:
-        return undefined;
+        case 1:
+            return 'success';
+        case 0:
+            return 'danger';
+        default:
+            return undefined;
     }
   }
 }

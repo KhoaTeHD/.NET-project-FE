@@ -3,33 +3,102 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4">Quốc gia</h1>
             <div class="mb-3 d-flex flex-row-reverse">
-                <button type="button" class="btn btn-dark" (click)="handleAddAction()">Thêm quốc gia</button>
+                <button type="button" class="btn btn-dark" (click)="showDialog()">Thêm quốc gia</button>
             </div>
             <div class="card mb-4">
-
+                <p-toast></p-toast>
+                <p-confirmDialog />
                 <div class="card-body">
                     <div class="card-body">
-                        <p-table [value]="nations" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+                        <p-table #dt editMode="row" [value]="nations" dataKey="Nat_ID" [paginator]="true" [rows]="10"
+                            [globalFilterFields]="['Nat_ID', 'Nat_Name', 'Nat_Status']" [responsiveLayout]="'scroll'">
+                            <ng-template pTemplate="caption">
+                                <div class="d-flex">
+                                    <span class="p-input-icon-left ml-auto">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="width: 200px;"
+                                            (input)="handleInput($event, dt)" placeholder="Tìm kiếm" />
+                                    </span>
+                                </div>
+                            </ng-template>
                             <ng-template pTemplate="header">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Tên Quốc Gia</th>
-                                    <th>Trạng Thái</th>
+                                    <th style="width:10%">ID</th>
+                                    <th style="width:70%">Tên Quốc Gia</th>
+                                    <th style="width:10%">Trạng Thái</th>
+                                    <th style="width:10%"></th>
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body" let-nation>
-                                <tr>
+                            <ng-template pTemplate="body" let-nation let-editing="editing" let-ri="rowIndex">
+                                <tr [pEditableRow]="nation">
                                     <td>{{ nation.Nat_ID }}</td>
-                                    <td>{{ nation.Nat_Name }}</td>
-                                    <td><p-tag [value]="nation.Nat_Status ? 'Hoạt động' : 'Ngừng bán' " [severity]="getSeverity(nation.Nat_Status)"/></td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" [(ngModel)]="nation.Nat_Name" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{ nation.Nat_Name }}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <p-dropdown [options]="statuses" appendTo="body"
+                                                    [(ngModel)]="nation.Nat_Status" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                <p-tag [value]="nation.Nat_Status ? 'Hoạt động' : 'Ngừng bán' "
+                                                    [severity]="getSeverity(nation.Nat_Status)" />
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <div class="flex align-items-center justify-content-center gap-2">
+                                            <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                                icon="pi pi-pencil" (click)="onRowEditInit(nation)"
+                                                class="p-button-rounded p-button-text">
+                                            </button>
+                                            <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
+                                                (click)="deleteNation(nation)"
+                                                class="p-button-rounded p-button-text p-button-danger">
+                                            </button>
+                                            <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                                icon="pi pi-check" (click)="onRowEditSave(nation, ri)"
+                                                class="p-button-rounded p-button-text p-button-success mr-2">
+                                            </button>
+                                            <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                                icon="pi pi-times" (click)="onRowEditCancel(nation, ri)"
+                                                class="p-button-rounded p-button-text p-button-danger">
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             </ng-template>
                         </p-table>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </main>
     <app-admin-footer></app-admin-footer>
 </div>
+
+<p-dialog header="Thêm quốc gia" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }" styleClass="p-fluid">
+    <form>
+        <div class="mb-4">
+            <label for="name" class="form-label">Tên quốc gia</label>
+            <input type="text" class="form-control" id="name" placeholder="Nhập tên" name="name">
+        </div>
+        <div class="mb-4">
+            <label class="form-check-label me-2" for="active">Trạng thái:</label>
+            <input class="form-check-input" type="radio" name="active" id="visible"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="active" id="disable"> Ngừng bán
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />
+            <p-button label="Lưu" (onClick)="visible = false" />
+        </div>
+    </form>
+</p-dialog>

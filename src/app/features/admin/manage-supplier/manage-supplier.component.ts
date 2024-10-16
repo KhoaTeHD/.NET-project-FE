@@ -1,22 +1,28 @@
 import { Component } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { SupplierComponent } from '../dialog/supplier/supplier.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { InputIconModule } from 'primeng/inputicon';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-manage-supplier',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './manage-supplier.component.html',
   styleUrl: './manage-supplier.component.css'
 })
 export class ManageSupplierComponent {
-  dataSource:any;
-  responseMessage:any;
+
   suppliers = [
     { Supplier_ID: 1, SupplierName: 'Nhà cung cấp A', Address: 'Hà Nội', PhoneNumber: '0123456789', Status: 1 },
     { Supplier_ID: 2, SupplierName: 'Nhà cung cấp B', Address: 'TP.HCM', PhoneNumber: '0987654321', Status: 1 },
@@ -25,34 +31,63 @@ export class ManageSupplierComponent {
     { Supplier_ID: 5, SupplierName: 'Nhà cung cấp E', Address: 'Hải Phòng', PhoneNumber: '0123456788', Status: 1 }
   ];
 
-  constructor(
-    private dialog: MatDialog,
-    private router:Router) { }
+  statuses!: SelectItem[];
 
+  clonedSuppliers: { [id: number]: Supplier } = {};
 
-  handleAddAction(){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      action: 'Add'
-    }
-    dialogConfig.width = "850px";
-    const dialogRef = this.dialog.open(SupplierComponent, dialogConfig);
-    this.router.events.subscribe(()=>{
-      dialogRef.close();
-    })
+  visible: boolean = false;
+
+  ngOnInit(): void {
+    this.statuses = [
+      { label: 'Hoạt động', value: 1 },
+      { label: 'Ngừng bán', value: 0 }
+    ];
   }
 
-  handleEditAction(values:string){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      action: 'Edit',
-      data:values
+  constructor(
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService) { }
+
+    showDialog() {
+      this.visible = true;
     }
-    dialogConfig.width = "850px";
-    const dialogRef = this.dialog.open(SupplierComponent, dialogConfig);
-    this.router.events.subscribe(()=>{
-      dialogRef.close();
-    })
+
+  handleInput(event: Event, dt: any): void {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement) {
+        dt.filterGlobal(inputElement.value, 'contains');
+    }
+  }
+
+  onRowEditInit(supplier: Supplier) {
+    this.clonedSuppliers[supplier.Supplier_ID as number] = { ...supplier };
+  }
+
+  onRowEditSave(supplier: Supplier, index: number) {
+    if (supplier.SupplierName.trim().length !== 0) {
+      delete this.clonedSuppliers[supplier.Supplier_ID as number];
+      this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhà cung cấp đã được cập nhật' });
+    } else {
+      this.suppliers[index] = this.clonedSuppliers[supplier.Supplier_ID as number];
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
+    }
+  }
+
+  onRowEditCancel(supplier: Supplier, index: number) {
+    this.suppliers[index] = this.clonedSuppliers[supplier.Supplier_ID as number];
+    delete this.clonedSuppliers[supplier.Supplier_ID as number];
+  }
+
+  deleteSupplier(supplier: Supplier) {
+    this.confirmationService.confirm({
+        message: 'Bạn có chắc xóa ' + supplier.SupplierName + ' không?',
+        header: 'Xác nhận',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            this.suppliers = this.suppliers.filter((val) => val.Supplier_ID !== supplier.Supplier_ID);
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa nhà cung cấp', life: 3000 });
+        }
+    });
   }
 
   getSeverity(status: number) {
@@ -65,4 +100,12 @@ export class ManageSupplierComponent {
             return undefined;
     }
   }
+}
+
+interface Supplier{
+  Supplier_ID: number;
+  SupplierName: string;
+  Address: string;
+  PhoneNumber: string;
+  Status: number;
 }
