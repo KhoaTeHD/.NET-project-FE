@@ -1,0 +1,112 @@
+<app-header />
+<div class="container" style="margin-top: 80px;">
+    <div class="payment-container-parent">
+        <div class="payment-container left">
+            <div class="bg-dark text-light infor-payment-title">
+                <i class="fa-solid fa-wallet me-1"></i>
+                Thông tin thanh toán
+            </div>
+
+            <div class="payment-container-left-below">
+                <div style="padding: 0 16px 16px 0;">
+                    <i class="fa-solid fa-location-dot me-1"></i>
+                    Địa chỉ nhận hàng
+                </div>
+
+                <div class="divided-section"></div>
+
+                <div class="d-flex pb-0" style="padding: 16px 16px 16px 0;">
+                    <p class="me-3">Võ Quang Đăng Khoa - 0907604514 - 273 An Dương Vương, P3, Q5, TP Hồ Chí Minh</p>
+                    <a href="">Thay đổi</a>
+                </div>
+
+                <div class="divided-section"></div>
+
+                <p class="pb-0" style="padding: 16px 16px 16px 0; color: #184AFA; font-weight: 500;">Phương thức thanh
+                    toán</p>
+
+                <div class="divided-section"></div>
+
+                <div style="padding: 16px 32px;">
+                    <div class="row justify-content-between">
+                        <div class="col-3 card-item" *ngFor="let method of paymentMethods; let i = index"
+                            [ngClass]="{'selected-method': selectedMethodIndex === i}" (click)="selectMethod(i)">
+                            <div class="text-center">
+                                <img [src]="method.icon" class="my-2" style="height: 20px;" />
+                                <div class="divided-section-card-item"></div>
+                                <p class="mb-0 py-3">{{method.name}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divided-section"></div>
+
+                <div class="row justify-content-between align-items-center" style="padding: 16px 40px;">
+                    <p class="col-3 text-center mb-0 mx-2" style="background-color: #ccc; border-radius: 20px;">
+                        Mừng lễ 20/4
+                    </p>
+                    <div class="col-1" style="cursor: pointer;">
+                        <i class="fa-solid fa-trash-can" style="font-size: 14px;"></i>
+                    </div>
+                    <p class="col-2 text-center mb-0" style="color: #F03B13;">-22.000 đ</p>
+                    <div class="col-6 row justify-content-between">
+                        <div class="col-8">
+                            <input type="coupon" class="form-control" id="coupon" placeholder="Nhập mã giảm giá"
+                                name="coupon">
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-dark">Áp dụng</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center" style="margin: 16px 40px;">
+                    <button class="btn btn-dark" style="width: 100%;">Thanh toán</button>
+                </div>
+            </div>
+        </div>
+        <div class="payment-container right">
+            <p class="bg-dark text-light infor-payment-title">Danh sách sản phẩm</p>
+            <div class="row payment-container-left-below">
+                <div class="col-1">
+                    <p>1.</p>
+                </div>
+                <div class="col-2">
+                    <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu">
+                </div>
+                <div class="col-9">
+                    <p>Sơ mi dài tay trơn FATB002</p>
+                    <div class="row">
+                        <p class="col-8">Xanh da trời nhạt, L</p>
+                        <p class="col-4">20.000đ x 1</p>
+                    </div>
+                </div>
+
+                <div class="">
+                    <div class="row">
+                        <p class="col-6">Tổng tiền hàng:</p>
+                        <p class="col-6">96.720.000 đ</p>
+                    </div>
+
+                    <div class="row">
+                        <p class="col-6">Phí vận chuyển:</p>
+                        <p class="col-6">+ 15.500 đ</p>
+                    </div>
+
+                    <div class="row">
+                        <p class="col-6">Tổng khuyến mãi:</p>
+                        <p class="col-6">- 220.000 đ</p>
+                    </div>
+
+                    <div class="divided-section"></div>
+
+                    <div class="row">
+                        <p class="col-6">Tổng thanh toán:</p>
+                        <p class="col-6">96.515.500 đ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

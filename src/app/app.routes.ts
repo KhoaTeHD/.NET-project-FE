@@ -22,6 +22,7 @@ import { ManageProductComponent } from './features/admin/manage-product/manage-p
 import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
 import { CartComponent } from './features/cart/cart.component';
 import { ManageGoodsReceiptComponent } from './features/admin/manage-goods-receipt/manage-goods-receipt.component';
+import { PaymentComponent } from './features/payment/payment.component';
 
 export const routes: Routes = [
     {
@@ -82,5 +83,9 @@ export const routes: Routes = [
     {
         path: 'my-orders', 
         component: MyOrdersComponent
+    },
+    {
+        path: 'payment', 
+        component: PaymentComponent
     },
 ];
