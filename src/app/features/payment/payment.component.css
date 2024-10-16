@@ -40,7 +40,7 @@
 }
 
 .payment-container-left-below {
-    padding: 16px;
+    padding: 0 16px 16px;
 }
 
 .card-item {
@@ -52,5 +52,64 @@
 }
 
 .selected-method.card-item {
-    border: 1px solid #000;
+    border: 2px solid #184AFA;
+}
+
+.scrollable-products {
+    max-height: 340px; /* Đặt chiều cao tối đa cho div */
+    overflow-y: auto;  /* Kích hoạt thanh cuộn dọc */
+    overflow-x: hidden;
+    padding-right: 15px; /* Để tránh nội dung bị ẩn sau thanh cuộn */
+    background-color: #fff; /* Tùy chọn: Màu nền cho div */
+}
+
+/* DT */
+@media (max-width: 767px) {
+    .payment-container-parent {
+        flex-direction: column-reverse;
+    }
+
+    .payment-container.left {
+        margin-bottom: 32px;
+    }
+
+    .divided-section.first {
+        margin-top: 0px !important;
+    }
+
+    .method-container {
+        padding: 0 20px !important;
+    }
+
+    .coupon-container {
+        padding: 16px 0;
+    }
+
+    .input-coupon-container {
+        padding: 0 !important;
+        margin: 12px 0 0 !important;
+    }
+
+    .btn-payment-container {
+        margin: 16px 0 0 !important;
+    }
+
+    .btn-apply {
+        padding: 4px 6px !important;
+    }
+}
+
+/* Tablet and DT*/
+@media (min-width: 768px) and (max-width: 992px){
+    .payment-container-parent {
+        flex-direction: column-reverse;
+    }
+
+    .payment-container.left {
+        margin-bottom: 32px;
+    }
+
+    .btn-payment-container {
+        margin: 0 !important;
+    }
 }
