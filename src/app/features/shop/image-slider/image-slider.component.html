@@ -2,12 +2,12 @@
     <div class="row" style="min-height: 490px;height: fit-content;">
         <div class="col-12">
             <div id="mainImage" class="border p-2" style="position: relative;">
-                <button style="position: absolute;top: 50%;transform: translateY(-50%);width: auto;left: 16px;" (click)="prevImage()">
-                    <p style="margin: 0;"><</p>
+                <button class="btn_left" (click)="prevImage()">
+                    <img src="../../../../assets/images/icons/icons8-back-to-64.png" alt="">
                 </button>
                 <img id="currentImage" [src]="currentImage" class="img-fluid" alt="Main Image">
-                <button style="position: absolute;top: 50%;transform: translateY(-50%);width: auto;right: 16px;" (click)="nextImage()">
-                    <p style="margin: 0;">></p>
+                <button class="btn_right"  (click)="nextImage()">
+                    <img src="../../../../assets/images/icons/icons8-next-page-64.png" alt="">
                 </button>
             </div>
         </div>

@@ -1,0 +1,20 @@
+input{
+    border-radius: 0 !important;
+}
+
+.form-check-input:checked {
+    background-color: #000 !important;
+    border-color: transparent !important;
+}
+
+.form-check-input:checked[type=radio] {
+    --bs-form-check-bg-image: none !important;
+}
+.form-check-input:checked[type=radio] {
+    background-image: none !important;
+}
+
+.form-check-input:focus {
+    outline: 0;
+    box-shadow: none !important;
+}
