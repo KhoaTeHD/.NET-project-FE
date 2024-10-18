@@ -1,0 +1,39 @@
+<p-toast />
+<div class="col-md-4 col-lg-3 mb-4 item-container" *ngFor="let item of pagedItems">
+    <!-- Nếu item không phải là placeholder -->
+    <div *ngIf="!item.isPlaceholder" class="card custom-css-item" style="border-radius: 15px;">
+      <div (click)="navigateToProductDetail(item.id)" class="bg-image hover-overlay ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+        <div style="text-align: center;">
+          <img src="../../../../assets/images/vn-11134207-7r98o-lxtcujiemg9nbe.webp"
+               style="margin: 10px 0 0; width: 160px;"
+               class="img-fluid" alt="Laptop" />
+        </div>
+      </div>
+      <div class="card-body pb-0">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5 style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 3;line-height: 1.2; height: 52px; overflow: hidden;font-size: 14px;"><a (click)="navigateToProductDetail(item.id)" class="text-dark">{{ item.name }}</a></h5>
+          </div>
+        </div>
+      </div>
+      <div class="card-body pb-0">
+        <div class="d-flex justify-content-between" style="font-size: 14px;">
+          <p><a class="text-dark price-item-custom">{{ item.price - (item.price * item.pricesale / 100) | currency:'VND':'symbol' }}</a></p>
+          <p style="text-decoration: line-through;">{{ item.price | currency:'VND':'symbol'}} <span class="badge bg-danger">{{- item.pricesale }}%</span></p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
+          <button (click)="handleCartBtnClicked(item)" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-add-to-cart">
+            <img src="../../../../assets/images/icons/icons8-add-shopping-cart-32.png" alt="" width="24px">
+          </button>
+          <button style="font-size: 14px;" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark">Mua ngay</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Nếu item là placeholder, sử dụng class để ẩn item nhưng vẫn giữ chiều cao -->
+    <div *ngIf="item.isPlaceholder" class="card placeholder-item" style="border-radius: 15px;">
+      <!-- Các thành phần bên trong cũng có thể để trống -->
+    </div>
+  </div>

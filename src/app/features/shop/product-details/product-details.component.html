@@ -1,3 +1,4 @@
+<p-toast />
 <app-header />
 <section class="bg-light">
     <div class="container pb-5" style="margin-top: 40px !important;">
@@ -12,59 +13,154 @@
                         <h1 class="h2">{{product.name}}</h1>
                         <p>Thương hiệu: </p>
                         <p>Xuất xứ: </p>
-                        <p>Giá bán: {{product.price | currency:'VND':'symbol'}}</p>
-                        <div class="d-flex">
+                        <span class="d-flex">Giá bán: <p class="ms-2 me-2" style="color: rgb(226, 45, 0);font-weight: 700;margin: 0;">
+                                {{product.price | currency:'VND':'symbol'}}</p>
+                                <p class="ms-2 me-2" style="text-decoration: line-through;margin: 0;">110</p>
+                                <span class="badge bg-danger">{{- 10 }}%</span>
+                        </span>
+                        <div class="d-flex mt-3">
                             <p class="me-2">Còn lại: </p>
-                            <p style="color: green;">52</p>
+                            <p style="color: green;font-weight: 700;">52</p>
                         </div>
-                        <div>
-                            <p>Kích thước:</p>
-                            <div class="d-flex">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions" id="inlineRadio1"
-                                        value="option1">
-                                    <label class="form-check-label" for="inlineRadio1">1</label>
+                        <div class="d-flex flex-column">
+                            <p class="me-2">Kích thước:</p>
+                            <div class="ms-3" style="display: flex;flex-wrap: wrap;">
+                                <div class="form-check form-check-inline" >
+                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
+                                        id="inlineRadio1" value="S">
+                                    <label class="form-check-label" for="inlineRadio1">S</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions" id="inlineRadio2"
-                                        value="option2">
-                                    <label class="form-check-label" for="inlineRadio2">2</label>
+                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
+                                        id="inlineRadio2" value="M">
+                                    <label class="form-check-label" for="inlineRadio2">M</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions" id="inlineRadio3"
-                                        value="option3">
-                                    <label class="form-check-label" for="inlineRadio3">3</label>
+                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
+                                        id="inlineRadio3" value="L">
+                                    <label class="form-check-label" for="inlineRadio3">L</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
+                                        id="inlineRadio4" value="XL">
+                                    <label class="form-check-label" for="inlineRadio4">XL</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
+                                        id="inlineRadio5" value="XXL">
+                                    <label class="form-check-label" for="inlineRadio5">XXL</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
+                                        id="inlineRadio6" value="oversize">
+                                    <label class="form-check-label" for="inlineRadio6">Oversize</label>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <p>Màu sắc:</p>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio1"
-                                    value="option1">
-                                <label class="form-check-label" for="inlineRadio1">1</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio2"
-                                    value="option2">
-                                <label class="form-check-label" for="inlineRadio2">2</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio3"
-                                    value="option3">
-                                <label class="form-check-label" for="inlineRadio3">3</label>
+                        <div class="d-flex flex-column mt-3 mb-2" style="width: 100%;">
+                            <p class="mb-0 me-3">Màu sắc:</p>
+                            <div class="ms-3 d-flex" style="flex-wrap: wrap;">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio1"
+                                        value="red">
+                                    <label class="form-check-label" for="colorRadio1">Đỏ</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio2"
+                                        value="yellow">
+                                    <label class="form-check-label" for="colorRadio2">Vàng</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio3"
+                                        value="orange">
+                                    <label class="form-check-label" for="colorRadio3">Cam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio4"
+                                        value="blue">
+                                    <label class="form-check-label" for="colorRadio4">Xanh dương</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio5"
+                                        value="green">
+                                    <label class="form-check-label" for="colorRadio5">Xanh lá</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio6"
+                                        value="purple">
+                                    <label class="form-check-label" for="colorRadio6">Tím</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio7"
+                                        value="gray">
+                                    <label class="form-check-label" for="colorRadio7">Xám</label>
+                                </div>
                             </div>
                         </div>
 
-                        <a href="#">Hướng dẫn chọn Size</a>
+                        <!-- test -->
+                        <div class="modal fade" id="exampleModalScrollable" tabindex="-1"
+                            aria-labelledby="exampleModalScrollableTitle" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalScrollableTitle">Hướng dẫn chọn size
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            Để lấy số đo của cơ thể chính xác, bạn có thể dùng thước dây để đo các thông
+                                            số sau đây:
+                                        </p>
+                                        <p>
+                                            1. Vùng ngực: Dùng thước dây bọc xung quanh ngực của bạn.
+                                        </p>
+                                        <p>
+                                            2. Vòng bụng: Dùng thước dây bọc xung quanh bụng và lấy chu vi nhỏ nhất của
+                                            bụng.
+                                        </p>
+                                        <p>
+                                            3. Vòng mông: Khép hai chân lại, lấy thước dây bọc xung quanh vùng mông và
+                                            lấy
+                                            số đo chu vi lớn nhất của mông.
+                                        </p>
+                                        <p>
+                                            4. Chiều cao háng: Là chiều dài từ đáy quần đến gót chân.
+                                        </p>
+                                        <p>
+                                            5. Chiều cao cơ thể: Là chiều dài tính từ phần đầu đến gót chân.
+                                        </p>
+                                        <h5>Bảng size áo</h5>
+                                        <img src="../../../../assets/images/size_tutorial/size_ao.webp" alt=""
+                                            width="500" class="mt-2 mb-2">
+                                        <h5>Bảng size quần</h5>
+                                        <img src="../../../../assets/images/size_tutorial/size_quan.webp" alt=""
+                                            width="500" class="mt-2 mb-2">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-dark" style="background-color: black;"
+                                            data-bs-dismiss="modal">Đóng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+
+                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
+                            data-bs-target="#exampleModalScrollable" fdprocessedid="ppfwcs">
+                            Hướng dẫn chọn size
+                        </button>
+                        <!-- test -->
                         <div class="d-flex align-items-center pb-2 mb-2 mt-3">
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init
-                                class="btn btn-dark btn-add-to-cart">
+                            <button type="button" style="background-color: black;" data-mdb-button-init data-mdb-ripple-init
+                                class="btn btn-dark btn-add-to-cart"
+                                (click)="handleCartBtnClicked()">
                                 Thêm vào giỏ hàng
                             </button>
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init
-                                class="btn btn-dark ms-3">Mua ngay</button>
+                            <button type="button" style="background-color: black;" data-mdb-button-init data-mdb-ripple-init
+                                class="btn btn-dark ms-3 btn-add-buy-now">Mua ngay</button>
                         </div>
 
                         <p>Mô tả:</p>
@@ -81,6 +177,9 @@
     <div class="container">
         <div class="row text-left p-2 pb-3">
             <h4>Sản phẩm liên quan</h4>
+        </div>
+        <div class="row">
+            <app-related-products class="row col-lg" />
         </div>
     </div>
 </section>
