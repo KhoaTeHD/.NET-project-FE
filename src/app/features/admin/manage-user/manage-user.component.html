@@ -3,7 +3,7 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4">Tài khoản</h1>
             <div class="mb-3 d-flex flex-row-reverse">
-                <button type="button" class="btn btn-dark" (click)="handleAddAction()">Thêm tài khoản</button>
+                <button type="button" class="btn btn-dark" (click)="showDialog()">Thêm tài khoản</button>
             </div>
             <div class="card mb-4">
                 
@@ -15,3 +15,62 @@
     </main>
     <app-admin-footer></app-admin-footer>
 </div>
+
+<p-dialog header="Thêm người dùng" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem' }" styleClass="p-fluid">
+    <form>
+        <!-- Customer Name -->
+        <div class="mb-3">
+            <label for="Cus_Name" class="form-label">Tên khách hàng</label>
+            <input type="text" class="form-control" id="Cus_Name" placeholder="Nhập tên khách hàng" name="Cus_Name">
+        </div>
+
+        <!-- Customer Avatar -->
+        <div class="mb-3">
+            <label for="Cus_Avatar" class="form-label">Ảnh đại diện</label>
+            <input type="file" class="form-control" id="Cus_Avatar" name="Cus_Avatar">
+        </div>
+
+        <!-- Customer Email -->
+        <div class="mb-3">
+            <label for="Cus_Email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="Cus_Email" placeholder="Nhập email" name="Cus_Email">
+        </div>
+
+        <!-- Customer Password -->
+        <div class="mb-3">
+            <label for="Cus_PassWord" class="form-label">Mật khẩu</label>
+            <input type="password" class="form-control" id="Cus_PassWord" placeholder="Nhập mật khẩu" name="Cus_PassWord">
+        </div>
+
+        <!-- Customer Gender -->
+        <div class="mb-3">
+            <label for="Cus_Gender" class="form-label">Giới tính</label>
+            <input type="text" class="form-control" id="Cus_Gender" placeholder="Nhập giới tính (Nam/Nữ)" name="Cus_Gender">
+        </div>
+
+        <!-- Customer Phone -->
+        <div class="mb-3">
+            <label for="Cus_Phone" class="form-label">Số điện thoại</label>
+            <input type="tel" class="form-control" id="Cus_Phone" placeholder="Nhập số điện thoại" name="Cus_Phone">
+        </div>
+
+        <!-- Customer Birthday -->
+        <div class="mb-3">
+            <label for="Cus_Birthday" class="form-label">Ngày sinh</label>
+            <input type="date" class="form-control" id="Cus_Birthday" name="Cus_Birthday">
+        </div>
+
+        <!-- Customer Status -->
+        <div class="mb-3">
+            <label class="form-check-label me-2" for="Cus_Status">Trạng thái:</label>
+            <input class="form-check-input" type="radio" name="Cus_Status" id="active"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="Cus_Status" id="inactive"> Chặn
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />
+            <p-button label="Lưu" (onClick)="visible = false" />
+        </div>
+    </form>
+</p-dialog>

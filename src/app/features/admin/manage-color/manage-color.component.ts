@@ -1,7 +1,4 @@
 import { Component } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { ColorComponent } from '../dialog/color/color.component';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -10,20 +7,21 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { MessageService, SelectItem } from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { InputIconModule } from 'primeng/inputicon';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-manage-color',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule],
-  providers: [MessageService],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './manage-color.component.html',
   styleUrl: './manage-color.component.css'
 })
 export class ManageColorComponent {
-  dataSource: any;
-  responseMessage: any;
   colors = [
     { Col_ID: 1, Col_Name: 'Đỏ', Col_Status: 1 },
     { Col_ID: 2, Col_Name: 'Xanh', Col_Status: 1 },
@@ -41,6 +39,8 @@ export class ManageColorComponent {
 
   clonedColors: { [id: number]: Color } = {};
 
+  visible: boolean = false;
+
   ngOnInit(): void {
     this.statuses = [
       { label: 'Hoạt động', value: 1 },
@@ -49,33 +49,18 @@ export class ManageColorComponent {
   }
 
   constructor(
-    private dialog: MatDialog,
-    private router: Router,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService) { }
 
-  handleAddAction() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      action: 'Add'
-    }
-    dialogConfig.width = "850px";
-    const dialogRef = this.dialog.open(ColorComponent, dialogConfig);
-    this.router.events.subscribe(() => {
-      dialogRef.close();
-    })
+  showDialog() {
+    this.visible = true;
   }
 
-  handleEditAction(values: string) {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      action: 'Edit',
-      data: values
+  handleInput(event: Event, dt: any): void {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement) {
+      dt.filterGlobal(inputElement.value, 'contains');
     }
-    dialogConfig.width = "850px";
-    const dialogRef = this.dialog.open(ColorComponent, dialogConfig);
-    this.router.events.subscribe(() => {
-      dialogRef.close();
-    })
   }
 
   onRowEditInit(color: Color) {
@@ -95,6 +80,18 @@ export class ManageColorComponent {
   onRowEditCancel(color: Color, index: number) {
     this.colors[index] = this.clonedColors[color.Col_ID as number];
     delete this.clonedColors[color.Col_ID as number];
+  }
+
+  deleteColor(color: Color) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc xóa ' + color.Col_Name + ' không?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.colors = this.colors.filter((val) => val.Col_ID !== color.Col_ID);
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa màu sắc', life: 3000 });
+      }
+    });
   }
 
   getSeverity(status: number) {

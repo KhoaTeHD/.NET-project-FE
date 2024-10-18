@@ -1,8 +1,5 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { BrandComponent } from '../dialog/brand/brand.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -10,21 +7,23 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { MessageService, SelectItem } from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { InputIconModule } from 'primeng/inputicon';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-manage-brand',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule],
-  providers: [MessageService],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './manage-brand.component.html',
   styleUrl: './manage-brand.component.css'
 })
 
 export class ManageBrandComponent implements OnInit {
-  dataSource: any;
-  responseMessage: any;
+  visible: boolean = false;
 
   brands = [
     { Bra_ID: 1, Bra_Name: 'Vinamilk', Bra_Status: 1 },
@@ -43,6 +42,8 @@ export class ManageBrandComponent implements OnInit {
 
   clonedBrands: { [id: number]: Brand } = {};
 
+  searchValue: string | undefined;
+
   ngOnInit(): void {
     this.statuses = [
       { label: 'Hoạt động', value: 1 },
@@ -51,35 +52,12 @@ export class ManageBrandComponent implements OnInit {
   }
 
   constructor(
-    private dialog: MatDialog,
-    private router: Router,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService) { }
 
-
-  handleAddAction() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      action: 'Add'
-    }
-    dialogConfig.width = "850px";
-    const dialogRef = this.dialog.open(BrandComponent, dialogConfig);
-    this.router.events.subscribe(() => {
-      dialogRef.close();
-    })
+  showDialog() {
+    this.visible = true;
   }
-
-  // handleEditAction(values:string){
-  //   const dialogConfig = new MatDialogConfig();
-  //   dialogConfig.data = {
-  //     action: 'Edit',
-  //     data:values
-  //   }
-  //   dialogConfig.width = "850px";
-  //   const dialogRef = this.dialog.open(BrandComponent, dialogConfig);
-  //   this.router.events.subscribe(()=>{
-  //     dialogRef.close();
-  //   })
-  // }
 
   onRowEditInit(brand: Brand) {
     this.clonedBrands[brand.Bra_ID as number] = { ...brand };
@@ -98,6 +76,26 @@ export class ManageBrandComponent implements OnInit {
   onRowEditCancel(brand: Brand, index: number) {
     this.brands[index] = this.clonedBrands[brand.Bra_ID as number];
     delete this.clonedBrands[brand.Bra_ID as number];
+  }
+
+  deleteProduct(brand: Brand) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc xóa ' + brand.Bra_Name + ' không?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.brands = this.brands.filter((val) => val.Bra_ID !== brand.Bra_ID);
+        // this.brand = {};
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa thương hiệu', life: 3000 });
+      }
+    });
+  }
+
+  handleInput(event: Event, dt: any): void {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement) {
+      dt.filterGlobal(inputElement.value, 'contains');
+    }
   }
 
   getSeverity(status: number) {

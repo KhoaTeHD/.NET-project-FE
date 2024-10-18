@@ -5,10 +5,17 @@ import { Router } from '@angular/router';
 import { OrderComponent } from '../dialog/order/order.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { DropdownModule } from 'primeng/dropdown';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
 @Component({
   selector: 'app-manage-order',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, InputTextModule, ButtonModule, ToastModule, DropdownModule, ConfirmDialogModule],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './manage-order.component.html',
   styleUrl: './manage-order.component.css'
 })
@@ -42,7 +49,13 @@ export class ManageOrderComponent implements OnInit{
   constructor(
     private dialog: MatDialog,
     private router:Router) { }
-
+  
+  handleInput(event: Event, dt: any): void {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement) {
+        dt.filterGlobal(inputElement.value, 'contains');
+    }
+  }
 
   handleViewDetailAction() {
     const dialogConfig = new MatDialogConfig();

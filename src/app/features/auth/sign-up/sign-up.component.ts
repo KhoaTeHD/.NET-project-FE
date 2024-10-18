@@ -9,5 +9,18 @@ import { RouterModule } from '@angular/router';
   styleUrl: './sign-up.component.css'
 })
 export class SignUpComponent {
+  isPasswordVisible: boolean = false;
+  PasswordVisible = "Hiện";
+  isReInputPasswordVisible: boolean = false;
+  ReInputPasswordVisible = "Hiện";
 
+  togglePasswordVisibility() {
+    this.isPasswordVisible = !this.isPasswordVisible;
+    this.PasswordVisible = this.isPasswordVisible === true ? "Ẩn" : "Hiện";
+  }
+
+  toggleReInputPasswordVisibility() {
+    this.isReInputPasswordVisible = !this.isReInputPasswordVisible;
+    this.ReInputPasswordVisible = this.isReInputPasswordVisible === true? "Ẩn" : "Hiện";
+  }
 }

@@ -66,6 +66,10 @@
         order: 1;
         margin-left: 0 !important;
     }
+
+    .personal-info-container {
+        margin-top: 75px !important;
+    }
 }
 
 /* Tablet */
@@ -82,12 +86,16 @@
     .offfcanvas-option {
         padding: 10px;
     }
+
+    .personal-info-container {
+        margin-top: 75px !important;
+    }
 }
 
 /* DT */
 @media (min-width: 993px) {
     .personal-info-container {
         width: 80%;
-        margin-top: 36px !important;
+        margin-top: 90px !important;
     }
 }

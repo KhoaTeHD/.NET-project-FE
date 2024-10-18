@@ -35,7 +35,10 @@
     top: 10px;
     right: 13px;
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.7);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    color: #184AFA;
 }
 
 .forget-password {
