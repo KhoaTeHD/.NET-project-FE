@@ -1,69 +1,203 @@
 <div id="layoutSidenav_content">
-    <main>
-        <div class="container-fluid px-4">
-            <h1 class="mt-4">Sản phẩm</h1>
-            <div class="mb-3 d-flex flex-row-reverse">
-                <button type="button" class="btn btn-dark" (click)="handleAddAction()">Thêm sản phẩm</button>
-            </div>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <p-table #table [value]="products" dataKey="Pro_ID" [tableStyle]="{ 'min-width': '50rem' }" class="table table-striped table-bordered">
-                        <ng-template pTemplate="header">
-                          <tr>
-                            <th>Mã sản phẩm</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Trạng thái</th>
-                            <th>Biến thể</th>
-                          </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-product let-expanded="expanded">
-                          <tr>
-                            <td>{{ product.Pro_ID }}</td>
-                            <td>{{ product.Pro_name }}</td>
-                            <td>{{ product.Pro_status ? 'Hoạt động' : 'Ngừng bán' }}</td>
-                            <td>
-                              <p-button type="button" pRipple [pRowToggler]="product" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-                              <!-- <button type="button" pButton icon="pi pi-chevron-down" (click)="table.toggleRow(product)">Xem</button> -->
-                            </td>
-                          </tr>
-                        </ng-template>
-                      
-                        <ng-template pTemplate="rowexpansion" let-product>
-                          <td colspan="4">
-                            <div class="p-2">
-                                <!-- Bảng hiển thị danh sách các biến thể sản phẩm -->
-                                <p-table [value]="product.variations">
-                                    <ng-template pTemplate="header">
-                                      <tr>
-                                        <th>Mã biến thể</th>
-                                        <th>Màu sắc</th>
-                                        <th>Kích thước</th>
-                                        <th>Giá</th>
-                                        <th>Số lượng</th>
-                                        <th>Giảm giá</th>
-                                        <th>Trạng thái</th>
-                                      </tr>
-                                    </ng-template>
-                                    
-                                    <ng-template pTemplate="body" let-variation>
-                                      <tr>
-                                        <td>{{ variation.ProV_ID }}</td>
-                                        <td>{{ variation.Col_ID }}</td>
-                                        <td>{{ variation.Siz_ID }}</td>
-                                        <td>{{ variation.ProV_Price | currency: 'VND' }}</td>
-                                        <td>{{ variation.ProV_Quantity }}</td>
-                                        <td>{{ variation.ProV_Discount }}%</td>
-                                        <td>{{ variation.ProV_Status ? 'Hoạt động' : 'Ngừng bán' }}</td>
-                                      </tr>
-                                    </ng-template>
-                                  </p-table>
-                            </div>
-                          </td>
-                        </ng-template>
-                      </p-table>
+  <main>
+    <div class="container-fluid px-4">
+      <h1 class="mt-4">Sản phẩm</h1>
+      <div class="mb-3 d-flex flex-row-reverse">
+        <button type="button" class="btn btn-dark" (click)="showDialogProduct('Add')">Thêm sản phẩm</button>
+      </div>
+      <div class="card mb-4">
+        <p-toast></p-toast>
+        <p-confirmDialog />
+        <div class="card-body">
+          <p-table #table [value]="products" dataKey="Pro_ID" [tableStyle]="{ 'min-width': '50rem' }"
+            class="table table-striped table-bordered">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 5rem;"></th>
+                <th style="width: 10%;">Mã sản phẩm</th>
+                <th style="width: 55%;">Tên sản phẩm</th>
+                <th style="width: 15%;">Trạng thái</th>
+                <th style="width: 15%;">Hành động</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-product let-expanded="expanded">
+              <tr>
+                <td>
+                  <p-button type="button" pRipple [pRowToggler]="product" [text]="true" [rounded]="true" [plain]="true"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                  <!-- <button type="button" pButton icon="pi pi-chevron-down" (click)="table.toggleRow(product)">Xem</button> -->
+                </td>
+                <td>{{ product.Pro_ID }}</td>
+                <td>{{ product.Pro_name }}</td>
+                <td>{{ product.Pro_status ? 'Hoạt động' : 'Ngừng bán' }}</td>
+                <td>
+                  <div class="flex align-items-center justify-content-center gap-2">
+                    <button pButton pRipple type="button" icon="pi pi-plus" (click)="showDialogVariation('Add')"
+                      class="p-button-rounded p-button-text p-button-success">
+                    </button>
+                    <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text">
+                    </button>
+                    <button pButton pRipple type="button" icon="pi pi-trash" (click)="deleteProduct(product)"
+                      class="p-button-rounded p-button-text p-button-danger">
+                    </button>
+                  </div>
+                </td>
+
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="rowexpansion" let-product>
+              <td colspan="5">
+                <div class="p-2">
+                  <!-- Bảng hiển thị danh sách các biến thể sản phẩm -->
+                  <p-table [value]="product.variations">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th style="width: 10rem;">Mã biến thể</th>
+                        <th style="width: 10rem;">Màu sắc</th>
+                        <th style="width: 10rem;">Kích thước</th>
+                        <th style="width: 10rem;">Giá</th>
+                        <th style="width: 10rem;">Số lượng</th>
+                        <th style="width: 10rem;">Giảm giá</th>
+                        <th style="width: 10rem;">Trạng thái</th>
+                        <th style="width: 10rem;">Hành động</th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-variation>
+                      <tr>
+                        <td>{{ variation.ProV_ID }}</td>
+                        <td>{{ variation.Col_ID }}</td>
+                        <td>{{ variation.Siz_ID }}</td>
+                        <td>{{ variation.ProV_Price | currency: 'VND' }}</td>
+                        <td>{{ variation.ProV_Quantity }}</td>
+                        <td>{{ variation.ProV_Discount }}%</td>
+                        <td>{{ variation.ProV_Status ? 'Hoạt động' : 'Ngừng bán' }}</td>
+                        <td>
+                          <div class="flex align-items-center justify-content-center gap-2">
+                            <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text">
+                            </button>
+                            <button pButton pRipple type="button" icon="pi pi-trash" (click)="deleteVariation(variation)"
+                              class="p-button-rounded p-button-text p-button-danger">
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
                 </div>
-            </div>
+              </td>
+            </ng-template>
+          </p-table>
         </div>
-    </main>
-    <app-admin-footer></app-admin-footer>
+      </div>
+    </div>
+  </main>
+  <app-admin-footer></app-admin-footer>
 </div>
+
+<p-dialog header="{{ dialogTitle }} sản phẩm" [modal]="true" [(visible)]="visibleDialogProduct" [style]="{ width: '30rem' }"
+  styleClass="p-fluid">
+
+  <div class="mb-4">
+    <label for="id" class="form-label">Mã sản phẩm</label>
+    <input type="text" class="form-control" [(ngModel)]="product.Pro_ID" id="id" name="id" disabled>
+  </div>
+
+  <div class="mb-4">
+    <label for="name" class="form-label">Tên sản phẩm</label>
+    <input type="text" class="form-control" id="name" placeholder="Nhập tên" name="name">
+  </div>
+
+  <div class="mb-4">
+    <label class="form-check-label me-2" for="active">Trạng thái:</label>
+    <input class="form-check-input" type="radio" name="active" id="visible"> Hoạt động
+    <input class="form-check-input ms-2" type="radio" name="active" id="disable"> Ngừng bán
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-4">
+    <p-button label="Hủy" severity="secondary" (onClick)="visibleDialogProduct = false" />
+    <p-button label="Lưu" (onClick)="visibleDialogProduct = false" />
+  </div>
+
+</p-dialog>
+
+<!-- Dialog cho biến thể -->
+
+<p-dialog header="{{ dialogTitle }} biến thể" [modal]="true" [(visible)]="visibleDialogVariation" [style]="{ width: '55rem' }"
+  styleClass="p-fluid">
+
+  <div id="variationsContainer">
+    <div class="variation-item mb-3">
+      <div class="row">
+        <div class="col-md-4">
+          <label for="id" class="form-label">Mã biến thể</label>
+          <input type="text" class="form-control" [(ngModel)]="variations.ProV_ID" id="id" name="id" disabled>
+        </div>
+        <div class="col-md-4">
+          <label for="Col_ID" class="form-label">Color</label>
+          <p-dropdown 
+            [(ngModel)]="variations.Col_ID" 
+            [options]="colors" 
+            optionValue="Col_Name">
+            
+            <ng-template pTemplate="selectedItem">
+              <div *ngIf="variations.Col_ID">
+                {{ variations.Col_ID }}
+              </div>
+            </ng-template>
+            
+            <ng-template let-color pTemplate="item">
+              {{ color.Col_Name }}
+            </ng-template>
+
+          </p-dropdown>
+          <!-- <input type="text" class="form-control" name="Col_ID" /> -->
+        </div>
+        <div class="col-md-4">
+          <label for="Siz_ID" class="form-label">Size</label>
+          <p-dropdown 
+            [(ngModel)]="variations.Siz_ID" 
+            [options]="sizes" 
+            optionValue="Siz_Name">
+            
+            <ng-template pTemplate="selectedItem">
+              <div *ngIf="variations.Siz_ID">
+                {{ variations.Siz_ID }}
+              </div>
+            </ng-template>
+            
+            <ng-template let-size pTemplate="item">
+              {{ size.Siz_Name }}
+            </ng-template>
+            
+          </p-dropdown>
+        </div>
+        <div class="col-md-4 mt-3">
+          <label for="ProV_Price" class="form-label">Đơn giá</label>
+          <input type="number" [(ngModel)]="variations.ProV_Price"  class="form-control" name="ProV_Price" />
+        </div>
+        <div class="col-md-4 mt-3">
+          <label for="ProV_Quantity" class="form-label">Số lượng</label>
+          <input type="number" [(ngModel)]="variations.ProV_Quantity" class="form-control" name="ProV_Quantity" disabled/>
+        </div>
+        <div class="col-md-4 mt-3">
+          <label for="ProV_Discount" class="form-label">Khuyến mãi</label>
+          <input type="number" [(ngModel)]="variations.ProV_Discount" class="form-control" name="ProV_Discount" />
+        </div>
+        <div class="col-md-4 mt-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="ProV_Status" />
+            <label class="form-check-label" for="ProV_Status">
+              Hoạt động
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-4">
+    <p-button label="Ok" severity="secondary" (onClick)="visibleDialogVariation = false" />
+  </div>
+</p-dialog>

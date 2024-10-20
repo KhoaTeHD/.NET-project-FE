@@ -49,15 +49,15 @@
                         </ng-template>
                         <ng-template pTemplate="header">
                             <tr>
-                                <th pResizableColumn>Mã đơn hàng</th>
-                                <th pResizableColumn>Mã khách hàng</th>
-                                <th pResizableColumn>Mã giảm giá</th>
-                                <th pResizableColumn>Địa chỉ</th>
-                                <th pResizableColumn>Ngày đặt</th>
-                                <th pResizableColumn>Khuyến mãi</th>
-                                <th pResizableColumn>Thành tiền</th>
-                                <th pResizableColumn>Tình trạng</th>
-                                <th pResizableColumn>Chi tiết</th>
+                                <th>Mã khách hàng</th>
+                                <th>Mã giảm giá</th>
+                                <th>Địa chỉ</th>
+                                <th>Mã đơn hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Khuyến mãi</th>
+                                <th>Thành tiền</th>
+                                <th>Tình trạng</th>
+                                <th>Chi tiết</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-order>
@@ -71,7 +71,7 @@
                                 <td>{{ order.totalAmount | currency }}</td>
                                 <td>{{ order.status }}</td>
                                 <td>
-                                    <button pButton type="button" class="p-button-sm p-button-primary" (click)="handleViewDetailAction()">Xem</button>
+                                    <button pButton type="button" class="btn btn-dark" (click)="showDialog(order)">Xem</button>
                                 </td>
                             </tr>
                         </ng-template>
@@ -82,3 +82,33 @@
     </main>
     <app-admin-footer></app-admin-footer>
 </div>
+
+<p-dialog header="Chi tiết đơn hàng" [modal]="true" [(visible)]="visible" [style]="{ width: '55rem' }" styleClass="p-fluid">
+    <p>Mã đơn hàng: {{ selected_order?.orderId }}</p>
+    <p>Ngày đặt hàng: {{ selected_order?.orderDate | date: 'dd-MM-yyyy HH:mm:ss' }}</p>
+    <p>Khách hàng: {{ selected_order?.customerId }}</p>
+    <p>Tổng tiền: {{ selected_order?.totalAmount| currency:'VND' }}</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã sản phẩm</th>
+                <th>Tên sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let orderDetail of selected_order?.orderDetails">
+                <td>{{ orderDetail.productId }}</td>
+                <td  class=" text-truncate" style="max-width: 270px;">{{ orderDetail.productName }}</td>
+                <td>{{ orderDetail.quantity }}</td>
+                <td>{{ orderDetail.price | currency }}</td>
+                <td>{{ orderDetail.quantity * orderDetail.price | currency }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <p-button label="Ok" severity="secondary" (onClick)="visible = false" />
+    </div>
+</p-dialog>
