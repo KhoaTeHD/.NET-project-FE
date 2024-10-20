@@ -2,156 +2,170 @@
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4">Phiếu nhập</h1>
-            <div class="mb-3 mt-4 d-flex align-items-center">
-                <label for="date-from">Ngày Lọc</label>
-                <input name="date-from" type="date" class="ms-3 me-3 w-auto form-control">
-                <i class="fa-solid fa-arrow-right"></i>
-                <input name="date-to" type="date" class="ms-3 me-3 w-auto form-control">
-            </div>
-            <div class="mb-3 d-flex align-items-center">
-                <label for="province">Tỉnh (Thành)</label>
-                <select id="order-province" name="province" class="ms-3 me-3 w-auto form-select">
-                    <option disable value="">-- Chọn --</option>
-                </select>
-    
-                <label for="">Quận (Huyện)</label>
-                <select id="order-district" name="district" class="ms-3 me-3 w-auto form-select">
-                    <option disable value="">-- Chọn --</option>
-                </select>
-    
-                <label for="">Xã (Phường, Thị Trấn)</label>
-                <select id="order-ward" name="ward" class="ms-3 me-3 w-auto form-select">
-                    <option disable value="">-- Chọn --</option>
-                </select>
-            </div>
-            <div class="mb-4 d-flex align-items-center">
-                <label for="">Tình Trạng</label>
-    
-                <select name="order-status" id="status" class="ms-3 me-3 w-auto form-select">
-                    <option value="">-- Tất cả --</option>
-                </select>
-    
-                <button type="submit" name="submit" class="btn btn-dark">Lọc</button>
+            <div class="mb-3 d-flex flex-row-reverse">
+                <button type="button" class="btn btn-dark" (click)="showDialog(null)">Thêm phiếu nhập</button>
             </div>
             <div class="card mb-4">
-                
+                <p-toast></p-toast>
+                <p-confirmDialog />
                 <div class="card-body">
-                    <table id="datatablesSimple">
-                        <thead>
+                    <p-table #dt editMode="row" [value]="goodsReceipts" dataKey="GoodsReceipt_ID" [paginator]="true"
+                        [rows]="10" [globalFilterFields]="['GoodsReceipt_ID', 'Supplier_Name', 'Datetime', 'Total']"
+                        [responsiveLayout]="'scroll'">
+                        <ng-template pTemplate="caption">
+                            <div class="d-flex">
+                                <span class="p-input-icon-left ml-auto">
+                                    <i class="pi pi-search"></i>
+                                    <input pInputText type="text" style="width: 200px;"
+                                        (input)="handleInput($event, dt)" placeholder="Tìm kiếm" />
+                                </span>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
                             <tr>
-                                <th>Mã phiếu nhập</th>
-                                <th>Mã khách hàng</th>
-                                <th>Mã giảm giá</th>
-                                <th>Địa chỉ</th>
-                                <th>Ngày đặt</th>
-                                <th>Khuyến mãi</th>
-                                <th>Thành tiền</th>
-                                <th>Tình trạng</th>
-                                <th>Chi tiết</th>
+                                <th style="width:10%">ID</th>
+                                <th style="width:10%">Mã nhà cung cấp</th>
+                                <th style="width:30%">Nhà cung cấp</th>
+                                <th style="width:20%">Ngày nhập</th>
+                                <th style="width:20%">Tổng tiền</th>
+                                <th style="width:10%"></th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>000001</td>
-                                <td>00001</td>
-                                <td>Mã giảm giá</td>
-                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
-                                <td>2024-05-19 05:04:42</td>
-                                <td>-20,000đ</td>
-                                <td>7,605,000</td>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-goodsReceipt let-editing="editing" let-ri="rowIndex">
+                            <tr [pEditableRow]="goodsReceipt">
+                                <td>{{ goodsReceipt.GoodsReceipt_ID }}</td>
+                                <td>{{ goodsReceipt.Supplier_ID }}</td>
                                 <td>
-                                    <select class="form-select-sm">
-                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
-                                        <option value="Đã xác nhận">Đã xác nhận</option>
-                                        <option value="Đang giao hàng">Đang giao hàng</option>
-                                        <option value="Đã giao hàng">Đã giao hàng</option>
-                                        <option value="Đã hủy">Đã hủy</option>
-                                    </select>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.Supplier_Name" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ goodsReceipt.Supplier_Name }}
+                                        </ng-template>
+                                    </p-cellEditor>
                                 </td>
-                                <td><button (click)="handleViewDetailAction()">Xem</button></td>
-                            </tr>
-                            <tr>
-                                <td>000001</td>
-                                <td>00001</td>
-                                <td>Mã giảm giá</td>
-                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
-                                <td>2024-05-19 05:04:42</td>
-                                <td>-20,000đ</td>
-                                <td>7,605,000</td>
                                 <td>
-                                    <select class="form-select-sm">
-                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
-                                        <option value="Đã xác nhận">Đã xác nhận</option>
-                                        <option value="Đang giao hàng">Đang giao hàng</option>
-                                        <option value="Đã giao hàng">Đã giao hàng</option>
-                                        <option value="Đã hủy">Đã hủy</option>
-                                    </select>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.Datetime" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ goodsReceipt.Datetime | date:'yyyy-MM-dd HH:mm:ss' }}
+                                        </ng-template>
+                                    </p-cellEditor>
                                 </td>
-                                <td>Xem</td>
-                            </tr>
-                            <tr>
-                                <td>000001</td>
-                                <td>00001</td>
-                                <td>Mã giảm giá</td>
-                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
-                                <td>2024-05-19 05:04:42</td>
-                                <td>-20,000đ</td>
-                                <td>7,605,000</td>
                                 <td>
-                                    <select class="form-select-sm">
-                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
-                                        <option value="Đã xác nhận">Đã xác nhận</option>
-                                        <option value="Đang giao hàng">Đang giao hàng</option>
-                                        <option value="Đã giao hàng">Đã giao hàng</option>
-                                        <option value="Đã hủy">Đã hủy</option>
-                                    </select>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.Total" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ goodsReceipt.Total | currency:'VND' }}
+                                        </ng-template>
+                                    </p-cellEditor>
                                 </td>
-                                <td>Xem</td>
-                            </tr>
-                            <tr>
-                                <td>000001</td>
-                                <td>00001</td>
-                                <td>Mã giảm giá</td>
-                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
-                                <td>2024-05-19 05:04:42</td>
-                                <td>-20,000đ</td>
-                                <td>7,605,000</td>
                                 <td>
-                                    <select class="form-select-sm">
-                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
-                                        <option value="Đã xác nhận">Đã xác nhận</option>
-                                        <option value="Đang giao hàng">Đang giao hàng</option>
-                                        <option value="Đã giao hàng">Đã giao hàng</option>
-                                        <option value="Đã hủy">Đã hủy</option>
-                                    </select>
+                                    <div class="flex align-items-center justify-content-center gap-2">
+                                        <button 
+                                            pButton 
+                                            pRipple 
+                                            type="button"
+                                            icon="pi pi-pencil" 
+                                            (click)="editProduct(goodsReceipt)"
+                                            class="p-button-rounded p-button-text">
+                                        </button>
+                                        <button 
+                                            pButton 
+                                            pRipple 
+                                            type="button" 
+                                            icon="pi pi-trash"
+                                            (click)="deleteGoodsReceipt(goodsReceipt)"
+                                            class="p-button-rounded p-button-text p-button-danger">
+                                        </button>
+                                    </div>
                                 </td>
-                                <td>Xem</td>
                             </tr>
-                            <tr>
-                                <td>000001</td>
-                                <td>00001</td>
-                                <td>Mã giảm giá</td>
-                                <td>34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh</td>
-                                <td>2024-05-19 05:04:42</td>
-                                <td>-20,000đ</td>
-                                <td>7,605,000</td>
-                                <td>
-                                    <select class="form-select-sm">
-                                        <option value="Chưa xác nhận" selected>Chưa xác nhận</option>
-                                        <option value="Đã xác nhận">Đã xác nhận</option>
-                                        <option value="Đang giao hàng">Đang giao hàng</option>
-                                        <option value="Đã giao hàng">Đã giao hàng</option>
-                                        <option value="Đã hủy">Đã hủy</option>
-                                    </select>
-                                </td>
-                                <td>Xem</td>
-                            </tr>
-                            
-                        </tbody>
-                    </table>
+                        </ng-template>
+                    </p-table>
                 </div>
             </div>
         </div>
     </main>
     <app-admin-footer></app-admin-footer>
 </div>
+
+<p-dialog header="Thêm phiếu nhập" [modal]="true" [(visible)]="visible" [style]="{ width: '55rem' }"
+    styleClass="p-fluid">
+    <div class="d-flex justify-content-between">
+        <div>
+            <p>Mã phiếu nhập:
+                <input type="text" pInputText id="id" [(ngModel)]="selectedGoodsReceipt.GoodsReceipt_ID" disabled>
+            </p>
+            <p>Ngày đặt hàng: 
+                <input 
+                type="date" 
+                pInputText 
+                [ngModel]="selectedGoodsReceipt.Datetime | date: 'yyyy-MM-dd'"
+                name="">
+            </p>
+            <p>Nhà cung cấp:
+                <p-dropdown [(ngModel)]="selectedGoodsReceipt.Supplier_Name" [options]="suppliers"
+                    optionValue="SupplierName">
+                    <ng-template pTemplate="selectedItem">
+                        <div *ngIf="selectedGoodsReceipt.Supplier_Name">
+                            {{ selectedGoodsReceipt.Supplier_Name }}
+                        </div>
+                    </ng-template>
+                    <ng-template let-supplier pTemplate="item">
+                        {{ supplier.SupplierName }}
+                    </ng-template>
+                </p-dropdown>
+            </p>
+            <p>Tổng tiền:
+                <input type="text" pInputText id="total" [value]="selectedGoodsReceipt.Total| currency:'VND'" disabled>
+            </p>
+        </div>
+        <div>
+            <p-autoComplete 
+                [(ngModel)]="selectedProduct" 
+                [suggestions]="filteredProducts"
+                (completeMethod)="filterCountry($event)" 
+                (onSelect)="addProductToSelected($event)" 
+                optionLabel="Pro_name">
+                <ng-template let-product pTemplate="item">
+                    <div class="d-flex align-items-center gap-2">
+                        <img 
+                            src="https://placehold.co/40x40" 
+                            style="width: 40px" />
+                        <div>{{ product.Pro_name }}</div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã sản phẩm</th>
+                <th>Tên sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let detail of selectedGoodsReceipt.DetailedGoodsReceipts">
+                <td>{{ detail.Product_ID }}</td>
+                <td class=" text-truncate" style="max-width: 270px;">{{ detail.Product_Name }}</td>
+                <td>{{ detail.Unit_Price | currency }}</td>
+                <td>{{ detail.Quantity }}</td>
+                <td>{{ (detail.Quantity ?? 0) * (detail.Unit_Price ?? 0) | currency }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <p-button label="Ok" severity="secondary" (onClick)="visible = false" />
+    </div>
+</p-dialog>
