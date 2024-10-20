@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,14 +9,10 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
 })
 export class ImageSliderComponent {
+  @Input()
+  images: Array<{ id: number; value: string; }> = [];
+
   currentImageIndex: number = 0;
-  images: string[] = [
-    '../../../../assets/images/vn-11134207-7r98o-lxtcujiemg9nbe.webp',
-    'https://placehold.co/500x500/orange/white',
-    'https://placehold.co/500x500/blue/white',
-    'https://placehold.co/500x500/red/white',
-    'https://placehold.co/500x500/green/white'
-  ];
 
   constructor() {}
 

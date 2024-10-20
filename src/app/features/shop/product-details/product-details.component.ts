@@ -4,26 +4,33 @@ import { ImageSliderComponent } from '../image-slider/image-slider.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { CommonModule } from '@angular/common';
+import { RelatedProductsComponent } from './related-products/related-products.component';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { AfterViewInit } from '@angular/core';
+import { Item } from '../../../data_test/item/item-interface';
+import { ITEMS } from '../../../data_test/item/item-data';
 
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.css'],
-  imports:[ImageSliderComponent, HeaderComponent, FooterComponent, CommonModule],
+  imports:[ImageSliderComponent, HeaderComponent, FooterComponent, CommonModule, RelatedProductsComponent, ToastModule],
+  providers: [MessageService],
   standalone: true,
 })
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, AfterViewInit {
   productId: string | null = null;
   product: any;
 
-  // Ví dụ danh sách các sản phẩm, bạn có thể thay thế bằng cách gọi API thực tế
-  items = [
-    { id: 1, name: 'Item 1', price: 100, description: 'Description of Item 1' },
-    { id: 2, name: 'Item 2', price: 200, description: 'Description of Item 2' },
-    // ... các item khác
-  ];
+  items: Item[] = ITEMS;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private messageService: MessageService) { }
+
+  handleCartBtnClicked() {
+    //console.log(item);
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm vào giỏ hàng!' });
+  }
 
   // ngOnInit(): void {
   //   // Lấy ID từ URL
@@ -35,9 +42,13 @@ export class ProductDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.productId = params.get('id'); // Lấy id từ URL
-      // Bạn có thể sử dụng id này để gọi API và lấy thông tin chi tiết sản phẩm
+      this.productId = params.get('id'); 
       this.product = this.items.find(item => item.id.toString() === this.productId);
     });
   }
+
+  ngAfterViewInit() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
 }

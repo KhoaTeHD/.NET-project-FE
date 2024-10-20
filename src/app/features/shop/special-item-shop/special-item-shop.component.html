@@ -1,27 +1,21 @@
+<p-toast />
 <div class="card card-custom">
     <div class="row no-gutters">
         <div class="col-md-3 img-container">
-            <img src="../../../../assets/images/yor-spy-x-family.avif" alt="Placeholder Image" height="200">
+            <img src="../../../../assets/images/data-test/{{items[5].image[0].value}}" alt="Placeholder Image" height="200">
         </div>
         <div class="col-md-9 d-flex align-items-center mt-3">
             <div>
-                <p>Light Stick J97 Version 3</p>
-                <p>Mô tả: "Fireflies Light" là điều mong chờ của cộng đồng Đom Đóm trong năm 2024. Những người hâm mộ
-                    bấy lâu nay của Jack - J97 luôn trông chờ được sở hữu chiếc Light Stick chính thức - vật phẩm cổ
-                    động đặc trưng của mỗi một fandom.</p>
+                <p>{{items[5].name}}</p>
+                <p>Mô tả: {{items[5].des}}</p>
                 <div class="d-flex">
                     <p>Màu sắc:</p>
-                    <div class="d-flex ms-3">
-                        <div class="me-3" style="width: 24px; height: 24px; background-color: blue;border-radius: 50%;">
-                        </div>
-                        <div class="me-3"
-                            style="width: 24px; height: 24px; background-color: yellow;border-radius: 50%;"></div>
-                        <div class="me-3"
-                            style="width: 24px; height: 24px; background-color: green;border-radius: 50%;"></div>
-                    </div>
+                    <div class="d-flex ms-3" *ngFor="let color of items[5].color">
+                        <div class="me-3" style="width: 24px; height: 24px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);" [style.backgroundColor]="color.value"></div>
+                      </div>                                         
                 </div>
                 <div class="d-flex align-items-center pb-2 mb-1">
-                    <button type="button" data-mdb-button-init data-mdb-ripple-init
+                    <button (click)="handleCartBtnClicked()" type="button" data-mdb-button-init data-mdb-ripple-init
                         class="btn btn-dark btn-add-to-cart"
                         >
                         Thêm vào giỏ hàng
@@ -32,4 +26,5 @@
             </div>
         </div>
     </div>
+    <img src="../../../../assets/images/bestseller.png" alt="" width="150" style="position: absolute;right: 0;transform: rotate(45deg);">
 </div>

@@ -1,0 +1,57 @@
+* {
+    box-sizing: border-box;
+}
+
+input {
+    border-radius: 0 !important;
+}
+
+.form-check-inline{
+    position: relative;
+    display: block;
+    width: 100px;
+}
+
+.form-check-input:checked {
+    background-color: #000 !important;
+    border-color: transparent !important;
+}
+
+.form-check-input {
+    display: block;
+    min-width: 75px;
+    width: 100px;
+    height: 30px;
+    color: #000;
+    cursor: pointer;
+}
+
+.form-check-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    cursor: pointer;
+    display: flex;
+    width: max-content;
+    font-size: 14px;
+}
+
+.form-check-input:checked[type=radio] + .form-check-label{
+    --bs-form-check-bg-image: none !important;
+    color: #fff;
+}
+
+.form-check-input:checked[type=radio] {
+    background-image: none !important;
+}
+
+.form-check-input:focus {
+    outline: 0;
+    box-shadow: none !important;
+}
+
+.btn-add-to-cart:hover, .btn-add-buy-now:hover{
+    background-color: #000000e0 !important;
+}
