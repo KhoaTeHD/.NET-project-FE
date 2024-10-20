@@ -6,6 +6,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Item } from '../../../data_test/item/item-interface';
 import { ITEMS } from '../../../data_test/item/item-data';
+import { CartService } from '../../../data_test/cart/cart-service';
 
 @Component({
   selector: 'app-item-shop',
@@ -17,7 +18,7 @@ import { ITEMS } from '../../../data_test/item/item-data';
 })
 export class ItemShopComponent implements OnInit {
 
-  constructor(private router: Router, private messageService: MessageService, private route: ActivatedRoute) {
+  constructor(private router: Router, private messageService: MessageService, private route: ActivatedRoute, private cartService: CartService) {
     this.route.queryParams.subscribe(params => {
       const page = +params['page'];
       if (page) {
@@ -30,11 +31,6 @@ export class ItemShopComponent implements OnInit {
   navigateToProductDetail(productId: number) {
     //this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
     window.location.href = `/shop/product/details/${productId}`;
-  }
-
-  handleCartBtnClicked(item: Item) {
-    console.log(item);
-    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!' });
   }
 
   items: Item[] = ITEMS;
@@ -85,4 +81,11 @@ export class ItemShopComponent implements OnInit {
   get totalPages(): number {
     return Math.ceil(this.items.length / this.itemsPerPage);
   }
+
+  handleCartBtnClicked(item: Item) {
+    this.cartService.addItem(item.id, item.pricesale); 
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!' });
+    console.log(this.cartService.getCart()); 
+  }
+  
 }

@@ -27,4 +27,24 @@
         </div>
     </div>
     <img src="../../../../assets/images/bestseller.png" alt="" width="150" style="position: absolute;right: 0;transform: rotate(45deg);">
+
+    <!-- TEST HIỂN THỊ NGAY SAU KHI NHẤN THÊM VÀO GIỎ HÀNG -->
+
+    <!-- <div>
+        <h2>Giỏ hàng</h2>
+        <div *ngIf="cart && cart.items">
+          <ul>
+            <li *ngFor="let item of cart.items">
+              ID: {{ item.id }}, Giá: {{ item.price | currency }}, Số lượng: {{ item.quantity }}
+            </li>
+          </ul>
+          <p>Tổng số lượng: {{ cart.item_quantity }}</p>
+          <p>Tổng giá: {{ cart.total_price | currency }}</p>
+        </div>
+        <div *ngIf="!cart || cart.items?.length === 0">
+          <p>Giỏ hàng trống!</p>
+        </div>
+      </div> -->
+      
+      <!-- TEST HIỂN THỊ NGAY SAU KHI NHẤN THÊM VÀO GIỎ HÀNG -->
 </div>

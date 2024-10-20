@@ -20,7 +20,7 @@
       <h2>Sản phẩm nổi bật</h2>
       <div class="product-grid">
         <div class="product-card p-2" *ngFor="let product of vipItems" style="border-radius: 8px;">
-          <img src="../../../../assets/images/data-test/{{product.image[0].value}}" alt="{{product.name}}" style="border-radius: 12px;cursor: pointer;">
+          <img src="../../../../assets/images/data-test/{{product.image[0].value}}" alt="{{product.name}}" style="border-radius: 12px;cursor: pointer;" loading="lazy">
           <h3 style="text-align: left;cursor: pointer;">{{ product.name }}</h3>
           <div class="d-flex justify-content-between">
             <p><a href="#!" class="text-dark price-item-custom" style="color: red !important; text-decoration: none;font-weight: bold;">{{ product.pricesale | currency:'VND':'symbol' }}</a></p>

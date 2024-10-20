@@ -7,6 +7,27 @@
           <div class="card-header py-3">
             <h5 class="d-flex mb-0">GIỎ HÀNG (<p style="color: red;">3&nbsp;</p>SẢN PHẨM)</h5>
           </div>
+          <!-- test show cart -->
+          <!-- <div *ngIf="!cart.items || cart.items.length === 0">
+            <p>Giỏ hàng của bạn đang trống.</p>
+          </div>
+          <ul *ngIf="cart.items && cart.items.length > 0">
+            <li *ngFor="let item of cart.items">
+              <div>
+                <strong>ID sản phẩm:</strong> {{ item.id }} <br>
+                <strong>Giá:</strong> {{ item.price | currency:'VND':'symbol' }} <br>
+                <strong>Số lượng:</strong> {{ item.quantity }} <br>
+                <strong>Tổng:</strong> {{ item.price * item.quantity | currency:'VND':'symbol' }} <br>
+              </div>
+            </li>
+          </ul>
+          
+          <div class="total-price">
+            <h4>Tổng số lượng sản phẩm: {{ cart.item_quantity }}</h4>
+            <h4>Tổng giá: {{ cart.total_price | currency:'VND':'symbol' }}</h4>
+          </div> -->
+
+          <!-- test show cart -->
           <div class="card-body">
             <!-- Single item -->
             <div class="row mb-2">

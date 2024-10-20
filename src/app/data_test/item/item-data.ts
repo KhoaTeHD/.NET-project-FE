@@ -24,7 +24,7 @@ export const ITEMS: Item[] = [
     type: 'Clothing',
     des: 'A basic t-shirt made from 100% cotton.',
     origin: 'Vietnam',
-    quantity: '50',
+    quantity: 50,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -48,7 +48,7 @@ export const ITEMS: Item[] = [
     type: 'Footwear',
     des: 'Comfortable sneakers for everyday use.',
     origin: 'China',
-    quantity: '30',
+    quantity: 30,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -72,7 +72,7 @@ export const ITEMS: Item[] = [
     type: 'Bags',
     des: 'A stylish backpack for your laptop.',
     origin: 'Vietnam',
-    quantity: '25',
+    quantity: 25,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -95,7 +95,7 @@ export const ITEMS: Item[] = [
     type: 'Electronics',
     des: 'Noise-cancelling wireless headphones.',
     origin: 'USA',
-    quantity: '15',
+    quantity: 15,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -118,7 +118,7 @@ export const ITEMS: Item[] = [
     type: 'Clothing',
     des: 'A warm wool sweater for cold days.',
     origin: 'Iceland',
-    quantity: '20',
+    quantity: 20,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -141,7 +141,7 @@ export const ITEMS: Item[] = [
     type: 'Electronics',
     des: 'A smartwatch with various fitness features.',
     origin: 'USA',
-    quantity: '10',
+    quantity: 10,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -164,7 +164,7 @@ export const ITEMS: Item[] = [
     type: 'Footwear',
     des: 'Elegant formal shoes for special occasions.',
     origin: 'Italy',
-    quantity: '12',
+    quantity: 12,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -187,7 +187,7 @@ export const ITEMS: Item[] = [
     type: 'Clothing',
     des: 'A stylish graphic t-shirt.',
     origin: 'Vietnam',
-    quantity: '40',
+    quantity: 40,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -210,7 +210,7 @@ export const ITEMS: Item[] = [
     type: 'Electronics',
     des: 'Durable watch for sports activities.',
     origin: 'Japan',
-    quantity: '18',
+    quantity: 18,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -233,7 +233,7 @@ export const ITEMS: Item[] = [
     type: 'Clothing',
     des: 'Stylish leather jacket for men.',
     origin: 'USA',
-    quantity: '8',
+    quantity: 8,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -256,7 +256,7 @@ export const ITEMS: Item[] = [
     type: 'Clothing',
     des: 'Stylish leather jacket for men.',
     origin: 'USA',
-    quantity: '8',
+    quantity: 8,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -279,7 +279,7 @@ export const ITEMS: Item[] = [
     type: 'Clothing',
     des: 'Stylish leather jacket for men.',
     origin: 'USA',
-    quantity: '8',
+    quantity: 8,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },
@@ -302,7 +302,7 @@ export const ITEMS: Item[] = [
     type: 'Clothing',
     des: 'Stylish leather jacket for men.',
     origin: 'USA',
-    quantity: '8',
+    quantity: 8,
     size: [
       { id: 1, value: 'S' },
       { id: 2, value: 'M' },

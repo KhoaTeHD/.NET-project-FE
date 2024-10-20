@@ -7,7 +7,7 @@ export interface Item {
   type: string; 
   des: string;
   origin: string;
-  quantity: string;
+  quantity: number;
   size: Array<{ id: number; value: string }>; 
   color: Array<{ id: number; value: string }>; 
   image: Array<{ id: number; value: string }>; 
