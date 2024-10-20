@@ -3,15 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
-interface Item {
-  id: number;
-  name: String;
-  price: number;
-  pricesale: number;
-  type: String;
-}
-
+import { Item } from '../../../../data_test/item/item-interface';
+import { ITEMS } from '../../../../data_test/item/item-data';
+import { PlaceholderItem } from '../../../../data_test/item/item-interface';
 
 @Component({
   selector: 'app-related-products',
@@ -19,135 +13,81 @@ interface Item {
   imports: [CommonModule, ToastModule],
   providers: [MessageService],
   templateUrl: './related-products.component.html',
-  styleUrl: './related-products.component.css'
+  styleUrls: ['./related-products.component.css']
 })
 export class RelatedProductsComponent implements OnInit {
+  items: Item[] = ITEMS;
+  currentPage: number = 1;
+  itemsPerPage: number = 8;
+  pagedItems: (Item | PlaceholderItem)[] = [];
+  excludedId: number | null = null; // Khai báo biến để lưu id cần loại trừ
+
   constructor(private router: Router, private messageService: MessageService, private route: ActivatedRoute) {
-    this.route.queryParams.subscribe(params => {
-      const page = +params['page'];
-      if (page) {
-        this.currentPage = page;
-        this.updatePage();
-      }
+    // Lấy id từ URL
+    this.route.params.subscribe(params => {
+      this.excludedId = +params['id']; // Chuyển đổi id thành số
+      this.updatePage(); // Gọi hàm updatePage khi có id
     });
   }
 
-  navigateToProductDetail(productId: string) {
-    this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
+  ngOnInit() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  updatePage() {
+    if (this.excludedId === null) return; // Kiểm tra id có hợp lệ không
+
+    const filteredItems = this.items.filter(item => item.id !== this.excludedId); // Sử dụng id từ URL
+    this.pagedItems = this.getRandomItems(filteredItems, 8);
+    
+    const itemsToAdd = this.itemsPerPage - this.pagedItems.length;
+    for (let i = 0; i < itemsToAdd; i++) {
+      this.pagedItems.push({ isPlaceholder: true } as PlaceholderItem);
+    }
+  }
+
+  getRandomItems(array: Item[], n: number): Item[] {
+    const shuffled = array.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, n);
+  }
+
+  isPlaceholderItem(item: Item | PlaceholderItem): item is PlaceholderItem {
+    return (item as PlaceholderItem).isPlaceholder !== undefined;
+  }
+
+  navigateToProductDetail(productId: number) {
+    this.router.navigate(['/shop/product/details/', productId]);
     window.scrollTo(0, 0);
   }
 
   handleCartBtnClicked(item: Item) {
-    console.log(item);
-    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' +item.name+ ' vào giỏ hàng!' });
-  }
-
-  items: Item[] = [
-    {
-      id: 1,
-      name: "Quần thun Lavi",
-      price: 120000,
-      pricesale: 10,
-      type: 'Thời trang'
-    },
-    {
-      id: 2,
-      name: "Áo Tanjiro Cosplay",
-      price: 300000,
-      pricesale: 12,
-      type: 'Thời trang'
-    },
-    {
-      id: 3,
-      name: "Áo Hokage",
-      price: 120000,
-      pricesale: 15,
-      type: 'Thời trang'
-    },
-    {
-      id: 4,
-      name: "Balo J97",
-      price: 120000,
-      pricesale: 20,
-      type: 'Thời trang'
-    },
-    {
-      id: 5,
-      name: "Áo khoác Mitsuri",
-      price: 120000,
-      pricesale: 20,
-      type: 'Thời trang'
-    },
-    { id: 6, name: 'Item 6', price: 1600, pricesale: 15, type: 'Trang sức' },
-    { id: 7, name: 'Item 7', price: 1700, pricesale: 10, type: 'Trang sức' },
-    { id: 8, name: 'Item 8', price: 1800, pricesale: 20, type: 'Trang sức' },
-    { id: 9, name: 'Item 9', price: 1900, pricesale: 25, type: 'Trang sức' },
-    { id: 10, name: 'Item 10', price: 2000, pricesale: 30, type: 'Trang sức' },
-    { id: 11, name: 'Item 11', price: 2100, pricesale: 35, type: 'Trang sức' },
-    { id: 12, name: 'Item 12', price: 2200, pricesale: 5, type: 'Trang sức' },
-    { id: 13, name: 'Item 13', price: 2300, pricesale: 15, type: 'Trang sức' },
-    { id: 14, name: 'Item 14', price: 2400, pricesale: 10, type: 'Trang sức' },
-    { id: 15, name: 'Item 15', price: 2500, pricesale: 25, type: 'Trang sức' },
-    { id: 16, name: 'Item 16', price: 2600, pricesale: 20, type: 'Trang sức' },
-    { id: 17, name: 'Item 17', price: 2700, pricesale: 30, type: 'Trang sức' },
-    { id: 18, name: 'Item 18', price: 2800, pricesale: 35, type: 'Trang sức' },
-    { id: 19, name: 'Item 19', price: 2900, pricesale: 40, type: 'Trang sức' },
-    { id: 20, name: 'Item 20', price: 3000, pricesale: 50, type: 'Trang sức' },
-  ];
-
-  currentPage: number = 1;
-  itemsPerPage: number = 6;
-  pagedItems: any[] = [];
-
-  ngOnInit() {
-    this.updatePage();
-  }
-
-  updatePage() {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    this.pagedItems = this.items.slice(start, end);
-
-    // Tính toán số lượng item trống cần thêm
-    const itemsToAdd = this.itemsPerPage - this.pagedItems.length;
-    for (let i = 0; i < itemsToAdd; i++) {
-      this.pagedItems.push({ isPlaceholder: true });
-    }
-
-    // Cuộn đến phần tử đầu tiên của trang
-    setTimeout(() => {
-      const firstItemElement = document.querySelector('.item-container');
-      if (firstItemElement) {
-        firstItemElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 0);
-
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!' });
   }
 
   goToPage(currentPage: number): void {
-    if (currentPage >= 1 && currentPage <= this.items.length) {
+    if (currentPage >= 1 && currentPage <= this.totalPages) {
       this.currentPage = currentPage;
       this.router.navigate([], {
         queryParams: { page: currentPage },
-        queryParamsHandling: 'merge' // Giữ lại các tham số khác trong URL
+        queryParamsHandling: 'merge'
       });
-      this.updatePage(); // Gọi hàm để tải dữ liệu cho trang
+      this.updatePage();
     }
   }
 
   nextPage() {
-    if (this.currentPage < Math.ceil(this.items.length / this.itemsPerPage)) {
-        this.goToPage(this.currentPage + 1);
+    if (this.currentPage < this.totalPages) {
+      this.goToPage(this.currentPage + 1);
     }
   }
 
   previousPage() {
     if (this.currentPage > 1) {
-        this.goToPage(this.currentPage - 1);
+      this.goToPage(this.currentPage - 1);
     }
   }
 
   get totalPages(): number {
-    return Math.ceil(this.items.length / this.itemsPerPage);
+    return Math.ceil((this.items.length - 1) / this.itemsPerPage);
   }
 }

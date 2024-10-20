@@ -7,6 +7,9 @@ import { CommonModule } from '@angular/common';
 import { RelatedProductsComponent } from './related-products/related-products.component';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { AfterViewInit } from '@angular/core';
+import { Item } from '../../../data_test/item/item-interface';
+import { ITEMS } from '../../../data_test/item/item-data';
 
 @Component({
   selector: 'app-product-detail',
@@ -16,17 +19,11 @@ import { MessageService } from 'primeng/api';
   providers: [MessageService],
   standalone: true,
 })
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, AfterViewInit {
   productId: string | null = null;
   product: any;
 
-  // Ví dụ danh sách các sản phẩm, bạn có thể thay thế bằng cách gọi API thực tế
-  items = [
-    { id: 1, name: 'Item 1', price: 100, description: 'Description of Item 1' },
-    { id: 2, name: 'Item 2', price: 200, description: 'Description of Item 2' },
-    { id: 3, name: 'Item 3', price: 200, description: 'Description of Item 3' },
-    // ... các item khác
-  ];
+  items: Item[] = ITEMS;
 
   constructor(private route: ActivatedRoute, private messageService: MessageService) { }
 
@@ -45,9 +42,13 @@ export class ProductDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.productId = params.get('id'); // Lấy id từ URL
-      // Bạn có thể sử dụng id này để gọi API và lấy thông tin chi tiết sản phẩm
+      this.productId = params.get('id'); 
       this.product = this.items.find(item => item.id.toString() === this.productId);
     });
   }
+
+  ngAfterViewInit() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
 }

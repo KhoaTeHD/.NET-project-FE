@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { Item } from '../../../data_test/item/item-interface';
+import { ITEMS } from '../../../data_test/item/item-data';
 
 @Component({
   selector: 'app-special-item-shop',
@@ -12,7 +14,7 @@ import { MessageService } from 'primeng/api';
   styleUrl: './special-item-shop.component.css'
 })
 export class SpecialItemShopComponent implements OnInit{
-  
+  items: Item[] = ITEMS;
   ngOnInit() {
   }
   constructor(private messageService: MessageService) {

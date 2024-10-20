@@ -4,15 +4,15 @@
     <div class="container pb-5" style="margin-top: 40px !important;">
         <div class="row">
             <div class="col-lg-7 mt-5">
-                <app-image-slider></app-image-slider>
+                <app-image-slider [images]="product.image"></app-image-slider>
             </div>
             <!-- col end -->
             <div class="col-lg-5 mt-5">
                 <div class="card">
                     <div class="card-body">
                         <h1 class="h2">{{product.name}}</h1>
-                        <p>Thương hiệu: </p>
-                        <p>Xuất xứ: </p>
+                        <p>Thương hiệu: {{product.brand}}</p>
+                        <p>Xuất xứ: {{product.origin}}</p>
                         <span class="d-flex">Giá bán: <p class="ms-2 me-2" style="color: rgb(226, 45, 0);font-weight: 700;margin: 0;">
                                 {{product.price | currency:'VND':'symbol'}}</p>
                                 <p class="ms-2 me-2" style="text-decoration: line-through;margin: 0;">110</p>
@@ -25,75 +25,20 @@
                         <div class="d-flex flex-column">
                             <p class="me-2">Kích thước:</p>
                             <div class="ms-3" style="display: flex;flex-wrap: wrap;">
-                                <div class="form-check form-check-inline" >
+                                <div class="form-check form-check-inline" *ngFor="let size of product.size">
                                     <input class="form-check-input" type="radio" name="sizeRadioOptions"
-                                        id="inlineRadio1" value="S">
-                                    <label class="form-check-label" for="inlineRadio1">S</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
-                                        id="inlineRadio2" value="M">
-                                    <label class="form-check-label" for="inlineRadio2">M</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
-                                        id="inlineRadio3" value="L">
-                                    <label class="form-check-label" for="inlineRadio3">L</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
-                                        id="inlineRadio4" value="XL">
-                                    <label class="form-check-label" for="inlineRadio4">XL</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
-                                        id="inlineRadio5" value="XXL">
-                                    <label class="form-check-label" for="inlineRadio5">XXL</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
-                                        id="inlineRadio6" value="oversize">
-                                    <label class="form-check-label" for="inlineRadio6">Oversize</label>
+                                        id="inlineRadio{{size.id}}" value={{size.value}}>
+                                    <label class="form-check-label" for="inlineRadio{{size.id}}">{{size.value}}</label>
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex flex-column mt-3 mb-2" style="width: 100%;">
                             <p class="mb-0 me-3">Màu sắc:</p>
                             <div class="ms-3 d-flex" style="flex-wrap: wrap;">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio1"
+                                <div class="form-check form-check-inline" *ngFor="let color of product.color">
+                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio{{color.id}}"
                                         value="red">
-                                    <label class="form-check-label" for="colorRadio1">Đỏ</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio2"
-                                        value="yellow">
-                                    <label class="form-check-label" for="colorRadio2">Vàng</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio3"
-                                        value="orange">
-                                    <label class="form-check-label" for="colorRadio3">Cam</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio4"
-                                        value="blue">
-                                    <label class="form-check-label" for="colorRadio4">Xanh dương</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio5"
-                                        value="green">
-                                    <label class="form-check-label" for="colorRadio5">Xanh lá</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio6"
-                                        value="purple">
-                                    <label class="form-check-label" for="colorRadio6">Tím</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio7"
-                                        value="gray">
-                                    <label class="form-check-label" for="colorRadio7">Xám</label>
+                                    <label class="form-check-label" for="colorRadio{{color.id}}">{{color.value}}</label>
                                 </div>
                             </div>
                         </div>
@@ -147,7 +92,6 @@
                             </div>
                         </div>
 
-
                         <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
                             data-bs-target="#exampleModalScrollable" fdprocessedid="ppfwcs">
                             Hướng dẫn chọn size
@@ -164,7 +108,7 @@
                         </div>
 
                         <p>Mô tả:</p>
-                        <p>Áo dành cho người thích Cosplay.</p>
+                        <p>{{product.des}}</p>
 
                     </div>
                 </div>

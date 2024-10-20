@@ -1,17 +1,11 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
-interface Item {
-  id: number;
-  name: String;
-  price: number;
-  pricesale: number;
-  type: String;
-}
-
+import { Item } from '../../../data_test/item/item-interface';
+import { ITEMS } from '../../../data_test/item/item-data';
 
 @Component({
   selector: 'app-item-shop',
@@ -21,7 +15,6 @@ interface Item {
   templateUrl: './item-shop.component.html',
   styleUrl: './item-shop.component.css'
 })
-
 export class ItemShopComponent implements OnInit {
 
   constructor(private router: Router, private messageService: MessageService, private route: ActivatedRoute) {
@@ -34,75 +27,24 @@ export class ItemShopComponent implements OnInit {
     });
   }
 
-  navigateToProductDetail(productId: string) {
-    this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
-    window.scrollTo(0, 0);
+  navigateToProductDetail(productId: number) {
+    //this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
+    window.location.href = `/shop/product/details/${productId}`;
   }
 
   handleCartBtnClicked(item: Item) {
     console.log(item);
-    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' +item.name+ ' vào giỏ hàng!' });
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!' });
   }
 
-  items: Item[] = [
-    {
-      id: 1,
-      name: "Quần thun Lavi",
-      price: 120000,
-      pricesale: 10,
-      type: 'Thời trang'
-    },
-    {
-      id: 2,
-      name: "Áo Tanjiro Cosplay",
-      price: 300000,
-      pricesale: 12,
-      type: 'Thời trang'
-    },
-    {
-      id: 3,
-      name: "Áo Hokage",
-      price: 120000,
-      pricesale: 15,
-      type: 'Thời trang'
-    },
-    {
-      id: 4,
-      name: "Balo J97",
-      price: 120000,
-      pricesale: 20,
-      type: 'Thời trang'
-    },
-    {
-      id: 5,
-      name: "Áo khoác Mitsuri",
-      price: 120000,
-      pricesale: 20,
-      type: 'Thời trang'
-    },
-    { id: 6, name: 'Item 6', price: 1600, pricesale: 15, type: 'Trang sức' },
-    { id: 7, name: 'Item 7', price: 1700, pricesale: 10, type: 'Trang sức' },
-    { id: 8, name: 'Item 8', price: 1800, pricesale: 20, type: 'Trang sức' },
-    { id: 9, name: 'Item 9', price: 1900, pricesale: 25, type: 'Trang sức' },
-    { id: 10, name: 'Item 10', price: 2000, pricesale: 30, type: 'Trang sức' },
-    { id: 11, name: 'Item 11', price: 2100, pricesale: 35, type: 'Trang sức' },
-    { id: 12, name: 'Item 12', price: 2200, pricesale: 5, type: 'Trang sức' },
-    { id: 13, name: 'Item 13', price: 2300, pricesale: 15, type: 'Trang sức' },
-    { id: 14, name: 'Item 14', price: 2400, pricesale: 10, type: 'Trang sức' },
-    { id: 15, name: 'Item 15', price: 2500, pricesale: 25, type: 'Trang sức' },
-    { id: 16, name: 'Item 16', price: 2600, pricesale: 20, type: 'Trang sức' },
-    { id: 17, name: 'Item 17', price: 2700, pricesale: 30, type: 'Trang sức' },
-    { id: 18, name: 'Item 18', price: 2800, pricesale: 35, type: 'Trang sức' },
-    { id: 19, name: 'Item 19', price: 2900, pricesale: 40, type: 'Trang sức' },
-    { id: 20, name: 'Item 20', price: 3000, pricesale: 50, type: 'Trang sức' },
-  ];
-
+  items: Item[] = ITEMS;
   currentPage: number = 1;
-  itemsPerPage: number = 6;
+  itemsPerPage: number = 8;
   pagedItems: any[] = [];
 
   ngOnInit() {
     this.updatePage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   updatePage() {
@@ -110,20 +52,11 @@ export class ItemShopComponent implements OnInit {
     const end = start + this.itemsPerPage;
     this.pagedItems = this.items.slice(start, end);
 
-    // Tính toán số lượng item trống cần thêm
     const itemsToAdd = this.itemsPerPage - this.pagedItems.length;
     for (let i = 0; i < itemsToAdd; i++) {
       this.pagedItems.push({ isPlaceholder: true });
     }
-
-    // Cuộn đến phần tử đầu tiên của trang
-    setTimeout(() => {
-      const firstItemElement = document.querySelector('.item-container');
-      if (firstItemElement) {
-        firstItemElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 0);
-
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   goToPage(currentPage: number): void {
@@ -131,26 +64,25 @@ export class ItemShopComponent implements OnInit {
       this.currentPage = currentPage;
       this.router.navigate([], {
         queryParams: { page: currentPage },
-        queryParamsHandling: 'merge' // Giữ lại các tham số khác trong URL
+        queryParamsHandling: 'merge'
       });
-      this.updatePage(); // Gọi hàm để tải dữ liệu cho trang
+      this.updatePage();
     }
   }
 
   nextPage() {
     if (this.currentPage < Math.ceil(this.items.length / this.itemsPerPage)) {
-        this.goToPage(this.currentPage + 1);
+      this.goToPage(this.currentPage + 1);
     }
   }
 
   previousPage() {
     if (this.currentPage > 1) {
-        this.goToPage(this.currentPage - 1);
+      this.goToPage(this.currentPage - 1);
     }
   }
 
   get totalPages(): number {
     return Math.ceil(this.items.length / this.itemsPerPage);
   }
-
 }
