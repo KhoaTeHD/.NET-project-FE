@@ -296,9 +296,9 @@ export const ITEMS: Item[] = [
   },
   {
     id: 13,
-    name: 'Leather Jacket KC4366',
+    name: 'Leather Jacket KC4366 ther Jacket KC4366 Leather Jacket KC4366 Leather Jacket KC4366',
     price: 100000,
-    pricesale: 400000,
+    pricesale: 40000,
     type: 'Clothing',
     des: 'Stylish leather jacket for men.',
     origin: 'USA',
