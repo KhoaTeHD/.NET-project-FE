@@ -42,7 +42,7 @@ export class ManageBrandComponent implements OnInit {
 
   clonedBrands: { [id: number]: Brand } = {};
 
-  searchValue: string | undefined;
+  searchValue: string = '';
 
   ngOnInit(): void {
     this.statuses = [
