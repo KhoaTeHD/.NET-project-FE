@@ -1,12 +1,12 @@
 <div class="container">
-    <div class="row" style="min-height: 490px;height: fit-content;">
+    <div class="row" style="height: fit-content;">
         <div class="col-12">
             <div id="mainImage" class="border p-2" style="position: relative;">
                 <button class="btn_left" (click)="prevImage()">
                     <img src="../../../../assets/images/icons/icons8-back-to-64.png" alt="">
                 </button>
                 <img id="currentImage" src="../../../../assets/images/data-test/{{currentImage.value}}" class="img-fluid" alt="Main Image">
-                <button class="btn_right"  (click)="nextImage()">
+                <button class="btn_right" (click)="nextImage()">
                     <img src="../../../../assets/images/icons/icons8-next-page-64.png" alt="">
                 </button>
             </div>
@@ -15,7 +15,12 @@
 
     <div class="row mt-4">
         <div class="col-2" *ngFor="let img of images">
-            <img src="../../../../assets/images/data-test/{{img.value}}" class="img-fluid small-img" alt="Thumbnail" (click)="currentImageIndex = images.indexOf(img)">
+            <img 
+                src="../../../../assets/images/data-test/{{img.value}}" 
+                class="img-fluid small-img" 
+                alt="Thumbnail" 
+                (click)="currentImageIndex = images.indexOf(img)"
+                [ngStyle]="{'opacity': currentImage.value === img.value ? 1 : 0.5}">
         </div>
     </div>
 </div>

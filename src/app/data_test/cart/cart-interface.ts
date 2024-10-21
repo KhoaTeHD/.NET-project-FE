@@ -1,6 +1,8 @@
+import { Item } from "../item/item-interface";
+
 export interface Cart {
   cus_id: number;
-  items?: Array<{ id: number, price: number, quantity: number}> | null; 
+  items?: Array<{ item: Item, price: number, quantity: number}> | null; 
   item_quantity: number;
   total_price: number;
 }

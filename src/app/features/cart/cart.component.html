@@ -5,36 +5,15 @@
       <div class="col-md-12 col-lg-8">
         <div class="card mb-4">
           <div class="card-header py-3">
-            <h5 class="d-flex mb-0">GIỎ HÀNG (<p style="color: red;">3&nbsp;</p>SẢN PHẨM)</h5>
+            <h5 class="d-flex mb-0">GIỎ HÀNG (<p style="color: red;">{{cart.item_quantity}}&nbsp;</p>SẢN PHẨM)</h5>
           </div>
-          <!-- test show cart -->
-          <!-- <div *ngIf="!cart.items || cart.items.length === 0">
-            <p>Giỏ hàng của bạn đang trống.</p>
-          </div>
-          <ul *ngIf="cart.items && cart.items.length > 0">
-            <li *ngFor="let item of cart.items">
-              <div>
-                <strong>ID sản phẩm:</strong> {{ item.id }} <br>
-                <strong>Giá:</strong> {{ item.price | currency:'VND':'symbol' }} <br>
-                <strong>Số lượng:</strong> {{ item.quantity }} <br>
-                <strong>Tổng:</strong> {{ item.price * item.quantity | currency:'VND':'symbol' }} <br>
-              </div>
-            </li>
-          </ul>
-          
-          <div class="total-price">
-            <h4>Tổng số lượng sản phẩm: {{ cart.item_quantity }}</h4>
-            <h4>Tổng giá: {{ cart.total_price | currency:'VND':'symbol' }}</h4>
-          </div> -->
-
-          <!-- test show cart -->
           <div class="card-body">
             <!-- Single item -->
-            <div class="row mb-2">
+            <div class="row mb-2" *ngFor="let item of cart.items">
               <div class="col-lg-3 col-md-3 mb-4 mb-lg-0">
                 <!-- Image -->
                 <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
-                  <img src="../../../assets/images/j97.jpg" alt="Blue Jeans Jacket"
+                  <img src="../../../assets/images/data-test/{{item.item.image[0].value}}" alt="Blue Jeans Jacket"
                     style="height: 150px; width: 100%;object-fit: contain;" />
                 </div>
                 <!-- Image -->
@@ -42,9 +21,9 @@
 
               <div class="col-lg-5 col-md-5 mb-4 mb-lg-0">
                 <!-- Data -->
-                <p><strong>Hào quang rực rỡ</strong></p>
-                <p>Màu sắc: Vàng</p>
-                <p>Size: XXL</p>
+                <p><strong>{{item.item.name}}</strong></p>
+                <p>Màu sắc: {{item.item.color[0].value}}</p>
+                <p>Size: {{item.item.size[0].value}}</p>
 
                 <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-sm me-1 mb-2"
                   data-mdb-tooltip-init title="Remove item"
@@ -57,7 +36,7 @@
                 <!-- Price -->
                 <div class="d-flex text-start text-md-center">
                   <p class="me-2">Đơn giá:</p>
-                  <strong style="color: red;">{{9970000 | currency:'VND':'symbol'}}</strong>
+                  <strong style="color: red;">{{item.price | currency:'VND':'symbol'}}</strong>
                 </div>
                 <!-- Price -->
                 <!-- Quantity -->
@@ -69,7 +48,7 @@
                       <i class="fas fa-minus"></i>
                     </button>
                     <div data-mdb-input-init class="form-outline">
-                      <input id="form1" min="0" name="quantity" value="1" type="number" class="form-control"
+                      <input id="form1" min="0" name="quantity" value="{{item.quantity}}" type="number" class="form-control"
                         style="text-align: center;" />
                     </div>
                     <button data-mdb-button-init data-mdb-ripple-init class="btn btn-dark px-3 ms-2"
@@ -80,114 +59,7 @@
                 </div>
                 <!-- Quantity -->
               </div>
-            </div>
-            <hr class="mt-3 mb-4">
-            <!-- Single item -->
-
-            <!-- Single item -->
-            <div class="row mb-2">
-              <div class="col-lg-3 col-md-3 mb-4 mb-lg-0">
-                <!-- Image -->
-                <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
-                  <img src="../../../assets/images/j97.jpg" alt="Blue Jeans Jacket"
-                    style="height: 150px; width: 100%;object-fit: contain;" />
-                </div>
-                <!-- Image -->
-              </div>
-
-              <div class="col-lg-5 col-md-5 mb-4 mb-lg-0">
-                <!-- Data -->
-                <p><strong>Hào quang rực rỡ</strong></p>
-                <p>Màu sắc: Vàng</p>
-                <p>Size: XXL</p>
-
-                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-sm me-1 mb-2"
-                  data-mdb-tooltip-init title="Remove item">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <!-- Data -->
-              </div>
-              <div class="col-lg-4 col-md-4 mb-4 mb-lg-0">
-                <!-- Price -->
-                <div class="d-flex text-start text-md-center">
-                  <p class="me-2">Đơn giá:</p>
-                  <strong style="color: red;">{{9970000 | currency:'VND':'symbol'}}</strong>
-                </div>
-                <!-- Price -->
-                <!-- Quantity -->
-                <div class="d-flex flex-column mb-4" style="max-width: 300px">
-                  <label class="form-label" for="form1">Số lượng</label>
-                  <div class="d-flex">
-                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-dark px-3 me-2"
-                      onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                    <div data-mdb-input-init class="form-outline">
-                      <input id="form1" min="0" name="quantity" value="1" type="number" class="form-control"
-                        style="text-align: center;" />
-                    </div>
-                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-dark px-3 ms-2"
-                      onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                      <i class="fas fa-plus"></i>
-                    </button>
-                  </div>
-                </div>
-                <!-- Quantity -->
-              </div>
-            </div>
-            <hr class="mt-3 mb-4">
-            <!-- Single item -->
-
-            <!-- Single item -->
-            <div class="row mb-2">
-              <div class="col-lg-3 col-md-3 mb-4 mb-lg-0">
-                <!-- Image -->
-                <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
-                  <img src="../../../assets/images/j97.jpg" alt="Blue Jeans Jacket"
-                    style="height: 150px; width: 100%;object-fit: contain;" />
-                </div>
-                <!-- Image -->
-              </div>
-
-              <div class="col-lg-5 col-md-5 mb-4 mb-lg-0">
-                <!-- Data -->
-                <p><strong>Hào quang rực rỡ</strong></p>
-                <p>Màu sắc: Vàng</p>
-                <p>Size: XXL</p>
-
-                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-sm me-1 mb-2"
-                  data-mdb-tooltip-init title="Remove item">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <!-- Data -->
-              </div>
-              <div class="col-lg-4 col-md-4 mb-4 mb-lg-0">
-                <!-- Price -->
-                <div class="d-flex text-start text-md-center">
-                  <p class="me-2">Đơn giá:</p>
-                  <strong style="color: red;">{{9970000 | currency:'VND':'symbol'}}</strong>
-                </div>
-                <!-- Price -->
-                <!-- Quantity -->
-                <div class="d-flex flex-column mb-4" style="max-width: 300px">
-                  <label class="form-label" for="form1">Số lượng</label>
-                  <div class="d-flex">
-                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-dark px-3 me-2"
-                      onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                    <div data-mdb-input-init class="form-outline">
-                      <input id="form1" min="0" name="quantity" value="1" type="number" class="form-control"
-                        style="text-align: center;" />
-                    </div>
-                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-dark px-3 ms-2"
-                      onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                      <i class="fas fa-plus"></i>
-                    </button>
-                  </div>
-                </div>
-                <!-- Quantity -->
-              </div>
+              <hr class="mt-3 mb-4">
             </div>
             <!-- Single item -->
           </div>
@@ -200,10 +72,10 @@
             <h5 class="mb-0">Chi tiểt thanh toán</h5>
           </div>
           <div class="card-body">
-            <ul class="list-group list-group-flush">
+            <ul *ngIf="cart" class="list-group list-group-flush">
               <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
                 Sản phẩm
-                <span>{{10000000 | currency:'VND':'symbol'}}</span>
+                <span>{{cart.total_price| currency:'VND':'symbol'}}</span>
               </li>
               <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                 Vận chuyển
@@ -213,7 +85,7 @@
                 <div>
                   <strong>Tổng cộng</strong>
                 </div>
-                <span><strong style="color: red;">{{10030000 | currency:'VND':'symbol'}}</strong></span>
+                <span><strong style="color: red;">{{cart.total_price + 30000 | currency:'VND':'symbol'}}</strong></span>
               </li>
             </ul>
 

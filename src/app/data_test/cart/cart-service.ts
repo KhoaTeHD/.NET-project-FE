@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Cart } from '../../data_test/cart/cart-interface';
+import { Item } from '../item/item-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -24,15 +25,35 @@ export class CartService {
     return this.cartSubject.asObservable(); // Trả về observable để các component có thể subscribe
   }
 
-  addItem(itemId: number, price: number) {
+  // addItem(itemId: number, price: number) {
+  //   if (!this.cart.items) {
+  //     this.cart.items = [];
+  //   }
+
+  //   const itemIndex = this.cart.items.findIndex(entry => entry.id === itemId);
+
+  //   if (itemIndex === -1) {
+  //     this.cart.items.push({ id: itemId, price, quantity: 1 });
+  //   } else {
+  //     this.cart.items[itemIndex].quantity += 1;
+  //   }
+
+  //   this.cart.item_quantity = this.cart.items.length;
+  //   this.cart.total_price = this.cart.items.reduce((total, entry) => total + (entry.price * entry.quantity), 0);
+
+  //   localStorage.setItem('cart', JSON.stringify(this.cart));
+  //   this.cartSubject.next(this.cart); // Phát thông báo cho các subscriber
+  // }
+
+  addItem2(item: Item, price: number) {
     if (!this.cart.items) {
       this.cart.items = [];
     }
 
-    const itemIndex = this.cart.items.findIndex(entry => entry.id === itemId);
+    const itemIndex = this.cart.items.findIndex(entry => entry.item.id === item.id);
 
     if (itemIndex === -1) {
-      this.cart.items.push({ id: itemId, price, quantity: 1 });
+      this.cart.items.push({ item: item, price, quantity: 1 });
     } else {
       this.cart.items[itemIndex].quantity += 1;
     }

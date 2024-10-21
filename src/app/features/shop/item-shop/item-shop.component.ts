@@ -83,7 +83,7 @@ export class ItemShopComponent implements OnInit {
   }
 
   handleCartBtnClicked(item: Item) {
-    this.cartService.addItem(item.id, item.pricesale); 
+    this.cartService.addItem2(item, item.pricesale); 
     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!' });
     console.log(this.cartService.getCart()); 
   }

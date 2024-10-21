@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { AfterViewInit } from '@angular/core';
 import { Item } from '../../../data_test/item/item-interface';
 import { ITEMS } from '../../../data_test/item/item-data';
+import { CartService } from '../../../data_test/cart/cart-service';
 
 @Component({
   selector: 'app-product-detail',
@@ -25,12 +26,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
   items: Item[] = ITEMS;
 
-  constructor(private route: ActivatedRoute, private messageService: MessageService) { }
-
-  handleCartBtnClicked() {
-    //console.log(item);
-    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm vào giỏ hàng!' });
-  }
+  constructor(private route: ActivatedRoute, private messageService: MessageService, private cartService: CartService) { }
 
   // ngOnInit(): void {
   //   // Lấy ID từ URL
@@ -49,6 +45,12 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  handleCartBtnClicked(item: Item) {
+    this.cartService.addItem2(item, item.pricesale); 
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!' });
+    console.log(this.cartService.getCart()); 
   }
 
 }
