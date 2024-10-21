@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { RangeSliderComponent } from '../range-slider/range-slider.component';
+import { ImportsModule } from '../../../data_test/primeng/imports';
 
 interface Category {
   name: string;
@@ -22,13 +22,10 @@ interface Size {
   name: String;
 }
 
-
-
 @Component({
   selector: 'app-sidebar-shop',
   standalone: true,
-  imports: [FormsModule, CommonModule, RangeSliderComponent,],
-  template: '<app-range-slider [minValue]="10" [maxValue]="90"></app-range-slider>',
+  imports: [FormsModule, CommonModule, ImportsModule],
   templateUrl: './sidebar-shop.component.html',
   styleUrls: ['./sidebar-shop.component.css'] // Sửa styleUrl thành styleUrls
 })
@@ -126,4 +123,5 @@ export class SidebarShopComponent {
     console.log('Selected category:', selectedCategory);
     // Xử lý logic sau khi chọn category
   }
+  rangeValues: number[] = [20, 80];
 }

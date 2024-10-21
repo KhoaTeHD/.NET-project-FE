@@ -1,7 +1,7 @@
 <div class="custom-sidebar-css">
   <section class="mb-3">
-    <h1 class="h5 pb-4">DANH MỤC SẢN PHẨM</h1>
-    <select class="form-select" aria-label="Default select example" (change)="onCategoryChange($event)">
+    <h1 style="font-family: 'Roboto';" class="h5 pb-4">DANH MỤC SẢN PHẨM</h1>
+    <select style="font-family: 'Roboto';" class="form-select" aria-label="Default select example" (change)="onCategoryChange($event)">
       <option value="all" selected>Tất cả</option>
       <option *ngFor="let category of categories" [value]="category.name">{{ category.name }} ({{ category.quantity }})</option>
     </select>
@@ -9,35 +9,37 @@
   </section>
 
   <section class="mb-3">
-    <h1 class="h5 pb-4">LỌC THEO GIÁ</h1>
-    <app-range-slider [minValue]="10" [maxValue]="90"></app-range-slider>
+    <h1 style="font-family: 'Roboto';" class="h5 pb-4">LỌC THEO GIÁ</h1>
+    <div class="card flex justify-content-center">
+      <p-slider [(ngModel)]="rangeValues" [range]="true" styleClass="w-14rem" />
+  </div>
   </section>
 
   <section class="mb-3">
-    <h1 class="h5 pb-4">LỌC THEO MÀU SẮC</h1>
+    <h1 style="font-family: 'Roboto';" class="h5 pb-4">LỌC THEO MÀU SẮC</h1>
     <div class="form-check" *ngFor="let color of colors">
       <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-      <label class="form-check-label" for="flexCheckDefault">
+      <label style="font-family: 'Roboto';" class="form-check-label" for="flexCheckDefault">
         {{color.name}}
       </label>
     </div>
   </section>
 
   <section class="mb-3">
-    <h1 class="h5 pb-4">LỌC THEO THƯƠNG HIỆU</h1>
+    <h1 style="font-family: 'Roboto';" class="h5 pb-4">LỌC THEO THƯƠNG HIỆU</h1>
     <div class="form-check" *ngFor="let brand of brands">
       <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-      <label class="form-check-label" for="flexCheckDefault">
+      <label style="font-family: 'Roboto';" class="form-check-label" for="flexCheckDefault">
         {{brand.name}}
       </label>
     </div>
   </section>
 
   <section class="mb-3">
-    <h1 class="h5 pb-4">LỌC THEO SIZE</h1>
+    <h1 style="font-family: 'Roboto';" class="h5 pb-4">LỌC THEO SIZE</h1>
     <div class="form-check" *ngFor="let size of sizes">
       <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-      <label class="form-check-label" for="flexCheckDefault">
+      <label style="font-family: 'Roboto';" class="form-check-label" for="flexCheckDefault">
         {{size.name}}
       </label>
     </div>

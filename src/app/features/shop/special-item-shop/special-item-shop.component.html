@@ -6,15 +6,15 @@
         </div>
         <div class="col-md-9 d-flex align-items-center mt-3">
             <div>
-                <p>{{items[5].name}}</p>
-                <p>Mô tả: {{items[5].des}}</p>
+                <p style="font-family: 'Roboto';">{{items[5].name}}</p>
+                <p style="font-family: 'Roboto';">Mô tả: {{items[5].des}}</p>
                 <div class="d-flex">
-                    <p>Màu sắc:</p>
+                    <p style="font-family: 'Roboto';">Màu sắc:</p>
                     <div class="d-flex ms-3" *ngFor="let color of items[5].color">
                         <div class="me-3" style="width: 24px; height: 24px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);" [style.backgroundColor]="color.value"></div>
                       </div>                                         
                 </div>
-                <div class="d-flex align-items-center pb-2 mb-1">
+                <div class="d-flex align-items-center pb-2 mb-1" style="font-family: 'Roboto';">
                     <button (click)="handleCartBtnClicked()" type="button" data-mdb-button-init data-mdb-ripple-init
                         class="btn btn-dark btn-add-to-cart"
                         >

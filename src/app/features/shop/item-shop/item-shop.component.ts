@@ -38,6 +38,7 @@ export class ItemShopComponent implements OnInit {
   itemsPerPage: number = 8;
   pagedItems: any[] = [];
 
+
   ngOnInit() {
     this.updatePage();
     window.scrollTo({ top: 0, behavior: 'smooth' });
