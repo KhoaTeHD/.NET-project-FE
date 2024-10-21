@@ -82,7 +82,7 @@
 }
 
 /* DT*/
-@media (min-width: 993px) {
+@media (min-width: 1400px) {
     .input-search {
         width: 320px !important;
         border: none;
