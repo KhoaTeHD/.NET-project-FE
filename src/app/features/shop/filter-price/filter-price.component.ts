@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 interface FilterPrice {
-  name: String;
+  name: string;
 }
 
 @Component({
@@ -10,26 +12,46 @@ interface FilterPrice {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './filter-price.component.html',
-  styleUrl: './filter-price.component.css'
+  styleUrls: ['./filter-price.component.css']
 })
-
-export class FilterPriceComponent {
-
+export class FilterPriceComponent implements OnInit {
   filterprice: FilterPrice[] = [
-    {
-      name: 'Mặc định',
-    },
-    {
-      name: 'Giá từ cao đến thấp',
-    },
-    {
-      name: 'Giá từ thấp đến cao',
-    }
-   ];
+    { name: 'Mặc định' },
+    { name: 'Giá từ cao đến thấp' },
+    { name: 'Giá từ thấp đến cao' }
+  ];
 
-   onCategoryChange(event: any) {
-    const selectedCategory = event.target.value;
-    console.log('Selected category:', selectedCategory);
-    // Xử lý logic sau khi chọn category
+  selectedColors: string[] = [];
+  selectedCategory: string = '';
+
+  constructor(private router: Router, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    // Theo dõi các tham số query trong URL
+    this.route.queryParams.subscribe(params => {
+      this.selectedColors = params['color'] ? params['color'].split(' ') : [];
+      this.selectedCategory = params['select'] || '';
+    });
   }
+
+  get filtersDisplay(): string {
+    // Tạo chuỗi hiển thị dựa trên các bộ lọc đã chọn
+    const colorDisplay = this.selectedColors.length > 0 ? `Màu sắc: ${this.selectedColors.join(', ')}` : '';
+    const categoryDisplay = this.selectedCategory ? `- Danh mục: ${this.selectedCategory}` : '';
+    
+    return `${colorDisplay} ${categoryDisplay}`;
+  }
+
+  clearFilters() {
+    // Reset giá trị filter về mặc định
+    this.selectedColors = [];
+    this.selectedCategory = '';
+    
+    // Cập nhật URL
+    this.router.navigate([], {
+      queryParams: { color: null, select: null },
+      queryParamsHandling: 'merge'
+    });
+  }
+  
 }

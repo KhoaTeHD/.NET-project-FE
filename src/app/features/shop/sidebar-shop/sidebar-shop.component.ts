@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { ImportsModule } from '../../../data_test/primeng/imports';
-
+import { Item } from '../../../data_test/item/item-interface';
+import { ITEMS } from '../../../data_test/item/item-data';
+import { ItemService } from '../../../data_test/item/item-service';
+import { Router, ActivatedRoute } from '@angular/router';
 interface Category {
   name: string;
   quantity: number;
@@ -30,7 +33,74 @@ interface Size {
   styleUrls: ['./sidebar-shop.component.css'] // Sửa styleUrl thành styleUrls
 })
 
-export class SidebarShopComponent {
+export class SidebarShopComponent implements OnInit{
+
+  items: Item[] = ITEMS;
+  
+  uniqueTypes: { name: string; quantity: number }[] = [];
+
+  selectedCategory: string = 'all';
+
+  uniqueColors: {name: string}[] = [];
+
+  selectedColors: string[] = [];
+
+  constructor(private itemService: ItemService, private router: Router, private route: ActivatedRoute) {
+    this.getUniqueTypesWithQuantity();
+    this.getUniqueColorsWithQuantity();
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.selectedCategory = params['select'] || 'all';
+      this.selectedColors = params['color'] ? params['color'].split(' ') : [];
+
+          // Cập nhật lại trạng thái checkbox
+    this.updateCheckboxStates();
+  
+      // Cập nhật các items theo bộ lọc hiện tại
+      this.itemService.updateItemsByCategory(this.selectedCategory);
+      this.itemService.updateItemsByColors(this.selectedColors);
+    });
+  
+  }
+  
+// Hàm để cập nhật trạng thái checkbox dựa trên selectedColors
+updateCheckboxStates() {
+  this.uniqueColors.forEach(color => {
+    const checkbox = document.getElementById('color-' + color.name) as HTMLInputElement;
+    if (checkbox) {
+      checkbox.checked = this.selectedColors.includes(color.name);
+    }
+  });
+}
+  getUniqueColorsWithQuantity() {
+    const colorSet = new Set<string>(); // Sử dụng Set để lưu trữ màu sắc duy nhất
+      this.items.forEach(item => {
+        item.color.forEach(color => {
+          colorSet.add(color.value); // Thêm màu vào Set
+        });
+      });
+      // Chuyển Set thành mảng và định dạng lại
+      this.uniqueColors = Array.from(colorSet).map(color => ({ name: color }));
+
+  }
+  getUniqueTypesWithQuantity() {
+    const typeMap = new Map<string, number>();
+
+    // Duyệt qua từng item để tính số lượng cho từng loại
+    this.items.forEach(item => {
+      if (typeMap.has(item.type)) {
+        typeMap.set(item.type, typeMap.get(item.type)! + 1);
+      } else {
+        typeMap.set(item.type, 1);
+      }
+    });
+
+    // Chuyển typeMap thành mảng để gán vào uniqueTypes
+    this.uniqueTypes = Array.from(typeMap, ([name, quantity]) => ({ name, quantity }));
+  }
+
   categories: Category[] = [
     {
       name: 'Light Stick',
@@ -119,9 +189,42 @@ export class SidebarShopComponent {
   ];
   
   onCategoryChange(event: any) {
-    const selectedCategory = event.target.value;
-    console.log('Selected category:', selectedCategory);
-    // Xử lý logic sau khi chọn category
+    this.selectedCategory = event.target.value;
+    this.updateUrl();
+    this.itemService.updateItemsByCategory(this.selectedCategory);
+    // Gọi updateItemsByColors để đảm bảo danh sách sản phẩm được cập nhật
+    this.itemService.updateItemsByColors(this.selectedColors);
   }
+  
+  onColorChange(event: any) {
+    const colorValue = event.target.value;
+    if (!colorValue) return;
+  
+    if (event.target.checked) {
+      if (!this.selectedColors.includes(colorValue)) {
+        this.selectedColors.push(colorValue);
+      }
+    } else {
+      this.selectedColors = this.selectedColors.filter(color => color !== colorValue);
+    }
+  
+    this.updateUrl();
+    this.itemService.updateItemsByColors(this.selectedColors);
+  }
+  
+
+  updateUrl() {
+    // Cập nhật URL với các giá trị đã chọn
+    this.router.navigate([], {
+      queryParams: {
+        select: this.selectedCategory !== 'all' ? this.selectedCategory : null,
+        color: this.selectedColors.length > 0 ? this.selectedColors.join(' ') : null
+      },
+      queryParamsHandling: 'merge',
+      relativeTo: this.route
+    });
+  }
+  
+
   rangeValues: number[] = [20, 80];
 }

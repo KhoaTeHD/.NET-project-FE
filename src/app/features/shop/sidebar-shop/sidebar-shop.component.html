@@ -1,12 +1,20 @@
 <div class="custom-sidebar-css">
   <section class="mb-3">
     <h1 style="font-family: 'Roboto';" class="h5 pb-4">DANH MỤC SẢN PHẨM</h1>
-    <select style="font-family: 'Roboto';" class="form-select" aria-label="Default select example" (change)="onCategoryChange($event)">
-      <option value="all" selected>Tất cả</option>
-      <option *ngFor="let category of categories" [value]="category.name">{{ category.name }} ({{ category.quantity }})</option>
+    <select
+      style="font-family: 'Roboto';"
+      class="form-select"
+      aria-label="Default select example"
+      (change)="onCategoryChange($event)"
+      [value]="selectedCategory"
+    >
+      <option value="all">Tất cả</option>
+      <option *ngFor="let category of uniqueTypes" [value]="category.name">
+        {{ category.name }} ({{ category.quantity }})
+      </option>
     </select>
-    
   </section>
+  
 
   <section class="mb-3">
     <h1 style="font-family: 'Roboto';" class="h5 pb-4">LỌC THEO GIÁ</h1>
@@ -17,13 +25,21 @@
 
   <section class="mb-3">
     <h1 style="font-family: 'Roboto';" class="h5 pb-4">LỌC THEO MÀU SẮC</h1>
-    <div class="form-check" *ngFor="let color of colors">
-      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-      <label style="font-family: 'Roboto';" class="form-check-label" for="flexCheckDefault">
-        {{color.name}}
+    <div class="form-check" *ngFor="let color of uniqueColors">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [value]="color.name"
+        id="color-{{ color.name }}"
+        (change)="onColorChange($event)"
+        [checked]="selectedColors.includes(color.name)"
+      />
+      <label style="font-family: 'Roboto';" class="form-check-label" [for]="'color-' + color.name">
+        {{ color.name }}
       </label>
     </div>
   </section>
+   
 
   <section class="mb-3">
     <h1 style="font-family: 'Roboto';" class="h5 pb-4">LỌC THEO THƯƠNG HIỆU</h1>

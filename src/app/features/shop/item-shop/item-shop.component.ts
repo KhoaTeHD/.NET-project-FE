@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { Item } from '../../../data_test/item/item-interface';
 import { ITEMS } from '../../../data_test/item/item-data';
 import { CartService } from '../../../data_test/cart/cart-service';
+import { ItemService } from '../../../data_test/item/item-service';
 
 @Component({
   selector: 'app-item-shop',
@@ -18,13 +19,26 @@ import { CartService } from '../../../data_test/cart/cart-service';
 })
 export class ItemShopComponent implements OnInit {
 
-  constructor(private router: Router, private messageService: MessageService, private route: ActivatedRoute, private cartService: CartService) {
+  constructor(
+    private router: Router,
+    private messageService: MessageService,
+    private route: ActivatedRoute,
+    private cartService: CartService,
+    private itemService: ItemService
+  ) {
+    // Subscribe to query params
     this.route.queryParams.subscribe(params => {
-      const page = +params['page'];
-      if (page) {
-        this.currentPage = page;
-        this.updatePage();
-      }
+      const page = +params['page'] || 1;
+      const category = params['select'] || 'all';
+      const colors = params['color'] ? params['color'].split(' ') : [];
+  
+      this.currentPage = page;
+  
+      // Update items based on category and colors
+      this.itemService.updateItemsByCategory(category);
+      this.itemService.updateItemsByColors(colors); // Lọc theo màu sắc nếu có
+  
+      this.updatePage();
     });
   }
 
@@ -33,14 +47,17 @@ export class ItemShopComponent implements OnInit {
     window.location.href = `/shop/product/details/${productId}`;
   }
 
-  items: Item[] = ITEMS;
+  items: Item[] = [];
   currentPage: number = 1;
   itemsPerPage: number = 8;
   pagedItems: any[] = [];
 
 
   ngOnInit() {
-    this.updatePage();
+    this.itemService.items$.subscribe(items => {
+      this.items = items;
+      this.updatePage();
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 

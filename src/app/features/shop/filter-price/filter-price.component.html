@@ -1,6 +1,24 @@
-<div class="dropdown d-flex justify-content-end mb-3 mt-2">
-    <select class="form-select" style="width: 200px;font-size: 15px;" aria-label="Default select example" (change)="onCategoryChange($event)">
-        <option value="all" selected>Tất cả</option>
-        <option *ngFor="let filter of filterprice" [value]="filter.name">{{ filter.name }}</option>
-      </select>
+<div class="dropdown d-flex justify-content-between mb-3 mt-2">
+  <div *ngIf="selectedColors.length > 0 || selectedCategory" class="filter-on-url d-flex align-items-center">
+    <p class="mb-0" style="font-size: 14px;">Đang lọc:</p>
+    
+    <p class="mb-0">Màu sắc</p>
+    <p class="mb-0" *ngFor="let color of selectedColors">
+      <span class="badge text-bg-danger">{{ color }}</span>
+    </p>
+
+    <p class="mb-0">Danh mục</p>
+    <p class="mb-0" *ngIf="selectedCategory">
+      <span class="badge text-bg-warning">{{ selectedCategory }}</span>
+    </p>
+
+    <span class="badge text-bg-light" (click)="clearFilters()" style="cursor: pointer; font-size: 14px;">x</span>
+  </div>
+  <div>
+
+  </div>
+  <select class="form-select" style="width: 200px; font-size: 15px;" aria-label="Default select example">
+    <option value="all" selected>Tất cả</option>
+    <option *ngFor="let filter of filterprice" [value]="filter.name">{{ filter.name }}</option>
+  </select>
 </div>

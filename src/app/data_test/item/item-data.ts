@@ -265,8 +265,8 @@ export const ITEMS: Item[] = [
       { id: 5, value: 'Over Size' }
     ],
     color: [
-      { id: 1, value: 'orange' },
-      { id: 2, value: 'pink' }
+      { id: 1, value: 'Orange' },
+      { id: 2, value: 'Pink' }
     ],
     brand: 'DIOR',
     image: getRandomImages(images, 5),
@@ -288,8 +288,8 @@ export const ITEMS: Item[] = [
       { id: 5, value: 'Over Size' }
     ],
     color: [
-      { id: 1, value: 'green' },
-      { id: 2, value: 'gray' }
+      { id: 1, value: 'Green' },
+      { id: 2, value: 'Gray' }
     ],
     brand: 'VERSACE',
     image: getRandomImages(images, 5),
@@ -311,8 +311,8 @@ export const ITEMS: Item[] = [
       { id: 5, value: 'Over Size' }
     ],
     color: [
-      { id: 1, value: 'green' },
-      { id: 2, value: 'gray' }
+      { id: 1, value: 'Green' },
+      { id: 2, value: 'Gray' }
     ],
     brand: 'MICHAEL KORS',
     image: getRandomImages(images, 5),
