@@ -1,18 +1,37 @@
 import { Item } from './item-interface';
 
 const images = [
-  'demo-img (1).jpg', 'demo-img (2).jpg', 'demo-img (3).jpg',
-  'demo-img (4).jpg', 'demo-img (5).jpg', 'demo-img (6).jpg',
-  'demo-img (7).jpg', 'demo-img (8).jpg', 'demo-img (9).jpg',
-  'demo-img (10).jpg', 'demo-img (11).jpg', 'demo-img (12).jpg',
-  'demo-img (13).jpg', 'demo-img (14).jpg', 'demo-img (15).jpg',
-  'demo-img (16).jpg', 'demo-img (17).jpg', 'demo-img (18).jpg',
-  'demo-img (19).jpg', 'demo-img (20).jpg', 'demo-img (21).jpg',
+  'demo-img (1).jpg',
+  'demo-img (2).jpg',
+  'demo-img (3).jpg',
+  'demo-img (4).jpg',
+  'demo-img (5).jpg',
+  'demo-img (6).jpg',
+  'demo-img (7).jpg',
+  'demo-img (8).jpg',
+  'demo-img (9).jpg',
+  'demo-img (10).jpg',
+  'demo-img (11).jpg',
+  'demo-img (12).jpg',
+  'demo-img (13).jpg',
+  'demo-img (14).jpg',
+  'demo-img (15).jpg',
+  'demo-img (16).jpg',
+  'demo-img (17).jpg',
+  'demo-img (18).jpg',
+  'demo-img (19).jpg',
+  'demo-img (20).jpg',
+  'demo-img (21).jpg',
 ];
-  
-const getRandomImages = (imageArray: string[], count: number): Array<{ id: number; value: string }> => {
+
+const getRandomImages = (
+  imageArray: string[],
+  count: number
+): Array<{ id: number; value: string }> => {
   const shuffled = imageArray.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count).map((value, index) => ({ id: index + 1, value }));
+  return shuffled
+    .slice(0, count)
+    .map((value, index) => ({ id: index + 1, value }));
 };
 
 export const ITEMS: Item[] = [
@@ -30,12 +49,12 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Black' },
       { id: 2, value: 'White' },
-      { id: 3, value: 'Gray' }
+      { id: 3, value: 'Gray' },
     ],
     brand: 'LUONVUITUOI',
     image: getRandomImages(images, 5),
@@ -54,12 +73,12 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Red' },
       { id: 2, value: 'Blue' },
-      { id: 3, value: 'Green' }
+      { id: 3, value: 'Green' },
     ],
     brand: 'LUONVUITUOI',
     image: getRandomImages(images, 5),
@@ -78,11 +97,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Black' },
-      { id: 2, value: 'Navy' }
+      { id: 2, value: 'Navy' },
     ],
     brand: 'LUONVUITUOI',
     image: getRandomImages(images, 5),
@@ -101,11 +120,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Black' },
-      { id: 2, value: 'White' }
+      { id: 2, value: 'White' },
     ],
     brand: 'LUONVUITUOI',
     image: getRandomImages(images, 5),
@@ -124,11 +143,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Beige' },
-      { id: 2, value: 'Brown' }
+      { id: 2, value: 'Brown' },
     ],
     brand: 'GUCCHI',
     image: getRandomImages(images, 5),
@@ -147,11 +166,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Black' },
-      { id: 2, value: 'Silver' }
+      { id: 2, value: 'Silver' },
     ],
     brand: 'GUCCHI',
     image: getRandomImages(images, 5),
@@ -170,11 +189,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Black' },
-      { id: 2, value: 'Brown' }
+      { id: 2, value: 'Brown' },
     ],
     brand: 'GUCCHI',
     image: getRandomImages(images, 5),
@@ -193,11 +212,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'White' },
-      { id: 2, value: 'Black' }
+      { id: 2, value: 'Black' },
     ],
     brand: 'VESPA',
     image: getRandomImages(images, 5),
@@ -216,11 +235,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Black' },
-      { id: 2, value: 'Orange' }
+      { id: 2, value: 'Orange' },
     ],
     brand: 'VESPA',
     image: getRandomImages(images, 5),
@@ -239,11 +258,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Black' },
-      { id: 2, value: 'Brown' }
+      { id: 2, value: 'Brown' },
     ],
     brand: 'VESPA',
     image: getRandomImages(images, 5),
@@ -262,11 +281,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Orange' },
-      { id: 2, value: 'Pink' }
+      { id: 2, value: 'Pink' },
     ],
     brand: 'DIOR',
     image: getRandomImages(images, 5),
@@ -285,11 +304,11 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Green' },
-      { id: 2, value: 'Gray' }
+      { id: 2, value: 'Gray' },
     ],
     brand: 'VERSACE',
     image: getRandomImages(images, 5),
@@ -308,13 +327,204 @@ export const ITEMS: Item[] = [
       { id: 2, value: 'M' },
       { id: 3, value: 'L' },
       { id: 4, value: 'XL' },
-      { id: 5, value: 'Over Size' }
+      { id: 5, value: 'Over Size' },
     ],
     color: [
       { id: 1, value: 'Green' },
-      { id: 2, value: 'Gray' }
+      { id: 2, value: 'Gray' },
     ],
     brand: 'MICHAEL KORS',
     image: getRandomImages(images, 5),
   },
 ];
+
+const dataItemAPI = {
+  result: [
+    {
+      id: 1,
+      cat_Id: 1,
+      nat_Id: 1,
+      bra_Id: 1,
+      sup_Id: 1,
+      name: 'Áo thun co giãn',
+      status: true,
+      productVariations: [
+        {
+          id: 1,
+          pro_Id: 1,
+          col_Id: 1,
+          siz_Id: 1,
+          price: 50000,
+          importPrice: 40000,
+          pic: 'https://res.cloudinary.com/dt46dvdeu/image/upload/v1730974763/demowebHKH/aothun/atpe0pdkpyekfcmb981n.jpg',
+          quantity: 200,
+          desc: 'Áo thun cao cấp, siêu bền đẹp.',
+          discount: 10,
+          status: true,
+        },
+        {
+          id: 2,
+          pro_Id: 1,
+          col_Id: 1,
+          siz_Id: 2,
+          price: 60000,
+          importPrice: 50000,
+          pic: 'https://res.cloudinary.com/dt46dvdeu/image/upload/v1730974763/demowebHKH/aothun/atpe0pdkpyekfcmb981n.jpg',
+          quantity: 100,
+          desc: 'Áo thun cao cấp, siêu bền đẹp.',
+          discount: 10,
+          status: true,
+        },
+        {
+          id: 3,
+          pro_Id: 1,
+          col_Id: 2,
+          siz_Id: 2,
+          price: 60000,
+          importPrice: 50000,
+          pic: 'https://res.cloudinary.com/dt46dvdeu/image/upload/v1730974763/demowebHKH/aothun/atpe0pdkpyekfcmb981n.jpg',
+          quantity: 110,
+          desc: 'Áo thun cao cấp, siêu bền đẹp.',
+          discount: 10,
+          status: true,
+        },
+      ],
+    },
+    {
+      id: 2,
+      cat_Id: 2,
+      nat_Id: 1,
+      bra_Id: 1,
+      sup_Id: 2,
+      name: 'Áo thun Halloween',
+      status: true,
+      productVariations: [
+        {
+          id: 2,
+          pro_Id: 2,
+          col_Id: 1,
+          siz_Id: 1,
+          price: 990000,
+          importPrice: 800000,
+          pic: 'https://res.cloudinary.com/dt46dvdeu/image/upload/v1730974762/demowebHKH/aothun/x3gsg9qmgtmrqxq4cnqn.jpg',
+          quantity: 100,
+          desc: 'Áo thun hoá trang DonalTrump cao cấp, siêu bền đẹp.',
+          discount: 8,
+          status: true,
+        },
+      ],
+    },
+  ],
+  isSuccess: true,
+  message: null,
+};
+
+const dataColorAPI = {
+  result: [
+    {
+      id: 1,
+      name: 'Trắng',
+      status: true,
+    },
+    {
+      id: 2,
+      name: 'Đen',
+      status: true,
+    },
+  ],
+  isSuccess: true,
+  message: null,
+};
+
+const dataSizeAPI = {
+  result: [
+    {
+      id: 1,
+      name: 'S',
+      desc: 'Size S, đây là size nhỏ nhất. S nghĩa là Small.',
+      status: true,
+    },
+    {
+      id: 2,
+      name: 'M',
+      desc: 'Size M, đây là size trung bình. M nghĩa là Medium.',
+      status: true,
+    },
+  ],
+  isSuccess: true,
+  message: null,
+};
+
+const dataNationAPI = {
+  result: [
+    {
+      id: 1,
+      name: 'Việt Nam',
+      status: true,
+    },
+    {
+      id: 2,
+      name: 'Trung Quốc',
+      status: true,
+    },
+  ],
+  isSuccess: true,
+  message: null,
+};
+
+const dataCategoryAPI = {
+  result: [
+    {
+      id: 1,
+      name: 'Gucci',
+      description: 'This is Gucci',
+      status: true,
+    },
+    {
+      id: 2,
+      name: 'Fendi',
+      description: 'This is Fendi',
+      status: true,
+    },
+  ],
+  isSuccess: true,
+  message: null,
+};
+
+const dataBrandAPI = {
+  result: [
+    {
+      id: 1,
+      name: 'Hades',
+      status: true,
+    },
+    {
+      id: 2,
+      name: 'Dirty Coins',
+      status: true,
+    },
+  ],
+  isSuccess: true,
+  message: null,
+};
+
+const dataSupplierAPI = {
+  result: [
+    {
+      supplier_ID: 1,
+      supplierName: 'ABC Supplies',
+      address: '123 Main St, New York, NY',
+      phoneNumber: '9876543210',
+      status: true,
+    },
+    {
+      supplier_ID: 2,
+      supplierName: 'Global Traders',
+      address: '456 Elm St, Los Angeles, CA',
+      phoneNumber: '0123456789',
+      status: false,
+    },
+  ],
+  isSuccess: true,
+  message: null,
+};
