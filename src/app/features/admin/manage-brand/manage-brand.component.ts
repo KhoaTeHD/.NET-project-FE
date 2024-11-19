@@ -12,6 +12,9 @@ import { ToastModule } from 'primeng/toast';
 import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
+import { BrandService } from '../../../core/services/brand.service';
+import { firstValueFrom } from 'rxjs';
+import { BrandDto } from '../../../core/models/brand.model';
 
 @Component({
   selector: 'app-manage-brand',
@@ -37,10 +40,17 @@ export class ManageBrandComponent implements OnInit {
     { Bra_ID: 9, Bra_Name: 'Vissan', Bra_Status: 1 },
     { Bra_ID: 10, Bra_Name: 'Masan', Bra_Status: 1 }
   ];
+  brands2: BrandDto[] = [];
 
   statuses!: SelectItem[];
 
   clonedBrands: { [id: number]: Brand } = {};
+
+  createBrand: BrandDto = { 
+    id: 0,
+    name: '',
+    status: true
+  };
 
   searchValue: string = '';
 
@@ -49,11 +59,13 @@ export class ManageBrandComponent implements OnInit {
       { label: 'Hoạt động', value: 1 },
       { label: 'Ngừng bán', value: 0 }
     ];
+    this.loadBrands();
   }
 
   constructor(
     private messageService: MessageService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService,
+    private brandService: BrandService) { }
 
   showDialog() {
     this.visible = true;
@@ -107,6 +119,31 @@ export class ManageBrandComponent implements OnInit {
       default:
         return undefined;
     }
+  }
+
+  async loadBrands(): Promise<void> {
+    try {
+      // Sử dụng firstValueFrom để lấy dữ liệu từ observable
+      const data = await firstValueFrom(this.brandService.getAllBrands());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.brands2 = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching brands', error);
+    }
+  }
+
+  createNewBrand(): void {
+    this.brandService.createBrand(this.createBrand).subscribe({
+      next: response => {
+        console.log('Tạo brand thành công:', response);
+        alert('Tạo brand thành công!');
+      },
+      error: err => {
+        console.error('Lỗi khi tạo brand:', err);
+        alert('Lỗi khi tạo brand!');
+      }
+    });
   }
 }
 interface Brand {

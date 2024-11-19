@@ -23,6 +23,7 @@ import { ProductDetailsComponent } from './features/shop/product-details/product
 import { CartComponent } from './features/cart/cart.component';
 import { ManageGoodsReceiptComponent } from './features/admin/manage-goods-receipt/manage-goods-receipt.component';
 import { PaymentComponent } from './features/payment/payment.component';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -59,6 +60,7 @@ export const routes: Routes = [
             {path: 'goods-receipt', component: ManageGoodsReceiptComponent},
             {path: '**', component: DashboardComponent}
         ],
+        canActivate: [AuthGuard] // Chỉ Admin mới được truy cập
     },
     {
         path: 'sign-in', 
