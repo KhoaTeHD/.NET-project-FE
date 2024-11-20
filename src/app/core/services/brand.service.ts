@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BrandDto } from '../models/brand.model';
 import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường dẫn tới ApiResponse interface
+import { TokenStorageService } from './auth/token-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường d�
 export class BrandService {
   private baseUrl = 'https://localhost:7140/api/Brand'; // Base URL của API
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private tokenStorageService: TokenStorageService) {}
 
   // Lấy danh sách tất cả các Brand (GET /api/Brand)
   getAllBrands(): Observable<ApiResponse<BrandDto[]>> {
