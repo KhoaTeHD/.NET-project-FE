@@ -9,7 +9,7 @@ import { TokenStorageService } from './auth/token-storage.service';
   providedIn: 'root',
 })
 export class BrandService {
-  private baseUrl = 'https://localhost:7140/api/Brand'; // Base URL của API
+  private baseUrl = 'https://localhost:7777/api/Brand'; // Base URL của API
 
   constructor(private http: HttpClient, private tokenStorageService: TokenStorageService) {}
 
