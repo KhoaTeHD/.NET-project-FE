@@ -1,4 +1,4 @@
-export interface Size {
+export interface SizeDto {
   id?: number;
   name?: string;
   desc?: string;

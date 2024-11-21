@@ -1,4 +1,4 @@
-export interface Color {
+export interface ColorDto {
   id?: number;
   name?: string;
   status?: boolean;

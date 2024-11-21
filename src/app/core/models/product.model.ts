@@ -1,8 +1,8 @@
-export interface PlaceholderItem extends Item_v2 {
+export interface PlaceholderItem extends ProductDto {
   isPlaceholder: boolean;
 }
 
-export interface ItemVariation {
+export interface ItemVariationDto {
   id?: number;
   pro_Id?: number;
   col_Id?: number;
@@ -16,7 +16,7 @@ export interface ItemVariation {
   status?: boolean;
 }
 
-export interface Item_v2 {
+export interface ProductDto {
   id?: number;
   cat_Id?: number;
   nat_Id?: number;
@@ -24,5 +24,5 @@ export interface Item_v2 {
   sup_Id?: number;
   name?: string;
   status?: boolean;
-  productVariations?: ItemVariation[];
+  productVariations?: ItemVariationDto[];
 }
