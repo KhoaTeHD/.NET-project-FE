@@ -12,8 +12,8 @@
                 <p-confirmDialog />
                 <div class="card-body">
                     <div class="card-body">
-                        <p-table #dt editMode="row" [value]="brands" dataKey="Bra_ID" [paginator]="true" [rows]="10"
-                            [globalFilterFields]="['Bra_ID', 'Bra_Name', 'Bra_Status']" [responsiveLayout]="'scroll'">
+                        <p-table #dt editMode="row" [value]="brands2" dataKey="id" [paginator]="true" [rows]="10"
+                            [globalFilterFields]="['id', 'name', 'status']" [responsiveLayout]="'scroll'">
                             <ng-template pTemplate="caption">
                                 <div class="d-flex">
                                     <span class="p-input-icon-left ml-auto">
@@ -34,7 +34,7 @@
                             <ng-template pTemplate="body" let-brand let-editing="editing" let-ri="rowIndex">
                                 <tr [pEditableRow]="brand">
                                     <td>
-                                        {{ brand.Bra_ID }}
+                                        {{ brand.id }}
                                     </td>
                                     <td>
                                         <p-cellEditor>
@@ -42,7 +42,7 @@
                                                 <input pInputText type="text" [(ngModel)]="brand.Bra_Name" />
                                             </ng-template>
                                             <ng-template pTemplate="output">
-                                                {{ brand.Bra_Name }}
+                                                {{ brand.name }}
                                             </ng-template>
                                         </p-cellEditor>
                                     </td>
@@ -50,11 +50,11 @@
                                         <p-cellEditor>
                                             <ng-template pTemplate="input">
                                                 <p-dropdown [options]="statuses" appendTo="body"
-                                                    [(ngModel)]="brand.Bra_Status" />
+                                                    [(ngModel)]="brand.status" />
                                             </ng-template>
                                             <ng-template pTemplate="output">
-                                                <p-tag [value]="brand.Bra_Status ? 'Hoạt động' : 'Ngừng bán' "
-                                                    [severity]="getSeverity(brand.Bra_Status)" />
+                                                <p-tag [value]="brand.status ? 'Hoạt động' : 'Ngừng bán' "
+                                                    [severity]="getSeverity(brand.status)" />
                                             </ng-template>
                                         </p-cellEditor>
                                     </td>
@@ -92,19 +92,19 @@
 
 <p-dialog header="Thêm thương hiệu" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }"
     styleClass="p-fluid">
-    <form>
+    <form (ngSubmit) = "createNewBrand()">
         <div class="mb-4">
             <label for="name" class="form-label">Tên thương hiệu</label>
-            <input type="text" class="form-control" id="name" placeholder="Nhập tên" name="name">
+            <input type="text" class="form-control" id="name" placeholder="Nhập tên" name="name" [(ngModel)]="createBrand.name">
         </div>
         <div class="mb-4">
             <label class="form-check-label me-2" for="active">Trạng thái:</label>
-            <input class="form-check-input" type="radio" name="active" id="visible"> Hoạt động
-            <input class="form-check-input ms-2" type="radio" name="active" id="disable"> ngừng bán
+            <input class="form-check-input" type="radio" name="active" id="visible" value="true" [(ngModel)]="createBrand.status"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="active" id="disable" value="false" [(ngModel)]="createBrand.status"> ngừng bán
         </div>
         <div class="d-flex justify-content-end gap-2 mt-4">
             <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />
-            <p-button label="Lưu" (onClick)="visible = false" />
+            <p-button label="Lưu" (onClick)="visible = false" type="submit"/>
         </div>
     </form>
 </p-dialog>

@@ -10,7 +10,7 @@
                         alt="">
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 p-4">
-                    <form action="">
+                    <form (ngSubmit)="register()">
                         <div class="row">
                             <div class="col-6">
                                 <label for="name" class="form-label title-sign-up">Đăng ký</label>
@@ -22,25 +22,25 @@
                         <!-- Field: Name -->
                         <div class="mb-3 mt-2">
                             <label for="name" class="form-label">Họ tên</label>
-                            <input type="text" class="form-control" id="name" name="name">
+                            <input type="text" class="form-control" id="name" name="name" [(ngModel)]="registrationRequestDto.name">
                         </div>
 
                         <!-- Field: Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email">
+                            <input type="email" class="form-control" id="email" name="email" [(ngModel)]="registrationRequestDto.email">
                         </div>
 
                         <!-- Field: Phone -->
                         <div class="mb-3">
                             <label for="phone" class="form-label">Số điện thoại</label>
-                            <input type="number" class="form-control" id="phone" name="phone">
+                            <input type="number" class="form-control" id="phone" name="phone" [(ngModel)]="registrationRequestDto.phoneNumber">
                         </div>
 
                         <!-- Field: Birthday -->
                         <div class="mb-3 mt-3">
                             <label for="birthday" class="form-label">Ngày sinh</label>
-                            <input type="date" class="form-control" id="birthday" name="birthday" value="2000-01-01">
+                            <input type="date" class="form-control" id="birthday" name="birthday" value="2000-01-01" [(ngModel)]="registrationRequestDto.birthDateTemp">
                         </div>
 
                         <!-- Field: Gender -->
@@ -50,14 +50,14 @@
                                 <div class="col-6">
                                     <div class="form-check">
                                         <input type="radio" class="form-check-input" id="man" name="gender_radio"
-                                            value="nam" checked>Nam
+                                            value="Nam" checked [(ngModel)]="registrationRequestDto.gender">Nam
                                         <label class="form-check-label" for="man"></label>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-check">
                                         <input type="radio" class="form-check-input" id="woman" name="gender_radio"
-                                            value="nữ">Nữ
+                                            value="Nữ" [(ngModel)]="registrationRequestDto.gender">Nữ
                                         <label class="form-check-label" for="woman"></label>
                                     </div>
                                 </div>
@@ -69,7 +69,7 @@
                             <label for="password" class="form-label">Mật khẩu</label>
                             <div class="password-container">
                                 <input class="form-control" id="password" name="password"
-                                    [type]="isPasswordVisible ? 'text' : 'password'">
+                                    [type]="isPasswordVisible ? 'text' : 'password'" [(ngModel)]="registrationRequestDto.password">
                                 <a (click)="togglePasswordVisibility()" class="eye-icon-password">
                                     <p>{{PasswordVisible}}</p>
                                 </a>

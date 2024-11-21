@@ -10,7 +10,7 @@
                         alt="">
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 p-4">
-                    <form action="">
+                    <form (ngSubmit)="signIn()">
                         <div class="row">
                             <div class="col-6">
                                 <label for="name" class="form-label title-sign-in">Đăng nhập</label>
@@ -23,7 +23,7 @@
                         <!-- Field: Email -->
                         <div class="mb-4 mt-3">
                             <label for="email" class="form-label d-block mb-3">Email</label>
-                            <input type="email" class="form-control" id="email" name="email">
+                            <input type="email" class="form-control" id="email" name="email" [(ngModel)]="email">
                         </div>
 
                         <!-- Field: Password -->
@@ -31,7 +31,7 @@
                             <label for="password" class="form-label d-block mb-3">Mật khẩu</label>
                             <div class="password-container">
                                 <input class="form-control" id="password" name="password"
-                                    [type]="isPasswordVisible ? 'text' : 'password'">
+                                    [type]="isPasswordVisible ? 'text' : 'password'" [(ngModel)]="password">
                                 <a (click)="togglePasswordVisibility()" class="eye-icon-password">
                                     <p>{{PasswordVisible}}</p>
                                 </a>
