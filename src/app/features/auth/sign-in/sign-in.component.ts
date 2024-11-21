@@ -33,7 +33,9 @@ export class SignInComponent {
       next: (response: any) => {
         console.log('Đăng nhập thành công:', response);
         this.tokenStorageService.saveToken(response.result.token);
+        this.tokenStorageService.saveUser(response.result.user);
         alert('Đăng nhập thành công!');
+        console.log('User:', this.tokenStorageService.getUser());
       },
       error: err => {
         console.error('Đăng nhập thất bại:', err);
