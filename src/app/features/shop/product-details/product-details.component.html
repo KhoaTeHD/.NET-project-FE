@@ -1,131 +1,261 @@
 <p-toast />
 <app-header />
 <section class="bg-light">
-    <div class="container pb-5" style="margin-top: 40px !important;">
-        <div class="row">
-            <div class="col-lg-7 mt-5">
-                <app-image-slider [images]="product.image"></app-image-slider>
+  <div class="container pb-5" style="margin-top: 40px !important">
+    <div class="row">
+      <div class="col-lg-7 mt-5">
+        <app-image-slider
+          [images]="getProductVariationList(product)"
+        ></app-image-slider>
+      </div>
+      <!-- col end -->
+      <div class="col-lg-5 mt-5">
+        <div class="card">
+          <div class="card-body">
+            <h1 class="h2">{{ product.name }}</h1>
+            <p>Thương hiệu: {{ getBrandName(product) }}</p>
+            <p>Xuất xứ: {{ getNationName(product) }}</p>
+            <span class="d-flex" *ngIf="getVariationBySize(selectedSizeId)">
+              Giá bán:
+              <p
+                class="ms-2 me-2"
+                style="color: rgb(226, 45, 0); font-weight: 700; margin: 0"
+              >
+                {{
+                  (getVariationBySize(selectedSizeId)?.price || 0) -
+                    ((getVariationBySize(selectedSizeId)?.price || 0) *
+                      (getVariationBySize(selectedSizeId)?.discount || 0)) /
+                      100 | currency : "VND" : "symbol"
+                }}
+              </p>
+              <p
+                class="ms-2 me-2"
+                style="text-decoration: line-through; margin: 0"
+              >
+                {{ getVariationBySize(selectedSizeId)?.price }}
+              </p>
+              <span class="badge bg-danger">
+                -{{ getVariationBySize(selectedSizeId)?.discount || 0 }}%
+              </span>
+            </span>
+
+            <span class="d-flex" *ngIf="!getVariationBySize(selectedSizeId)">
+              Giá bán:
+              <p
+                class="ms-2 me-2"
+                style="color: rgb(226, 45, 0); font-weight: 700; margin: 0"
+              >
+                {{
+                  (product.productVariations[0]?.price || 0) -
+                    ((product.productVariations[0]?.price || 0) *
+                      (product.productVariations[0]?.discount || 0)) /
+                      100 | currency : "VND" : "symbol"
+                }}
+              </p>
+              <p
+                class="ms-2 me-2"
+                style="text-decoration: line-through; margin: 0"
+              >
+                {{ product.productVariations[0]?.price }}
+              </p>
+              <span class="badge bg-danger">
+                -{{ product.productVariations[0]?.discount || 0 }}%
+              </span>
+            </span>
+            <div class="d-flex mt-3">
+              <p class="me-2">Còn lại:</p>
+              <p style="color: green; font-weight: 700">52</p>
             </div>
-            <!-- col end -->
-            <div class="col-lg-5 mt-5">
-                <div class="card">
-                    <div class="card-body">
-                        <h1 class="h2">{{product.name}}</h1>
-                        <p>Thương hiệu: {{product.brand}}</p>
-                        <p>Xuất xứ: {{product.origin}}</p>
-                        <span class="d-flex">Giá bán: <p class="ms-2 me-2" style="color: rgb(226, 45, 0);font-weight: 700;margin: 0;">
-                                {{product.price | currency:'VND':'symbol'}}</p>
-                                <p class="ms-2 me-2" style="text-decoration: line-through;margin: 0;">110</p>
-                                <span class="badge bg-danger">{{- 10 }}%</span>
-                        </span>
-                        <div class="d-flex mt-3">
-                            <p class="me-2">Còn lại: </p>
-                            <p style="color: green;font-weight: 700;">52</p>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <p class="me-2">Kích thước:</p>
-                            <div class="ms-3" style="display: flex;flex-wrap: wrap;">
-                                <div class="form-check form-check-inline" *ngFor="let size of product.size">
-                                    <input class="form-check-input" type="radio" name="sizeRadioOptions"
-                                        id="inlineRadio{{size.id}}" value={{size.value}}>
-                                    <label class="form-check-label" for="inlineRadio{{size.id}}">{{size.value}}</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column mt-3 mb-2" style="width: 100%;">
-                            <p class="mb-0 me-3">Màu sắc:</p>
-                            <div class="ms-3 d-flex" style="flex-wrap: wrap;">
-                                <div class="form-check form-check-inline" *ngFor="let color of product.color">
-                                    <input class="form-check-input" type="radio" name="colorRadioOptions" id="colorRadio{{color.id}}"
-                                        value="red">
-                                    <label class="form-check-label" for="colorRadio{{color.id}}">{{color.value}}</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- test -->
-                        <div class="modal fade" id="exampleModalScrollable" tabindex="-1"
-                            aria-labelledby="exampleModalScrollableTitle" style="display: none;" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-scrollable">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalScrollableTitle">Hướng dẫn chọn size
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>
-                                            Để lấy số đo của cơ thể chính xác, bạn có thể dùng thước dây để đo các thông
-                                            số sau đây:
-                                        </p>
-                                        <p>
-                                            1. Vùng ngực: Dùng thước dây bọc xung quanh ngực của bạn.
-                                        </p>
-                                        <p>
-                                            2. Vòng bụng: Dùng thước dây bọc xung quanh bụng và lấy chu vi nhỏ nhất của
-                                            bụng.
-                                        </p>
-                                        <p>
-                                            3. Vòng mông: Khép hai chân lại, lấy thước dây bọc xung quanh vùng mông và
-                                            lấy
-                                            số đo chu vi lớn nhất của mông.
-                                        </p>
-                                        <p>
-                                            4. Chiều cao háng: Là chiều dài từ đáy quần đến gót chân.
-                                        </p>
-                                        <p>
-                                            5. Chiều cao cơ thể: Là chiều dài tính từ phần đầu đến gót chân.
-                                        </p>
-                                        <h5>Bảng size áo</h5>
-                                        <img src="../../../../assets/images/size_tutorial/size_ao.webp" alt=""
-                                            width="500" class="mt-2 mb-2">
-                                        <h5>Bảng size quần</h5>
-                                        <img src="../../../../assets/images/size_tutorial/size_quan.webp" alt=""
-                                            width="500" class="mt-2 mb-2">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-dark" style="background-color: black;"
-                                            data-bs-dismiss="modal">Đóng</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
-                            data-bs-target="#exampleModalScrollable" fdprocessedid="ppfwcs">
-                            Hướng dẫn chọn size
-                        </button>
-                        <!-- test -->
-                        <div class="d-flex align-items-center pb-2 mb-2 mt-3">
-                            <button type="button" style="background-color: black;" data-mdb-button-init data-mdb-ripple-init
-                                class="btn btn-dark btn-add-to-cart"
-                                (click)="handleCartBtnClicked(product)">
-                                Thêm vào giỏ hàng
-                            </button>
-                            <button type="button" style="background-color: black;" data-mdb-button-init data-mdb-ripple-init
-                                class="btn btn-dark ms-3 btn-add-buy-now">Mua ngay</button>
-                        </div>
-
-                        <p>Mô tả:</p>
-                        <p>{{product.des}}</p>
-
-                    </div>
+            <div class="d-flex flex-column">
+              <p class="me-2">Kích thước:</p>
+              <div class="ms-3" style="display: flex; flex-wrap: wrap">
+                <div
+                  class="form-check form-check-inline"
+                  *ngFor="let size of getDistinctSizeNames(product)"
+                >
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="sizeRadioOptions"
+                    id="inlineRadio{{ size.id }}"
+                    value="{{ size.id }}"
+                    [checked]="selectedSizeId === size.id"
+                    (click)="onSizeChange($event)"
+                    (change)="onSizeChange($event)"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="inlineRadio{{ size.id }}"
+                    >{{ size.value }}</label
+                  >
                 </div>
+              </div>
             </div>
+            <div class="d-flex flex-column mt-3 mb-2" style="width: 100%">
+              <p class="mb-0 me-3">Màu sắc:</p>
+              <div class="ms-3 d-flex" style="flex-wrap: wrap">
+                <div
+                  class="form-check form-check-inline"
+                  *ngFor="let color of colorOptions"
+                >
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="colorRadioOptions"
+                    id="colorRadio{{ color.id }}"
+                    value="{{ color.id }}"
+                    [disabled]="color.disabled"
+                    (change)="onColorChange($event)"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="colorRadio{{ color.id }}"
+                    >{{ color.value }}</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- test -->
+            <div
+              class="modal fade"
+              id="exampleModalScrollable"
+              tabindex="-1"
+              aria-labelledby="exampleModalScrollableTitle"
+              style="display: none"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalScrollableTitle">
+                      Hướng dẫn chọn size
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>
+                      Để lấy số đo của cơ thể chính xác, bạn có thể dùng thước
+                      dây để đo các thông số sau đây:
+                    </p>
+                    <p>
+                      1. Vùng ngực: Dùng thước dây bọc xung quanh ngực của bạn.
+                    </p>
+                    <p>
+                      2. Vòng bụng: Dùng thước dây bọc xung quanh bụng và lấy
+                      chu vi nhỏ nhất của bụng.
+                    </p>
+                    <p>
+                      3. Vòng mông: Khép hai chân lại, lấy thước dây bọc xung
+                      quanh vùng mông và lấy số đo chu vi lớn nhất của mông.
+                    </p>
+                    <p>
+                      4. Chiều cao háng: Là chiều dài từ đáy quần đến gót chân.
+                    </p>
+                    <p>
+                      5. Chiều cao cơ thể: Là chiều dài tính từ phần đầu đến gót
+                      chân.
+                    </p>
+                    <h5>Bảng size áo</h5>
+                    <img
+                      src="../../../../assets/images/size_tutorial/size_ao.webp"
+                      alt=""
+                      width="500"
+                      class="mt-2 mb-2"
+                    />
+                    <h5>Bảng size quần</h5>
+                    <img
+                      src="../../../../assets/images/size_tutorial/size_quan.webp"
+                      alt=""
+                      width="500"
+                      class="mt-2 mb-2"
+                    />
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-dark"
+                      style="background-color: black"
+                      data-bs-dismiss="modal"
+                    >
+                      Đóng
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-primary mt-3"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModalScrollable"
+              fdprocessedid="ppfwcs"
+            >
+              Hướng dẫn chọn size
+            </button>
+            <!-- test -->
+            <div class="d-flex align-items-center pb-2 mb-2 mt-3">
+              <!-- <button
+                type="button"
+                style="background-color: black"
+                data-mdb-button-init
+                data-mdb-ripple-init
+                class="btn btn-dark btn-add-to-cart"
+                (click)="handleCartBtnClicked(product)"
+              >
+                Thêm vào giỏ hàng
+              </button> -->
+              <button
+                type="button"
+                style="background-color: black"
+                data-mdb-button-init
+                data-mdb-ripple-init
+                class="btn btn-dark btn-add-to-cart"
+                (click)="
+                  handleCartBtnClicked_v2(
+                    product,
+                    selectedSizeId,
+                    selectedColorId
+                  )
+                "
+              >
+                Thêm vào giỏ hàng
+              </button>
+              <button
+                type="button"
+                style="background-color: black"
+                data-mdb-button-init
+                data-mdb-ripple-init
+                class="btn btn-dark ms-3 btn-add-buy-now"
+              >
+                Mua ngay
+              </button>
+            </div>
+
+            <p>Mô tả:</p>
+            <p>{{ product.productVariations[0].desc }}</p>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <section class="py-5">
-    <div class="container">
-        <div class="row text-left p-2 pb-3">
-            <h4>Sản phẩm liên quan</h4>
-        </div>
-        <div class="row">
-            <app-related-products class="row col-lg" />
-        </div>
+  <div class="container">
+    <div class="row text-left p-2 pb-3">
+      <h4>Sản phẩm liên quan</h4>
     </div>
+    <div class="row">
+      <app-related-products class="row col-lg" />
+    </div>
+  </div>
 </section>
 
 <app-footer />
