@@ -10,18 +10,18 @@ import { Cart } from '../../../data_test/cart/cart-interface'; // Nhập interfa
   standalone: true,
   imports: [RouterModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrl: './header.component.css',
 })
-export class HeaderComponent implements OnInit{
+export class HeaderComponent implements OnInit {
   items: Item[] = ITEMS;
   cart: Cart = { cus_id: 1001, items: null, item_quantity: 0, total_price: 0 }; // Khởi tạo với giá trị mặc định
 
-  constructor(private cartService: CartService) { }
+  constructor(private cartService: CartService) {}
 
   ngOnInit() {
     // Subscribe để nhận thông báo về sự thay đổi giỏ hàng
-    this.cartService.getCart().subscribe(updatedCart => {
-      this.cart = updatedCart; // Cập nhật dữ liệu giỏ hàng
-    });
+    // this.cartService.getCart().subscribe(updatedCart => {
+    //   this.cart = updatedCart; // Cập nhật dữ liệu giỏ hàng
+    // });
   }
 }

@@ -1,51 +1,113 @@
 <p-toast />
-<div class="col-md-4 col-lg-3 mb-4 item-container" *ngFor="let item of pagedItems">
-    <!-- Nếu item không phải là placeholder -->
-    <div *ngIf="!item.isPlaceholder" class="card custom-css-item" style="border-radius: 15px;">
-      <div (click)="navigateToProductDetail(item.id)" class="bg-image hover-overlay ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-        <div style="text-align: center;">
-          <img src="../../../../assets/images/data-test/{{item.image[0].value}}"
+<div
+  class="col-md-4 col-lg-3 mb-4 item-container"
+  *ngFor="let item of pagedItems"
+>
+  <!-- Nếu item không phải là placeholder -->
+  <div
+    *ngIf="!item.isPlaceholder"
+    class="card custom-css-item"
+    style="border-radius: 15px"
+  >
+    <div
+      (click)="navigateToProductDetail(item.id)"
+      class="bg-image hover-overlay ripple ripple-surface ripple-surface-light"
+      data-mdb-ripple-color="light"
+    >
+      <div style="text-align: center">
+        <!-- <img src="../../../../assets/images/data-test/{{item.image[0].value}}"
                style="margin: 10px 0 0; width: 160px;"
                class="img-fluid" alt="{{item.name}}"
-               loading="lazy" />
+               loading="lazy" /> -->
+        <img
+          src="{{ item.productVariations[0].pic }}"
+          style="margin: 10px 0 0; width: 160px"
+          class="img-fluid"
+          alt="{{ item.name }}"
+          loading="lazy"
+        />
+      </div>
+    </div>
+    <div class="card-body pb-0">
+      <div class="d-flex justify-content-between">
+        <div>
+          <h5
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              line-height: 1.2;
+              height: 52px;
+              overflow: hidden;
+              font-size: 14px;
+              font-family: 'Roboto';
+            "
+          >
+            <a (click)="navigateToProductDetail(item.id)" class="text-dark">{{
+              item.name
+            }}</a>
+          </h5>
         </div>
       </div>
-      <div class="card-body pb-0">
-        <div class="d-flex justify-content-between">
-          <div>
-            <h5 style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 3;line-height: 1.2; height: 52px; overflow: hidden;font-size: 14px;font-family: 'Roboto';"><a (click)="navigateToProductDetail(item.id)" class="text-dark">{{ item.name }}</a></h5>
-          </div>
-        </div>
+    </div>
+    <div class="card-body pb-0">
+      <div
+        class="d-flex justify-content-between"
+        style="font-size: 14px; font-family: 'Roboto'"
+      >
+        <p>
+          <a class="text-dark price-item-custom">{{
+            item.productVariations[0].price -
+              (item.productVariations[0].price *
+                item.productVariations[0].discount) /
+                100 | currency : "VND" : "symbol"
+          }}</a>
+        </p>
+        <p style="text-decoration: line-through">
+          {{ item.productVariations[0].price | currency : "VND" : "symbol" }}
+          <span class="badge bg-danger"
+            >{{ item.productVariations[0].discount | number : "1.0-2" }}%</span
+          >
+        </p>
       </div>
-      <div class="card-body pb-0">
-        <div class="d-flex justify-content-between" style="font-size: 14px;font-family: 'Roboto';">
-          <p><a class="text-dark price-item-custom">{{ item.pricesale | currency:'VND':'symbol' }}</a></p>
-          <p style="text-decoration: line-through;">
-            {{ item.price | currency:'VND':'symbol'}} 
-            <span class="badge bg-danger">{{ (100 - (item.pricesale * 100 / item.price)) | number: '1.0-2' }}%</span>
-          </p>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
-          <!-- <button (click)="handleCartBtnClicked(item)" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-add-to-cart">
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
+        <!-- <button (click)="handleCartBtnClicked(item)" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-add-to-cart">
             <img src="../../../../assets/images/icons/icons8-add-shopping-cart-32.png" alt="" width="24px">
           </button> -->
-          <button (click)="navigateToProductDetail(item.id)" style="width: 100%;justify-content: space-evenly;align-items: center;" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-add-to-cart d-flex">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <p style="margin: 0;font-size: 14px;font-family: 'Roboto';">Thêm vào giỏ hàng</p>
-          </button>
-          <!-- <button style="font-size: 14px;" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark">Mua ngay</button> -->
-        </div>
+        <button
+          (click)="navigateToProductDetail(item.id)"
+          style="
+            width: 100%;
+            justify-content: space-evenly;
+            align-items: center;
+          "
+          type="button"
+          data-mdb-button-init
+          data-mdb-ripple-init
+          class="btn btn-dark btn-add-to-cart d-flex"
+        >
+          <i class="fa-solid fa-cart-shopping"></i>
+          <p style="margin: 0; font-size: 14px; font-family: 'Roboto'">
+            Thêm vào giỏ hàng
+          </p>
+        </button>
+        <!-- <button style="font-size: 14px;" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark">Mua ngay</button> -->
       </div>
     </div>
-  
-    <!-- Nếu item là placeholder, sử dụng class để ẩn item nhưng vẫn giữ chiều cao -->
-    <div *ngIf="item.isPlaceholder" class="card placeholder-item" style="border-radius: 15px;">
-      <!-- Các thành phần bên trong cũng có thể để trống -->
-    </div>
   </div>
-  
+
+  <!-- Nếu item là placeholder, sử dụng class để ẩn item nhưng vẫn giữ chiều cao -->
+  <div
+    *ngIf="item.isPlaceholder"
+    class="card placeholder-item"
+    style="border-radius: 15px"
+  >
+    <!-- Các thành phần bên trong cũng có thể để trống -->
+  </div>
+</div>
+
 <!-- Phân trang -->
 <div class="pagination-controls">
   <nav aria-label="Page navigation example">
@@ -55,8 +117,17 @@
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
-      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index">
-        <a style="font-family: 'Roboto';" class="page-link" (click)="goToPage(i + 1)" [class.active]="currentPage === (i + 1)">{{ i + 1 }}</a>
+      <li
+        class="page-item"
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+      >
+        <a
+          style="font-family: 'Roboto'"
+          class="page-link"
+          (click)="goToPage(i + 1)"
+          [class.active]="currentPage === i + 1"
+          >{{ i + 1 }}</a
+        >
       </li>
       <li class="page-item" [class.disabled]="currentPage === totalPages">
         <a class="page-link" (click)="nextPage()" aria-label="Next">
@@ -65,5 +136,4 @@
       </li>
     </ul>
   </nav>
-  
 </div>
