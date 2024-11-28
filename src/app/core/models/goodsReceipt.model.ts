@@ -1,14 +1,14 @@
 export interface GoodsReceiptDto {
-  goo_Id?: number;
-  supplier_Id?: number;
+  goo_ID?: number;
+  supplier_ID?: number;
   datetime?: Date;
   total?: number;
   detailGoodsReceipts?: DetailGoodsReceiptDto[];
 }
 
 export interface DetailGoodsReceiptDto {
-  goo_Id?: number;
-  product_Id?: number;
+  goo_ID?: number;
+  product_ID?: number;
   quantity?: number;
   unit_Price?: number;
 }

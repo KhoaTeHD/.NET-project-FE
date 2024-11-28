@@ -28,36 +28,20 @@ import { BrandDto } from '../../../core/models/brand.model';
 export class ManageBrandComponent implements OnInit {
   visible: boolean = false;
 
-  brands = [
-    { Bra_ID: 1, Bra_Name: 'Vinamilk', Bra_Status: 1 },
-    { Bra_ID: 2, Bra_Name: 'Th True Milk', Bra_Status: 1 },
-    { Bra_ID: 3, Bra_Name: 'Nestlé', Bra_Status: 1 },
-    { Bra_ID: 4, Bra_Name: 'Coca-Cola Vietnam', Bra_Status: 1 },
-    { Bra_ID: 5, Bra_Name: 'PepsiCo', Bra_Status: 0 },
-    { Bra_ID: 6, Bra_Name: "Biti's", Bra_Status: 1 },
-    { Bra_ID: 7, Bra_Name: 'Trung Nguyên', Bra_Status: 1 },
-    { Bra_ID: 8, Bra_Name: 'Kinh Đô', Bra_Status: 1 },
-    { Bra_ID: 9, Bra_Name: 'Vissan', Bra_Status: 1 },
-    { Bra_ID: 10, Bra_Name: 'Masan', Bra_Status: 1 }
-  ];
-  brands2: BrandDto[] = [];
+  brands: BrandDto[] = [];
 
   statuses!: SelectItem[];
 
-  clonedBrands: { [id: number]: Brand } = {};
+  clonedBrands: { [id: number]: BrandDto } = {};
 
-  createBrand: BrandDto = { 
-    id: 0,
-    name: '',
-    status: true
-  };
+  createBrand: BrandDto = {};
 
   searchValue: string = '';
 
   ngOnInit(): void {
     this.statuses = [
-      { label: 'Hoạt động', value: 1 },
-      { label: 'Ngừng bán', value: 0 }
+      { label: 'Hoạt động', value: true },
+      { label: 'Ngừng bán', value: false }
     ];
     this.loadBrands();
   }
@@ -71,32 +55,32 @@ export class ManageBrandComponent implements OnInit {
     this.visible = true;
   }
 
-  onRowEditInit(brand: Brand) {
-    this.clonedBrands[brand.Bra_ID as number] = { ...brand };
+  onRowEditInit(brand: BrandDto) {
+    this.clonedBrands[brand.id as number] = { ...brand };
   }
 
-  onRowEditSave(brand: Brand, index: number) {
-    if (brand.Bra_Name.trim().length !== 0) {
-      delete this.clonedBrands[brand.Bra_ID as number];
-      this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Thương hiệu đã được cập nhật' });
+  onRowEditSave(brand: BrandDto, index: number) {
+    if (brand.name?.trim().length !== 0) {
+      this.EditBrand(brand);
+      delete this.clonedBrands[brand.id as number];
     } else {
-      this.brands[index] = this.clonedBrands[brand.Bra_ID as number];
+      this.brands[index] = this.clonedBrands[brand.id as number];
       this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
     }
   }
 
-  onRowEditCancel(brand: Brand, index: number) {
-    this.brands[index] = this.clonedBrands[brand.Bra_ID as number];
-    delete this.clonedBrands[brand.Bra_ID as number];
+  onRowEditCancel(brand: BrandDto, index: number) {
+    this.brands[index] = this.clonedBrands[brand.id as number];
+    delete this.clonedBrands[brand.id as number];
   }
 
-  deleteProduct(brand: Brand) {
+  deleteProduct(brand: BrandDto) {
     this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa ' + brand.Bra_Name + ' không?',
+      message: 'Bạn có chắc xóa ' + brand.name + ' không?',
       header: 'Xác nhận',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.brands = this.brands.filter((val) => val.Bra_ID !== brand.Bra_ID);
+        this.brands = this.brands.filter((val) => val.id !== brand.id);
         // this.brand = {};
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa thương hiệu', life: 3000 });
       }
@@ -110,11 +94,11 @@ export class ManageBrandComponent implements OnInit {
     }
   }
 
-  getSeverity(status: number) {
+  getSeverity(status: boolean) {
     switch (status) {
-      case 1:
+      case true:
         return 'success';
-      case 0:
+      case false:
         return 'danger';
       default:
         return undefined;
@@ -126,7 +110,7 @@ export class ManageBrandComponent implements OnInit {
       // Sử dụng firstValueFrom để lấy dữ liệu từ observable
       const data = await firstValueFrom(this.brandService.getAllBrands());
       if (data.isSuccess && Array.isArray(data.result)) {
-        this.brands2 = data.result;
+        this.brands = data.result;
       }
     } catch (error) {
       console.error('Error fetching brands', error);
@@ -136,18 +120,25 @@ export class ManageBrandComponent implements OnInit {
   createNewBrand(): void {
     this.brandService.createBrand(this.createBrand).subscribe({
       next: response => {
-        console.log('Tạo brand thành công:', response);
-        alert('Tạo brand thành công!');
+        // Toast
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Thương hiệu đã được tạo' });
+        this.loadBrands();
       },
       error: err => {
-        console.error('Lỗi khi tạo brand:', err);
-        alert('Lỗi khi tạo brand!');
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
       }
     });
   }
-}
-interface Brand {
-  Bra_ID: number;
-  Bra_Name: string;
-  Bra_Status: number;
+
+  EditBrand(brand: BrandDto): void {
+    this.brandService.updateBrand(brand).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Thương hiệu đã được cập nhật' });
+        this.loadBrands();
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+  }
 }

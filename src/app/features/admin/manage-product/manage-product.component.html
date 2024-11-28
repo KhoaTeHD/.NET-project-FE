@@ -3,7 +3,7 @@
     <div class="container-fluid px-4">
       <h1 class="mt-4">Sản phẩm</h1>
       <div class="mb-3 d-flex flex-row-reverse">
-        <button type="button" class="btn btn-dark" (click)="showDialogProduct('Add')">Thêm sản phẩm</button>
+        <button type="button" class="btn btn-dark" (click)="showDialogProduct('Add', {})">Thêm sản phẩm</button>
       </div>
       <div class="card mb-4">
         <p-toast></p-toast>
@@ -32,10 +32,10 @@
                 <td>{{ product.Pro_status ? 'Hoạt động' : 'Ngừng bán' }}</td>
                 <td>
                   <div class="flex align-items-center justify-content-center gap-2">
-                    <button pButton pRipple type="button" icon="pi pi-plus" (click)="showDialogVariation('Add')"
+                    <button pButton pRipple type="button" icon="pi pi-plus" (click)="showDialogVariation('Add', {})"
                       class="p-button-rounded p-button-text p-button-success">
                     </button>
-                    <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text">
+                    <button pButton pRipple type="button" icon="pi pi-pencil" (click)="showDialogProduct('Edit', product)" class="p-button-rounded p-button-text">
                     </button>
                     <button pButton pRipple type="button" icon="pi pi-trash" (click)="deleteProduct(product)"
                       class="p-button-rounded p-button-text p-button-danger">
@@ -75,7 +75,7 @@
                         <td>{{ variation.ProV_Status ? 'Hoạt động' : 'Ngừng bán' }}</td>
                         <td>
                           <div class="flex align-items-center justify-content-center gap-2">
-                            <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text">
+                            <button pButton pRipple type="button" icon="pi pi-pencil" (click)="showDialogVariation('Edit', variation)" class="p-button-rounded p-button-text">
                             </button>
                             <button pButton pRipple type="button" icon="pi pi-trash" (click)="deleteVariation(variation)"
                               class="p-button-rounded p-button-text p-button-danger">
@@ -106,7 +106,7 @@
 
   <div class="mb-4">
     <label for="name" class="form-label">Tên sản phẩm</label>
-    <input type="text" class="form-control" id="name" placeholder="Nhập tên" name="name">
+    <input type="text" class="form-control" [(ngModel)]="product.Pro_name" id="name" placeholder="Nhập tên" name="name">
   </div>
 
   <div class="mb-4">
