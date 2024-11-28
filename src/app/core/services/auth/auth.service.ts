@@ -17,7 +17,7 @@ export class AuthService {
   register(registrationRequestDto: RegistrationRequestDto): Observable<any> {
     console.log('Dữ liệu gửi:', registrationRequestDto);
     // Chuyển đổi birthDate sang ISO-8601
-    registrationRequestDto.birthDate = new Date(registrationRequestDto.birthDateTemp).toISOString();
+    registrationRequestDto.birthDate = new Date(registrationRequestDto.birthDate).toISOString();
     registrationRequestDto.phoneNumber = registrationRequestDto.phoneNumber.toString();
     return this.http.post(`${this.baseUrl}/register`, registrationRequestDto).pipe(
       switchMap(() => this.assignRole(registrationRequestDto)) // Gán vai trò sau khi đăng ký thành công

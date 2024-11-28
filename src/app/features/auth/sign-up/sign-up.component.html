@@ -1,3 +1,5 @@
+<!-- Toast sẽ hiển thị ở đây trong 1s, mặc định là top-right -->
+<p-toast [life]="1000"></p-toast>
 <div class="container-fuild">
     <div class="row">
         <div class="col-12">
@@ -10,7 +12,7 @@
                         alt="">
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 p-4">
-                    <form (ngSubmit)="register()">
+                    <form [formGroup]="loginF" (submit)="register()">
                         <div class="row">
                             <div class="col-6">
                                 <label for="name" class="form-label title-sign-up">Đăng ký</label>
@@ -22,25 +24,38 @@
                         <!-- Field: Name -->
                         <div class="mb-3 mt-2">
                             <label for="name" class="form-label">Họ tên</label>
-                            <input type="text" class="form-control" id="name" name="name" [(ngModel)]="registrationRequestDto.name">
+                            <input type="text" class="form-control" id="name" formControlName="name">
+                            <div *ngIf="loginF['controls']['name'].dirty && loginF['controls']['name'].errors">
+                                <small *ngIf="loginF['controls']['name'].errors['required']">Tên không được bỏ trống!</small>
+                                <small *ngIf="loginF['controls']['name'].errors['minlength']">Tên phải chứa tối thiểu 3 kí tự!</small>
+                                <small *ngIf="loginF['controls']['name'].errors['maxlength']">Tên chỉ chứa tối đa 50 kí tự!</small>
+                            </div>
                         </div>
 
                         <!-- Field: Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" [(ngModel)]="registrationRequestDto.email">
+                            <input type="email" class="form-control" id="email" formControlName="email">
+                            <div *ngIf="loginF['controls']['email'].dirty && loginF['controls']['email'].errors">
+                                <small *ngIf="loginF['controls']['email'].errors['required']">Email không được bỏ trống!</small>
+                                <small *ngIf="loginF['controls']['email'].errors['email']">Email không đúng định dạng!</small>
+                            </div>
                         </div>
 
                         <!-- Field: Phone -->
                         <div class="mb-3">
                             <label for="phone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="phone" name="phone" [(ngModel)]="registrationRequestDto.phoneNumber">
+                            <input type="text" class="form-control" id="phone" formControlName="phoneNumber" onkeypress="if(event.key.length === 1 && !/[0-9]/.test(event.key)) event.preventDefault();">
+                            <div *ngIf="loginF['controls']['phoneNumber'].dirty && loginF['controls']['phoneNumber'].errors">
+                                <small *ngIf="loginF['controls']['phoneNumber'].errors['required']">Số điện thoại không được bỏ trống!</small>
+                                <small *ngIf="loginF['controls']['phoneNumber'].errors['pattern']">Số điện thoại không đúng định dạng!</small>
+                            </div>
                         </div>
 
                         <!-- Field: Birthday -->
                         <div class="mb-3 mt-3">
                             <label for="birthday" class="form-label">Ngày sinh</label>
-                            <input type="date" class="form-control" id="birthday" name="birthday" value="2000-01-01" [(ngModel)]="registrationRequestDto.birthDateTemp">
+                            <input type="date" class="form-control" id="birthday" formControlName="birthDate" [max]="today">
                         </div>
 
                         <!-- Field: Gender -->
@@ -49,15 +64,15 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="man" name="gender_radio"
-                                            value="Nam" checked [(ngModel)]="registrationRequestDto.gender">Nam
+                                        <input type="radio" class="form-check-input" id="man" name="gender"
+                                            value="Nam" checked formControlName="gender">Nam
                                         <label class="form-check-label" for="man"></label>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="woman" name="gender_radio"
-                                            value="Nữ" [(ngModel)]="registrationRequestDto.gender">Nữ
+                                        <input type="radio" class="form-check-input" id="woman" name="gender"
+                                            value="Nữ" formControlName="gender">Nữ
                                         <label class="form-check-label" for="woman"></label>
                                     </div>
                                 </div>
@@ -68,11 +83,17 @@
                         <div class="mb-3 mt-3">
                             <label for="password" class="form-label">Mật khẩu</label>
                             <div class="password-container">
-                                <input class="form-control" id="password" name="password"
-                                    [type]="isPasswordVisible ? 'text' : 'password'" [(ngModel)]="registrationRequestDto.password">
+                                <input class="form-control" id="password"
+                                    [type]="isPasswordVisible ? 'text' : 'password'" formControlName="password">
                                 <a (click)="togglePasswordVisibility()" class="eye-icon-password">
                                     <p>{{PasswordVisible}}</p>
                                 </a>
+                            </div>
+                            <div *ngIf="loginF['controls']['password'].dirty && loginF['controls']['password'].errors">
+                                <small *ngIf="loginF['controls']['password'].errors['required']">Mật khẩu không được bỏ trống!</small>
+                                <small *ngIf="loginF['controls']['password'].errors['minlength']">Mật khẩu phải chứa tối thiểu 8 kí tự!</small>
+                                <small *ngIf="loginF['controls']['password'].errors['maxlength']">Mật khẩu chỉ chứa tối đa 20 kí tự!</small>
+                                <small *ngIf="loginF['controls']['password'].errors['pattern']">Mật khẩu phải chứa chữ hoa, chữ thường và kí tự khác!</small>
                             </div>
                         </div>
 
@@ -80,15 +101,19 @@
                         <div class="mb-3 mt-3">
                             <label for="re_enter_password" class="form-label">Nhập lại mật khẩu</label>
                             <div class="password-container">
-                                <input class="form-control" id="re_enter_password" name="re_enter_password"
-                                    [type]="isReInputPasswordVisible ? 'text' : 'password'">
+                                <input class="form-control" id="re_enter_password"
+                                    [type]="isReInputPasswordVisible ? 'text' : 'password'" formControlName="re_password">
                                 <a (click)="toggleReInputPasswordVisibility()" class="eye-icon-password">
                                     <p>{{ReInputPasswordVisible}}</p>
                                 </a>
                             </div>
+                            <div *ngIf="loginF['controls']['re_password'].dirty && loginF['controls']['re_password'].errors">
+                                <small *ngIf="loginF['controls']['re_password'].errors['required']">Trường này không được bỏ trống!</small>
+                                <small *ngIf="loginF['controls']['re_password'].errors['mustMatch']">Mật khẩu không khớp!</small>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-dark w-100 mt-3">Đăng Ký</button>
+                        <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="loginF.invalid">Đăng Ký</button>
                     </form>
                 </div>
             </div>
