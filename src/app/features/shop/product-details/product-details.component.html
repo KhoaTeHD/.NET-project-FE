@@ -12,7 +12,7 @@
       <div class="col-lg-5 mt-5">
         <div class="card">
           <div class="card-body">
-            <h1 class="h2">{{ product.name }}</h1>
+            <h1 class="h2">{{ product?.name }}</h1>
             <p>Thương hiệu: {{ getBrandName(product) }}</p>
             <p>Xuất xứ: {{ getNationName(product) }}</p>
             <span class="d-flex" *ngIf="getVariationBySize(selectedSizeId)">
@@ -31,12 +31,13 @@
               <p
                 class="ms-2 me-2"
                 style="text-decoration: line-through; margin: 0"
+                *ngIf="getVariationBySize(selectedSizeId)?.discount !== 0"
               >
                 {{ getVariationBySize(selectedSizeId)?.price }}
+                <span class="badge bg-danger">
+                  -{{ getVariationBySize(selectedSizeId)?.discount || 0 }}%
+                </span>
               </p>
-              <span class="badge bg-danger">
-                -{{ getVariationBySize(selectedSizeId)?.discount || 0 }}%
-              </span>
             </span>
 
             <span class="d-flex" *ngIf="!getVariationBySize(selectedSizeId)">
@@ -46,25 +47,47 @@
                 style="color: rgb(226, 45, 0); font-weight: 700; margin: 0"
               >
                 {{
-                  (product.productVariations[0]?.price || 0) -
-                    ((product.productVariations[0]?.price || 0) *
-                      (product.productVariations[0]?.discount || 0)) /
+                  (product?.productVariations?.[0]?.price || 0) -
+                    ((product?.productVariations?.[0]?.price || 0) *
+                      (product?.productVariations?.[0]?.discount || 0)) /
                       100 | currency : "VND" : "symbol"
                 }}
               </p>
               <p
                 class="ms-2 me-2"
                 style="text-decoration: line-through; margin: 0"
+                *ngIf="product?.productVariations?.[0]?.discount !== 0"
               >
-                {{ product.productVariations[0]?.price }}
+                {{ product?.productVariations?.[0]?.price }}
+                <span class="badge bg-danger">
+                  -{{ product?.productVariations?.[0]?.discount || 0 }}%
+                </span>
               </p>
-              <span class="badge bg-danger">
-                -{{ product.productVariations[0]?.discount || 0 }}%
-              </span>
             </span>
-            <div class="d-flex mt-3">
+            <div
+              class="d-flex mt-3"
+              *ngIf="
+                getVariationBySizeAndColor(selectedSizeId, selectedColorId)
+              "
+            >
               <p class="me-2">Còn lại:</p>
-              <p style="color: green; font-weight: 700">52</p>
+              <p style="color: green; font-weight: 700">
+                {{
+                  getVariationBySizeAndColor(selectedSizeId, selectedColorId)
+                    ?.quantity
+                }}
+              </p>
+            </div>
+            <div
+              class="d-flex mt-3"
+              *ngIf="
+                !getVariationBySizeAndColor(selectedSizeId, selectedColorId)
+              "
+            >
+              <p class="me-2">Còn lại:</p>
+              <p style="color: green; font-weight: 700">
+                {{product?.productVariations?.[0]?.quantity}}
+              </p>
             </div>
             <div class="d-flex flex-column">
               <p class="me-2">Kích thước:</p>
@@ -239,7 +262,7 @@
             </div>
 
             <p>Mô tả:</p>
-            <p>{{ product.productVariations[0].desc }}</p>
+            <p>{{ product?.productVariations?.[0]?.desc }}</p>
           </div>
         </div>
       </div>
@@ -253,7 +276,7 @@
       <h4>Sản phẩm liên quan</h4>
     </div>
     <div class="row">
-      <app-related-products class="row col-lg" />
+      <app-related-products class="col-lg" />
     </div>
   </div>
 </section>

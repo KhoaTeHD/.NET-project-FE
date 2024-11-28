@@ -2,9 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { SharedService } from '../../../core/services/share.service';
 
 interface FilterPrice {
   name: string;
+  value: number;
 }
 
 @Component({
@@ -16,15 +18,18 @@ interface FilterPrice {
 })
 export class FilterPriceComponent implements OnInit {
   filterprice: FilterPrice[] = [
-    { name: 'Mặc định' },
-    { name: 'Giá từ cao đến thấp' },
-    { name: 'Giá từ thấp đến cao' },
+    { name: 'Giá từ cao đến thấp', value: 1 },
+    { name: 'Giá từ thấp đến cao', value: 2 },
   ];
 
   selectedColors: string[] = [];
   selectedCategory: string = '';
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private shareService: SharedService
+  ) {}
 
   ngOnInit() {
     // Theo dõi các tham số query trong URL
@@ -77,5 +82,12 @@ export class FilterPriceComponent implements OnInit {
       queryParams: { select: null },
       queryParamsHandling: 'merge',
     });
+  }
+
+  onFilterPriceChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedCategoryId = +selectElement.value;
+    console.log(selectedCategoryId);
+    this.shareService.setFilerPriceId(selectedCategoryId);
   }
 }

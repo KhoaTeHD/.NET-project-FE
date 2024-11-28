@@ -10,7 +10,7 @@ import { MessageService } from 'primeng/api';
 import { AfterViewInit } from '@angular/core';
 import { Item, Item_v2 } from '../../../data_test/item/item-interface';
 import { ITEMS, ITEMS_V2 } from '../../../data_test/item/item-data';
-import { CartService } from '../../../data_test/cart/cart-service';
+//import { CartService } from '../../../data_test/cart/cart-service';
 import { SIZES } from '../../../data_test/size/size-data';
 import { Size } from '../../../data_test/size/size-interface';
 import { COLORS } from '../../../data_test/color/color-data';
@@ -20,6 +20,17 @@ import { Nation } from '../../../data_test/nation/nation-interface';
 import { NATIONS } from '../../../data_test/nation/nation-data';
 import { Brand } from '../../../data_test/brand/brand-interface';
 import { BRANDS } from '../../../data_test/brand/brand-data';
+
+import { ApiResponse } from '../../../core/models/auth/api-resonse.model';
+import { ProductService } from '../../../core/services/product.service';
+import { ProductDto } from '../../../core/models/product.model';
+import {
+  ProductVariationDto,
+  ProductVariationDto_v2,
+} from '../../../core/models/productVariation.model';
+
+import { CartService } from '../../../core/services/cart.service';
+import { CartDto } from '../../../core/models/cart.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -37,8 +48,12 @@ import { BRANDS } from '../../../data_test/brand/brand-data';
   standalone: true,
 })
 export class ProductDetailsComponent implements OnInit, AfterViewInit {
+  product: ProductDto | null = null; // Dữ liệu sản phẩm
+  loading: boolean = true; // Trạng thái tải
+  error: string | null = null; // Thông báo lỗi
+
   productId: string | null = null;
-  product: any;
+  products: any;
   selectedColorId: number | null = null;
   selectedSizeId: number | null = null;
   colorOptions: { id: number; value: string; disabled: boolean }[] = [];
@@ -49,10 +64,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   colors: Color[] = COLORS;
   nations: Nation[] = NATIONS;
   brands: Brand[] = BRANDS;
+  cartItem: CartDto | null = null;
+  //product: ProductDto | undefined;
 
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService,
+    private productService: ProductService,
     private cartService: CartService
   ) {}
 
@@ -75,22 +93,46 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
   /**Xu ly item v2 */
   ngOnInit() {
+    // Lấy `id` từ URL
     this.route.paramMap.subscribe((params) => {
-      this.productId = params.get('id');
-      this.product = this.items_v2.find(
-        (item) => item.id.toString() === this.productId
-      );
-      console.log(this.product);
-      this.colorOptions = this.getDistinctColNames(this.product);
+      const id = Number(params.get('id')); // Chuyển đổi tham số sang số
+      if (id) {
+        // this.productService.getProductById(id).subscribe((response) => {
+        //   this.product = response.result || null;
+        //   console.log(this.product);
+        // });
+        this.fetchProduct(id); // Gọi API để lấy dữ liệu
+      } else {
+        this.error = 'Không tìm thấy sản phẩm!';
+        this.loading = false;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  private fetchProduct(id: number): void {
+    this.productService.getProductById(id).subscribe({
+      next: (response) => {
+        this.product = response.result || null; // Cập nhật dữ liệu sản phẩm
+        this.colorOptions = this.getDistinctColNames(this.product);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = 'Không thể tải thông tin sản phẩm!';
+        this.loading = false;
+      },
     });
   }
 
   getVariationBySize(siz_Id: number | null): ItemVariation | undefined {
     if (this.product && this.product.productVariations) {
+      //console.log(this.product.productVariations);
       const variation = this.product.productVariations.find(
-        (variation: ItemVariation) => variation.siz_Id === siz_Id
-      );
-      console.log(variation);
+        (variation: ProductVariationDto) => variation.siz_Id === siz_Id
+      ) as ItemVariation;
+      //console.log(variation);
       return variation;
     }
     return undefined;
@@ -99,10 +141,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   getVariationBySizeAndColor(
     col_Id: number | null,
     siz_Id: number | null
-  ): ItemVariation | undefined {
+  ): ProductVariationDto_v2 | undefined {
     if (this.product && this.product.productVariations) {
+      console.log(this.product);
       const variation = this.product.productVariations.find(
-        (variation: ItemVariation) => {
+        (variation: ProductVariationDto_v2) => {
           return variation.col_Id === col_Id && variation.siz_Id === siz_Id;
         }
       );
@@ -302,6 +345,22 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     const variation = this.getProductVariation(product, sizeId, colorId);
 
     console.log(variation);
+    const cartDto: CartDto = {
+      item_Id: variation.id,
+      cus_Id: 'thhionaj97',
+      price: variation.productVariations[0].price,
+      quantity: 1,
+    };
+
+    this.cartService.createCart(cartDto).subscribe(
+      (response) => {
+        console.log('Cart created successfully:', response);
+      },
+      (error) => {
+        console.error('Error creating cart:', error);
+      }
+    );
+
     return this.getProductVariation(product, sizeId, colorId);
   }
 }

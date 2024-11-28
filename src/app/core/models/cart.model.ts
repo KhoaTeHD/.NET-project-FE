@@ -4,3 +4,7 @@ export interface CartDto {
   price?: number;
   quantity?: number;
 }
+
+export interface CartDtoExtendStatus extends CartDto {
+  status?: boolean;
+}

@@ -1,99 +1,111 @@
-<p-toast />
-<div
-  class="col-md-4 col-lg-3 mb-4 item-container"
-  *ngFor="let item of pagedItems_v2"
->
+<!--Cài thêm: npm install ngx-pagination -->
+<p-toast></p-toast>
+<div *ngIf="loading" class="loading-spinner">Đang tải...</div>
+<div *ngIf="error" class="error-message">
+  {{ error }}
+</div>
+<div *ngIf="!loading && !error" class="row col-lg">
   <div
-    *ngIf="!isPlaceholderItem(item)"
-    class="card custom-css-item"
-    style="border-radius: 15px"
+    class="col-md-4 col-lg-3 mb-4 item-container"
+    *ngFor="let product of (products$ | async) || []"
   >
-    <div
-      (click)="navigateToProductDetail(item.id)"
-      class="bg-image hover-overlay ripple ripple-surface ripple-surface-light"
-      data-mdb-ripple-color="light"
-    >
-      <div style="text-align: center">
-        <img
-          src="{{ item.productVariations[0].pic }}"
-          style="margin: 10px 0 0; width: 160px"
-          class="img-fluid"
-          alt="{{ item.name }}"
-          loading="lazy"
-        />
+    <div class="card custom-css-item" style="border-radius: 15px">
+      <div
+        class="bg-image hover-overlay ripple ripple-surface ripple-surface-light"
+        data-mdb-ripple-color="light"
+      >
+        <div style="text-align: center">
+          <a [routerLink]="['/shop/product/details', product.id]">
+            <img
+              style="margin: 10px 0 0; width: 160px"
+              class="img-fluid"
+              [src]="product.productVariations?.[0]?.pic"
+              [alt]="product.name"
+              loading="lazy"
+            />
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="card-body pb-0">
-      <div class="d-flex justify-content-between">
-        <div>
-          <h5
-            style="
-              display: -webkit-box;
-              -webkit-box-orient: vertical;
-              -webkit-line-clamp: 3;
-              line-height: 1.2;
-              height: 52px;
-              overflow: hidden;
-              font-size: 14px;
-            "
-          >
-            <a (click)="navigateToProductDetail(item.id)" class="text-dark">{{
-              item.name
+      <div class="card-body pb-0">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5
+              style="
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+                line-height: 1.2;
+                height: 52px;
+                overflow: hidden;
+                font-size: 14px;
+                font-family: 'Roboto';
+              "
+            >
+              <a
+                class="text-dark"
+                [routerLink]="['/shop/product/details', product.id]"
+                >{{ product.name }}</a
+              >
+            </h5>
+          </div>
+        </div>
+      </div>
+      <div class="card-body pb-0">
+        <div
+          class="d-flex justify-content-between"
+          style="font-size: 14px; font-family: 'Roboto'"
+        >
+          <p>
+            <a class="text-dark price-item-custom">{{
+            (product.productVariations?.[0]?.price || 0) -
+              ((product.productVariations?.[0]?.price || 0) *
+                (product.productVariations?.[0]?.discount || 0)) /
+                100 | currency : "VND" : "symbol"
             }}</a>
-          </h5>
+          </p>
+          <p
+            style="text-decoration: line-through"
+            *ngIf="product.productVariations?.[0]?.discount !== 0"
+          >
+            {{ product.productVariations?.[0]?.price | currency : "VND" : "symbol" }}
+            <span class="badge bg-danger"
+              >{{ product.productVariations?.[0]?.discount | number : "1.0-2"
+
+
+
+
+
+
+
+
+
+              }}%</span
+            >
+          </p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div
+          class="d-flex justify-content-between align-items-center pb-2 mb-1"
+        >
+          <button
+            style="
+              width: 100%;
+              justify-content: space-evenly;
+              align-items: center;
+            "
+            type="button"
+            data-mdb-button-init
+            data-mdb-ripple-init
+            class="btn btn-dark btn-add-to-cart d-flex"
+          >
+            <i class="fa-solid fa-cart-shopping"></i>
+            <p style="margin: 0; font-size: 14px; font-family: 'Roboto'">
+              Thêm vào giỏ hàng
+            </p>
+          </button>
         </div>
       </div>
     </div>
-    <div class="card-body pb-0">
-      <div class="d-flex justify-content-between" style="font-size: 14px">
-        <p>
-          <a class="text-dark price-item-custom">{{
-            item.productVariations[0].price -
-              (item.productVariations[0].price *
-                item.productVariations[0].discount) /
-                100 | currency : "VND" : "symbol"
-          }}</a>
-        </p>
-        <p style="text-decoration: line-through">
-          {{ item.productVariations[0].price | currency : "VND" : "symbol" }}
-          <span class="badge bg-danger"
-            >{{ item.productVariations[0].discount | number : "1.0-2" }}%</span
-          >
-        </p>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
-        <button
-          (click)="handleCartBtnClicked(item)"
-          type="button"
-          data-mdb-button-init
-          data-mdb-ripple-init
-          class="btn btn-dark btn-add-to-cart"
-        >
-          <img
-            src="../../../../assets/images/icons/icons8-add-shopping-cart-32.png"
-            alt=""
-            width="24px"
-          />
-        </button>
-        <button
-          style="font-size: 14px"
-          type="button"
-          data-mdb-button-init
-          data-mdb-ripple-init
-          class="btn btn-dark"
-        >
-          Mua ngay
-        </button>
-      </div>
-    </div>
-  </div>
-  <div
-    *ngIf="isPlaceholderItem(item)"
-    class="card placeholder-item"
-    style="border-radius: 15px"
-  >
-    <!-- Placeholder nội dung có thể để trống -->
   </div>
 </div>

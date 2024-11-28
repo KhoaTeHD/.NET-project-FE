@@ -1,137 +1,171 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { Item, Item_v2 } from '../../../data_test/item/item-interface';
-import { ITEMS } from '../../../data_test/item/item-data';
-import { CartService } from '../../../data_test/cart/cart-service';
-import { ItemService } from '../../../data_test/item/item-service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { ProductDto } from '../../../core/models/product.model';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-item-shop',
   standalone: true,
-  imports: [CommonModule, ToastModule],
+  imports: [
+    CommonModule,
+    ToastModule,
+    NgxPaginationModule,
+    FormsModule,
+    RouterModule,
+  ],
   providers: [MessageService],
   templateUrl: './item-shop.component.html',
   styleUrl: './item-shop.component.css',
+  encapsulation: ViewEncapsulation.None,
 })
 export class ItemShopComponent implements OnInit {
+  products$: Observable<ProductDto[]> = new BehaviorSubject<ProductDto[]>([]); // Dữ liệu hiển thị sản phẩm
+  loading = true; // Trạng thái tải dữ liệu
+  error: string | null = null; // Trạng thái lỗi
+  page: number = 1;
+  products: ProductDto[] = []; // Dữ liệu tất cả sản phẩm
+  filteredProducts: ProductDto[] = []; // Dữ liệu sản phẩm đã lọc
+  categories: any[] = []; // Danh mục
+  brands: any[] = []; // Thương hiệu
+  colors: any[] = []; // Màu sắc
+  sizes: any[] = []; // Kích thước
+
   constructor(
+    private productService: ProductService,
     private router: Router,
-    private messageService: MessageService,
-    private route: ActivatedRoute,
-    private cartService: CartService,
-    private itemService: ItemService
-  ) {
-    // Subscribe to query params
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    // this.fetchProducts(); // Lấy danh sách sản phẩm khi khởi tạo component
     this.route.queryParams.subscribe((params) => {
-      const page = +params['page'] || 1;
-      const category = params['select'] || 'all';
-      const colors = params['color'] ? params['color'].split(' ') : [];
-
-      this.currentPage = page;
-
-      // Update items based on category and colors
-      this.itemService.updateItemsByCategory(category);
-      this.itemService.updateItemsByColors(colors); // Lọc theo màu sắc nếu có
-
-      this.updatePage();
-    });
-  }
-
-  navigateToProductDetail(productId: number) {
-    //this.router.navigate(['/shop/product/details/', productId]); // Điều hướng đến trang chi tiết sản phẩm
-    window.location.href = `/shop/product/details/${productId}`;
-    // console.log(this.items_v2.find((item) => item.id === productId));
-  }
-
-  items: Item[] = [];
-  items_v2: Item_v2[] = [];
-  currentPage: number = 1;
-  itemsPerPage: number = 8;
-  pagedItems: any[] = [];
-
-  // ngOnInit() {
-  //   this.itemService.items$.subscribe(items => {
-  //     this.items = items;
-  //     this.updatePage();
-  //   });
-  //   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // }
-
-  /**Xu ly item v2 */
-  ngOnInit() {
-    this.itemService.items_v2$.subscribe((items_v2) => {
-      this.items_v2 = items_v2;
-      this.updatePage();
-      console.log(this.items_v2);
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  updatePage() {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    this.pagedItems = this.items_v2.slice(start, end);
-
-    const itemsToAdd = this.itemsPerPage - this.pagedItems.length;
-    for (let i = 0; i < itemsToAdd; i++) {
-      this.pagedItems.push({ isPlaceholder: true });
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  /**Xu ly item v2 */
-
-  // updatePage() {
-  //   const start = (this.currentPage - 1) * this.itemsPerPage;
-  //   const end = start + this.itemsPerPage;
-  //   this.pagedItems = this.items.slice(start, end);
-
-  //   const itemsToAdd = this.itemsPerPage - this.pagedItems.length;
-  //   for (let i = 0; i < itemsToAdd; i++) {
-  //     this.pagedItems.push({ isPlaceholder: true });
-  //   }
-  //   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // }
-
-  goToPage(currentPage: number): void {
-    if (currentPage >= 1 && currentPage <= this.items_v2.length) {
-      this.currentPage = currentPage;
-      this.router.navigate([], {
-        queryParams: { page: currentPage },
-        queryParamsHandling: 'merge',
+      // Lấy số trang từ URL (nếu không có thì mặc định là 1)
+      this.page = +params['page'] || 1;
+      this.fetchProducts();
+      this.productService.getAllProducts().subscribe((response) => {
+        this.products = response.result || [];
+        console.log(this.products);
+        this.filteredProducts = [...this.products]; // Sao chép tất cả sản phẩm để lọc sau
+        this.loadFilters();
       });
-      this.updatePage();
-    }
+    });
   }
 
-  nextPage() {
-    if (
-      this.currentPage < Math.ceil(this.items_v2.length / this.itemsPerPage)
-    ) {
-      this.goToPage(this.currentPage + 1);
-    }
+  private fetchProducts(): void {
+    this.products$ = this.productService.getAllProducts_cache(this.page).pipe(
+      map((response) => response.result ?? []) // Assuming 'data' is the property containing the array of products
+    ); // Gọi API lấy sản phẩm từ service
+    this.products$.subscribe({
+      next: () => (this.loading = false),
+      error: (err) => {
+        this.error = 'Không thể tải danh sách sản phẩm.';
+        this.loading = false;
+        console.error(err);
+      },
+    });
   }
 
-  previousPage() {
-    if (this.currentPage > 1) {
-      this.goToPage(this.currentPage - 1);
-    }
+  onPageChange(page: number): void {
+    this.page = page;
+    // Cập nhật URL với số trang mới
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: this.page },
+      queryParamsHandling: 'merge', // Giữ các query params khác nếu có
+    });
+    window.scrollTo(0, 0);
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.items_v2.length / this.itemsPerPage);
+  loadFilters(): void {
+    this.categories = this.getUniqueCategories(this.products);
+    this.brands = this.getUniqueBrands(this.products);
+    this.colors = this.getUniqueColors(this.products);
+    this.sizes = this.getUniqueSizes(this.products);
   }
 
-  // handleCartBtnClicked(item: Item) {
-  //   this.cartService.addItem2(item, item.pricesale);
-  //   this.messageService.add({
-  //     severity: 'success',
-  //     summary: 'Thành công',
-  //     detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!',
-  //   });
-  //   console.log(this.cartService.getCart());
-  // }
+  getUniqueCategories(products: ProductDto[]): any[] {
+    return Array.from(new Set(products.map((product) => product.cat_Id))).map(
+      (id) => ({
+        id,
+        name: `Category ${id}`,
+      })
+    );
+  }
+
+  getUniqueBrands(products: ProductDto[]): any[] {
+    return Array.from(new Set(products.map((product) => product.bra_Id))).map(
+      (id) => ({
+        id,
+        name: `Brand ${id}`,
+      })
+    );
+  }
+
+  getUniqueColors(products: ProductDto[]): any[] {
+    const colors = new Set<number>();
+    products.forEach((product) => {
+      product.productVariations?.forEach((variation) => {
+        colors.add(variation.col_Id);
+      });
+    });
+    return Array.from(colors).map((id) => ({
+      id,
+      name: `Color ${id}`,
+    }));
+  }
+
+  getUniqueSizes(products: ProductDto[]): any[] {
+    const sizes = new Set<number>();
+    products.forEach((product) => {
+      product.productVariations?.forEach((variation) => {
+        if (variation.siz_Id !== undefined) {
+          sizes.add(variation.siz_Id);
+        }
+      });
+    });
+    return Array.from(sizes).map((id) => ({
+      id,
+      name: `Size ${id}`,
+    }));
+  }
+
+  // Hàm xử lý tìm kiếm với các filter
+  onSearch(filters: any): void {
+    this.filteredProducts = this.products.filter((product) => {
+      const matchesCategory = filters.cat_Id
+        ? product.cat_Id === +filters.cat_Id
+        : true;
+      const matchesBrand = filters.bra_Id
+        ? product.bra_Id === +filters.bra_Id
+        : true;
+      const matchesColor = filters.col_Id
+        ? product.productVariations?.some((v) => v.col_Id === +filters.col_Id)
+        : true;
+      const matchesSize = filters.siz_Id
+        ? product.productVariations?.some((v) => v.siz_Id === +filters.siz_Id)
+        : true;
+      const matchesPrice = filters.price
+        ? product.productVariations?.some(
+            (v) => v.price && v.price <= +filters.price
+          )
+        : true;
+
+      return (
+        matchesCategory &&
+        matchesBrand &&
+        matchesColor &&
+        matchesSize &&
+        matchesPrice
+      );
+    });
+  }
 }

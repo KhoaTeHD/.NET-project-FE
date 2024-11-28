@@ -4,6 +4,9 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Item } from '../../../data_test/item/item-interface';
 import { ITEMS } from '../../../data_test/item/item-data';
+import { ProductDto } from '../../../core/models/product.model';
+import { BehaviorSubject, map, Observable } from 'rxjs';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-special-item-shop',
@@ -11,17 +14,39 @@ import { ITEMS } from '../../../data_test/item/item-data';
   imports: [CommonModule, ToastModule],
   providers: [MessageService],
   templateUrl: './special-item-shop.component.html',
-  styleUrl: './special-item-shop.component.css'
+  styleUrl: './special-item-shop.component.css',
 })
-export class SpecialItemShopComponent implements OnInit{
+export class SpecialItemShopComponent implements OnInit {
   items: Item[] = ITEMS;
+  products$: Observable<ProductDto[]> = new BehaviorSubject<ProductDto[]>([]); // Dữ liệu hiển thị sản phẩm
+
+  constructor(
+    private messageService: MessageService,
+    private productService: ProductService
+  ) {}
   ngOnInit() {
+    this.fetchProducts();
   }
-  constructor(private messageService: MessageService) {
+
+  private fetchProducts(): void {
+    this.productService.getAllProducts().subscribe((response) => {
+      const products = response.result ?? [];
+      if (products.length > 0) {
+        const lastProduct = products[products.length - 1];
+        this.products$ = new BehaviorSubject<ProductDto[]>([lastProduct]);
+      } else {
+        this.products$ = new BehaviorSubject<ProductDto[]>([]);
+      }
+    });
   }
+
   handleCartBtnClicked() {
     //console.log(item);
-    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm sản phẩm vào giỏ hàng!' });
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Thành công',
+      detail: 'Đã thêm sản phẩm vào giỏ hàng!',
+    });
   }
 }
 

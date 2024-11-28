@@ -1,230 +1,151 @@
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { ImportsModule } from '../../../data_test/primeng/imports';
-import { Item } from '../../../data_test/item/item-interface';
-import { ITEMS } from '../../../data_test/item/item-data';
-import { ItemService } from '../../../data_test/item/item-service';
-import { Router, ActivatedRoute } from '@angular/router';
-interface Category {
-  name: string;
-  quantity: number;
-  detailsCategory: Array<{ name: string; link: string }>;
-}
+import { CategoryDto } from '../../../core/models/category.model';
+import { BrandDto } from '../../../core/models/brand.model';
+import { ColorDto } from '../../../core/models/color.model';
+import { SizeDto } from '../../../core/models/size.model';
+import { SliderModule } from 'primeng/slider';
+import { ProductService } from '../../../core/services/product.service';
+import { ProductDto } from '../../../core/models/product.model';
 
-interface Color {
-  name: String;
-  value: String;
-}
-
-interface Brand {
-  name: String;
-}
-
-interface Size {
-  name: String;
+interface Filters {
+  [key: string]: any;
+  cat_Id: any;
+  bra_Id: any;
+  col_Id: any;
+  siz_Id: any;
+  price: any;
+  nat_Id: any;
+  sup_Id: any;
 }
 
 @Component({
   selector: 'app-sidebar-shop',
   standalone: true,
-  imports: [FormsModule, CommonModule, ImportsModule],
+  imports: [FormsModule, CommonModule, SliderModule],
   templateUrl: './sidebar-shop.component.html',
-  styleUrls: ['./sidebar-shop.component.css'] // Sửa styleUrl thành styleUrls
+  styleUrls: ['./sidebar-shop.component.css'],
 })
+export class SidebarShopComponent implements OnInit {
+  @Output() search: EventEmitter<any> = new EventEmitter<any>();
 
-export class SidebarShopComponent implements OnInit{
+  categories: CategoryDto[] = [];
+  brands: BrandDto[] = [];
+  colors: ColorDto[] = [];
+  sizes: SizeDto[] = [];
+  nations: any[] = [];
+  suppliers: any[] = [];
+  filters: Filters = {
+    cat_Id: null,
+    bra_Id: null,
+    col_Id: null,
+    siz_Id: null,
+    price: null,
+    nat_Id: null,
+    sup_Id: null,
+  };
+  minPrice: number | undefined;
+  maxPrice: number | undefined;
+  priceRange: number[] = [0, 0];
+  productVariations: any[] = [];
 
-  items: Item[] = ITEMS;
-  
-  uniqueTypes: { name: string; quantity: number }[] = [];
+  constructor(private productService: ProductService) {}
 
-  selectedCategory: string = 'all';
-
-  uniqueColors: {name: string}[] = [];
-
-  selectedColors: string[] = [];
-
-  constructor(private itemService: ItemService, private router: Router, private route: ActivatedRoute) {
-    this.getUniqueTypesWithQuantity();
-    this.getUniqueColorsWithQuantity();
-  }
-
-  ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.selectedCategory = params['select'] || 'all';
-      this.selectedColors = params['color'] ? params['color'].split(' ') : [];
-
-          // Cập nhật lại trạng thái checkbox
-    this.updateCheckboxStates();
-  
-      // Cập nhật các items theo bộ lọc hiện tại
-      this.itemService.updateItemsByCategory(this.selectedCategory);
-      this.itemService.updateItemsByColors(this.selectedColors);
+  ngOnInit(): void {
+    this.productService.getAllProducts().subscribe((response) => {
+      const products = response.result || [];
+      this.categories = this.getCategoriesFromObjects(products);
+      this.brands = this.getBrandsFromObjects(products);
+      this.colors = this.getColorFromObjects(products);
+      this.sizes = this.getSizesFromObjects(products);
+      this.setPriceRange();
     });
-  
   }
-  
-// Hàm để cập nhật trạng thái checkbox dựa trên selectedColors
-updateCheckboxStates() {
-  this.uniqueColors.forEach(color => {
-    const checkbox = document.getElementById('color-' + color.name) as HTMLInputElement;
-    if (checkbox) {
-      checkbox.checked = this.selectedColors.includes(color.name);
-    }
-  });
-}
-  getUniqueColorsWithQuantity() {
-    const colorSet = new Set<string>(); // Sử dụng Set để lưu trữ màu sắc duy nhất
-      this.items.forEach(item => {
-        item.color.forEach(color => {
-          colorSet.add(color.value); // Thêm màu vào Set
-        });
-      });
-      // Chuyển Set thành mảng và định dạng lại
-      this.uniqueColors = Array.from(colorSet).map(color => ({ name: color }));
 
-  }
-  getUniqueTypesWithQuantity() {
-    const typeMap = new Map<string, number>();
-
-    // Duyệt qua từng item để tính số lượng cho từng loại
-    this.items.forEach(item => {
-      if (typeMap.has(item.type)) {
-        typeMap.set(item.type, typeMap.get(item.type)! + 1);
-      } else {
-        typeMap.set(item.type, 1);
+  getCategoriesFromObjects(objects: any[]): CategoryDto[] {
+    const categories: CategoryDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      if (object.category && !map.has(object.category.id)) {
+        map.set(object.category.id, true);
+        categories.push(object.category);
       }
-    });
-
-    // Chuyển typeMap thành mảng để gán vào uniqueTypes
-    this.uniqueTypes = Array.from(typeMap, ([name, quantity]) => ({ name, quantity }));
+    }
+    return categories;
   }
 
-  categories: Category[] = [
-    {
-      name: 'Light Stick',
-      quantity: 100,
-      detailsCategory: [
-        { name: 'J97',
-          link: 'j97'
-        },
-        { name: 'Sơn Tùng M-TP',
-          link: 'sontungmtp'
-        },
-        { name: 'BlackPink',
-          link: 'blackpink'
-        }
-      ]
-    },
-    {
-      name: 'Áo mùa đông',
-      quantity: 50,
-      detailsCategory: [
-        { name: 'Áo lông J97',
-          link: 'aolongj97'
-         },
-        { name: 'Áo khoác J97',
-          link: 'aokhoacj97'
-        }
-      ]
-    },
-    {
-      name: 'Quần thời thượng',
-      quantity: 80,
-      detailsCategory: [
-        { name: 'Quần Jean J97',
-          link: 'quanjeanj97'
-         },
-        { name: 'Quần Free Fire',
-          link: 'quanfreefire'
-         },
-        { name: 'Quần bò J97',
-          link: 'quanboj97'
-         }
-      ]
-    }
-  ];
-
-  colors: Color[] = [
-    {
-      name: 'Hồng',
-      value: 'pink'
-    },
-    {
-      name: 'Xanh',
-      value: 'blue'
-    },
-    {
-      name: 'Đỏ',
-      value: 'red'
-    }
-  ];
-
-  brands: Brand[] = [
-    {
-      name: 'J97',
-    },
-    {
-      name: 'Sơn Tùng M-TP',
-    },
-    {
-      name: 'Trịnh Trần Phương Tuấn',
-    }
-  ];
-
-  sizes: Size[] = [
-    {
-      name: 'S',
-    },
-    {
-      name: 'M',
-    },
-    {
-      name: 'L',
-    },
-    {
-      name: 'Over Size',
-    }
-  ];
-  
-  onCategoryChange(event: any) {
-    this.selectedCategory = event.target.value;
-    this.updateUrl();
-    this.itemService.updateItemsByCategory(this.selectedCategory);
-    // Gọi updateItemsByColors để đảm bảo danh sách sản phẩm được cập nhật
-    this.itemService.updateItemsByColors(this.selectedColors);
-  }
-  
-  onColorChange(event: any) {
-    const colorValue = event.target.value;
-    if (!colorValue) return;
-  
-    if (event.target.checked) {
-      if (!this.selectedColors.includes(colorValue)) {
-        this.selectedColors.push(colorValue);
+  getBrandsFromObjects(objects: any[]): BrandDto[] {
+    const brands: BrandDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      if (object.brand && !map.has(object.brand.id)) {
+        map.set(object.brand.id, true);
+        brands.push(object.brand);
       }
+    }
+    return brands;
+  }
+
+  getColorFromObjects(objects: any[]): ColorDto[] {
+    const colors: ColorDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      for (const productVariation of object.productVariations) {
+        if (productVariation.color && !map.has(productVariation.color.id)) {
+          map.set(productVariation.color.id, true);
+          colors.push(productVariation.color);
+        }
+      }
+    }
+    return colors.filter((color) => color !== undefined);
+  }
+
+  getSizesFromObjects(objects: any[]): SizeDto[] {
+    const sizes: SizeDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      for (const productVariation of object.productVariations) {
+        if (productVariation.size && !map.has(productVariation.size.id)) {
+          map.set(productVariation.size.id, true);
+          sizes.push(productVariation.size);
+        }
+      }
+    }
+    return sizes;
+  }
+
+  setPriceRange(): void {
+    if (this.productVariations.length > 0) {
+      const prices = this.productVariations.map((variation) => variation.price);
+      this.minPrice = Math.min(...prices);
+      this.maxPrice = Math.max(...prices);
+      this.priceRange = [this.minPrice, this.maxPrice];
+    }
+  }
+
+  extractUnique<T>(items: T[], key: keyof T): T[] {
+    const uniqueItems = [];
+    const map = new Map();
+    for (const item of items) {
+      if (!map.has(item[key])) {
+        map.set(item[key], true);
+        uniqueItems.push(item);
+      }
+    }
+    return uniqueItems;
+  }
+
+  onFilterChange(filterKey: string, value: any, checked: boolean): void {
+    if (checked) {
+      this.filters[filterKey] = value;
     } else {
-      this.selectedColors = this.selectedColors.filter(color => color !== colorValue);
+      this.filters[filterKey] = null;
     }
-  
-    this.updateUrl();
-    this.itemService.updateItemsByColors(this.selectedColors);
+    this.onSearch();
   }
-  
 
-  updateUrl() {
-    // Cập nhật URL với các giá trị đã chọn
-    this.router.navigate([], {
-      queryParams: {
-        select: this.selectedCategory !== 'all' ? this.selectedCategory : null,
-        color: this.selectedColors.length > 0 ? this.selectedColors.join(' ') : null
-      },
-      queryParamsHandling: 'merge',
-      relativeTo: this.route
-    });
+  onSearch(): void {
+    this.search.emit(this.filters);
   }
-  
-
-  rangeValues: number[] = [20, 80];
 }
