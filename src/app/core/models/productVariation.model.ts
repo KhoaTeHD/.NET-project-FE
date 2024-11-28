@@ -1,3 +1,5 @@
+import { ProductDto } from "./product.model";
+
 export interface ProductVariationDto {
     id?: number;
     pro_Id?: number;
@@ -10,4 +12,5 @@ export interface ProductVariationDto {
     desc?: string;
     discount?: number;
     status?: boolean;
+    product?: ProductDto;
 }

@@ -37,7 +37,7 @@
                 <p-toast></p-toast>
                 <p-confirmDialog></p-confirmDialog>
                 <div class="card-body">
-                    <p-table #dt [value]="orders" [paginator]="true" [rows]="10"  [globalFilterFields]="['orderId', 'customerId', 'discountCode', 'address']"  dataKey="orderId" responsiveLayout="scroll">
+                    <p-table #dt [value]="orders" [paginator]="true" [rows]="10"  [globalFilterFields]="['order_ID', 'customer_ID', 'coupon_Code', 'address']"  dataKey="order_ID" responsiveLayout="scroll">
                         <ng-template pTemplate="caption">
                             <div class="d-flex">
                                 <span class="p-input-icon-left ml-auto">
@@ -49,10 +49,10 @@
                         </ng-template>
                         <ng-template pTemplate="header">
                             <tr>
+                                <th>Mã đơn hàng</th>
                                 <th>Mã khách hàng</th>
                                 <th>Mã giảm giá</th>
                                 <th>Địa chỉ</th>
-                                <th>Mã đơn hàng</th>
                                 <th>Ngày đặt</th>
                                 <th>Khuyến mãi</th>
                                 <th>Thành tiền</th>
@@ -62,14 +62,14 @@
                         </ng-template>
                         <ng-template pTemplate="body" let-order>
                             <tr>
-                                <td>{{ order.orderId }}</td>
-                                <td>{{ order.customerId }}</td>
-                                <td>{{ order.discountCode }}</td>
+                                <td>{{ order.order_ID }}</td>
+                                <td>{{ order.customer_ID }}</td>
+                                <td>{{ order.coupon_Code }}</td>
                                 <td>{{ order.address }}</td>
-                                <td>{{ order.orderDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td>{{ order.discount | currency }}</td>
-                                <td>{{ order.totalAmount | currency }}</td>
-                                <td>{{ order.status }}</td>
+                                <td>{{ order.datetime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td>{{ order.discount_amount | currency }}</td>
+                                <td>{{ order.total | currency }}</td>
+                                <td>{{ order.orderStatus }}</td>
                                 <td>
                                     <button pButton type="button" class="btn btn-dark" (click)="showDialog(order)">Xem</button>
                                 </td>
@@ -84,10 +84,10 @@
 </div>
 
 <p-dialog header="Chi tiết đơn hàng" [modal]="true" [(visible)]="visible" [style]="{ width: '55rem' }" styleClass="p-fluid">
-    <p>Mã đơn hàng: {{ selected_order?.orderId }}</p>
-    <p>Ngày đặt hàng: {{ selected_order?.orderDate | date: 'dd-MM-yyyy HH:mm:ss' }}</p>
-    <p>Khách hàng: {{ selected_order?.customerId }}</p>
-    <p>Tổng tiền: {{ selected_order?.totalAmount| currency:'VND' }}</p>
+    <p>Mã đơn hàng: {{ createOrder.order_ID }}</p>
+    <p>Ngày đặt hàng: {{ createOrder.datetime | date: 'dd-MM-yyyy HH:mm:ss' }}</p>
+    <p>Khách hàng: {{ createOrder.customer_ID }}</p>
+    <p>Tổng tiền: {{ createOrder.total | currency:'VND' }}</p>
     <table class="table">
         <thead>
             <tr>
@@ -99,12 +99,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let orderDetail of selected_order?.orderDetails">
-                <td>{{ orderDetail.productId }}</td>
-                <td  class=" text-truncate" style="max-width: 270px;">{{ orderDetail.productName }}</td>
+            <tr *ngFor="let orderDetail of createOrder?.detailOrders">
+                <td>{{ orderDetail.product_ID }}</td>
+                <td  class=" text-truncate" style="max-width: 270px;">{{ orderDetail.productVariation?.product?.name }}</td>
                 <td>{{ orderDetail.quantity }}</td>
-                <td>{{ orderDetail.price | currency }}</td>
-                <td>{{ orderDetail.quantity * orderDetail.price | currency }}</td>
+                <td>{{ orderDetail.unit_Price | currency }}</td>
+                <td>{{ (orderDetail?.quantity ?? 0) * (orderDetail?.unit_Price ?? 0) | currency }}</td>
             </tr>
         </tbody>
     </table>

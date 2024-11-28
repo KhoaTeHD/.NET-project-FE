@@ -1,7 +1,7 @@
 export interface SupplierDto {
-  supplier_Id?: number;
-  supplier_Name?: string;
+  supplier_ID?: number;
+  supplierName?: string;
   address?: string;
-  phone_Number?: string;
+  phoneNumber?: string;
   status?: boolean;
 }

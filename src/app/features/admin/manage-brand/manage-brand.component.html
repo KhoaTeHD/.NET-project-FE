@@ -12,7 +12,7 @@
                 <p-confirmDialog />
                 <div class="card-body">
                     <div class="card-body">
-                        <p-table #dt editMode="row" [value]="brands2" dataKey="id" [paginator]="true" [rows]="10"
+                        <p-table #dt editMode="row" [value]="brands" dataKey="id" [paginator]="true" [rows]="10"
                             [globalFilterFields]="['id', 'name', 'status']" [responsiveLayout]="'scroll'">
                             <ng-template pTemplate="caption">
                                 <div class="d-flex">
@@ -39,7 +39,7 @@
                                     <td>
                                         <p-cellEditor>
                                             <ng-template pTemplate="input">
-                                                <input pInputText type="text" [(ngModel)]="brand.Bra_Name" />
+                                                <input pInputText type="text" [(ngModel)]="brand.name" />
                                             </ng-template>
                                             <ng-template pTemplate="output">
                                                 {{ brand.name }}

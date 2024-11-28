@@ -24,12 +24,12 @@ export class BrandService {
 
   // Thêm mới một Brand (POST /api/Brand)
   createBrand(brand: BrandDto): Observable<ApiResponse<BrandDto>> {
-    return this.http.post<ApiResponse<BrandDto>>(`${this.baseUrl}`, brand);
+    return this.http.post<ApiResponse<BrandDto>>(`${this.baseUrl}`, brand, {headers: {'Content-Type': 'application/json'}});
   }
 
   // Cập nhật thông tin Brand (PUT /api/Brand)
   updateBrand(brand: BrandDto): Observable<ApiResponse<BrandDto>> {
-    return this.http.put<ApiResponse<BrandDto>>(`${this.baseUrl}`, brand);
+    return this.http.put<ApiResponse<BrandDto>>(`${this.baseUrl}`, brand, {headers: {'Content-Type': 'application/json'}});
   }
 
   // Xóa một Brand theo ID (DELETE /api/Brand/{id})

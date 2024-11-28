@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -12,6 +12,9 @@ import { ToastModule } from 'primeng/toast';
 import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
+import { ColorService } from '../../../core/services/color.service';
+import { firstValueFrom } from 'rxjs';
+import { ColorDto } from '../../../core/models/color.model';
 
 @Component({
   selector: 'app-manage-color',
@@ -21,39 +24,72 @@ import { DialogModule } from 'primeng/dialog';
   templateUrl: './manage-color.component.html',
   styleUrl: './manage-color.component.css'
 })
-export class ManageColorComponent {
-  colors = [
-    { Col_ID: 1, Col_Name: 'Đỏ', Col_Status: 1 },
-    { Col_ID: 2, Col_Name: 'Xanh', Col_Status: 1 },
-    { Col_ID: 3, Col_Name: 'Vàng', Col_Status: 1 },
-    { Col_ID: 4, Col_Name: 'Tím', Col_Status: 1 },
-    { Col_ID: 5, Col_Name: 'Đen', Col_Status: 1 },
-    { Col_ID: 6, Col_Name: 'Trắng', Col_Status: 1 },
-    { Col_ID: 7, Col_Name: 'Cam', Col_Status: 1 },
-    { Col_ID: 8, Col_Name: 'Hồng', Col_Status: 1 },
-    { Col_ID: 9, Col_Name: 'Xám', Col_Status: 1 },
-    { Col_ID: 10, Col_Name: 'Nâu', Col_Status: 1 }
-  ];
+export class ManageColorComponent implements OnInit {
+  visible: boolean = false;
+
+  colors: ColorDto[] = [];
 
   statuses!: SelectItem[];
 
-  clonedColors: { [id: number]: Color } = {};
+  clonedColors: { [id: number]: ColorDto } = {};
 
-  visible: boolean = false;
+  createColor: ColorDto = {};
+
+  searchValue: string = '';
 
   ngOnInit(): void {
     this.statuses = [
-      { label: 'Hoạt động', value: 1 },
-      { label: 'Ngừng bán', value: 0 }
+      { label: 'Hoạt động', value: true },
+      { label: 'Ngừng bán', value: false }
     ];
+    this.loadColors();
   }
 
   constructor(
     private messageService: MessageService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService,
+    private colorService: ColorService) { }
 
   showDialog() {
     this.visible = true;
+  }
+
+  onRowEditInit(color: ColorDto) {
+    this.clonedColors[color.id as number] = { ...color };
+  }
+
+  onRowEditSave(color: ColorDto, index: number) {
+    if (color.name?.trim().length !== 0) {
+      this.editColor(color);
+      delete this.clonedColors[color.id as number];
+    } else {
+      this.colors[index] = this.clonedColors[color.id as number];
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
+    }
+  }
+
+  onRowEditCancel(color: ColorDto, index: number) {
+    this.colors[index] = this.clonedColors[color.id as number];
+    delete this.clonedColors[color.id as number];
+  }
+
+  deleteColor(color: ColorDto) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc xóa ' + color.name + ' không?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.colorService.deleteColor(color.id as number).subscribe({
+          next: () => {
+            this.colors = this.colors.filter((val) => val.id !== color.id);
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa màu sắc', life: 3000 });
+          },
+          error: () => {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+          }
+        });
+      }
+    });
   }
 
   handleInput(event: Event, dt: any): void {
@@ -63,51 +99,49 @@ export class ManageColorComponent {
     }
   }
 
-  onRowEditInit(color: Color) {
-    this.clonedColors[color.Col_ID as number] = { ...color };
-  }
-
-  onRowEditSave(color: Color, index: number) {
-    if (color.Col_Name.trim().length !== 0) {
-      delete this.clonedColors[color.Col_ID as number];
-      this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Màu sắc đã được cập nhật' });
-    } else {
-      this.colors[index] = this.clonedColors[color.Col_ID as number];
-      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
-    }
-  }
-
-  onRowEditCancel(color: Color, index: number) {
-    this.colors[index] = this.clonedColors[color.Col_ID as number];
-    delete this.clonedColors[color.Col_ID as number];
-  }
-
-  deleteColor(color: Color) {
-    this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa ' + color.Col_Name + ' không?',
-      header: 'Xác nhận',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.colors = this.colors.filter((val) => val.Col_ID !== color.Col_ID);
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa màu sắc', life: 3000 });
-      }
-    });
-  }
-
-  getSeverity(status: number) {
+  getSeverity(status: boolean) {
     switch (status) {
-      case 1:
+      case true:
         return 'success';
-      case 0:
+      case false:
         return 'danger';
       default:
         return undefined;
     }
   }
-}
 
-interface Color {
-  Col_ID: number;
-  Col_Name: string;
-  Col_Status: number;
+  async loadColors(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.colorService.getAllColors());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.colors = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching colors', error);
+    }
+  }
+
+  createNewColor(): void {
+    this.colorService.createColor(this.createColor).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Màu sắc đã được tạo' });
+        this.loadColors(); // Reload colors after creation
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+  }
+
+  editColor(color: ColorDto): void {
+    this.colorService.updateColor(color).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Màu sắc đã được cập nhật' });
+        this.loadColors(); // Reload colors after update
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+  }
 }
