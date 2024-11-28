@@ -114,7 +114,9 @@ export class ItemShopComponent implements OnInit {
     const colors = new Set<number>();
     products.forEach((product) => {
       product.productVariations?.forEach((variation) => {
-        colors.add(variation.col_Id);
+        if (variation.col_Id !== undefined) {
+          colors.add(variation.col_Id);
+        }
       });
     });
     return Array.from(colors).map((id) => ({
