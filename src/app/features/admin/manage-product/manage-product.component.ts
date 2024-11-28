@@ -87,9 +87,10 @@ export class ManageProductComponent implements OnInit  {
     };
   }
 
-  showDialogProduct(type: string): void {
+  showDialogProduct(type: string, product: Product): void {
     if(type == 'Edit'){
       this.dialogTitle = 'Sửa';
+      this.product = {...product };
     }
     else{
       this.dialogTitle = 'Thêm';
@@ -100,9 +101,10 @@ export class ManageProductComponent implements OnInit  {
     this.visibleDialogProduct = true;
   }
 
-  showDialogVariation(type: string): void {
+  showDialogVariation(type: string, variation: Variation): void {
     if(type == 'Edit'){
       this.dialogTitle = 'Sửa';
+      this.variations = {...variation };
     }
     else{
       this.dialogTitle = 'Thêm';

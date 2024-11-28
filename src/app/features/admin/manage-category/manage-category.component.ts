@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdminFooterComponent } from '../../../shared/components/admin-footer/admin-footer.component';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -12,6 +12,9 @@ import { ToastModule } from 'primeng/toast';
 import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
+import { CategoryService } from '../../../core/services/category.service';
+import { firstValueFrom } from 'rxjs';
+import { CategoryDto } from '../../../core/models/category.model';
 
 @Component({
   selector: 'app-manage-category',
@@ -21,36 +24,72 @@ import { DialogModule } from 'primeng/dialog';
   templateUrl: './manage-category.component.html',
   styleUrl: './manage-category.component.css'
 })
-export class ManageCategoryComponent {
+export class ManageCategoryComponent implements OnInit {
+  visible: boolean = false;
 
-  categories = [
-    { Cat_ID: 1, Cat_Name: 'Danh mục A', Cat_Desc: 'Mô tả A', Cat_Status: 1 },
-    { Cat_ID: 2, Cat_Name: 'Danh mục B', Cat_Desc: 'Mô tả B', Cat_Status: 1 },
-    { Cat_ID: 3, Cat_Name: 'Danh mục C', Cat_Desc: 'Mô tả C', Cat_Status: 1 },
-    { Cat_ID: 4, Cat_Name: 'Danh mục D', Cat_Desc: 'Mô tả D', Cat_Status: 0 },
-    { Cat_ID: 5, Cat_Name: 'Danh mục E', Cat_Desc: 'Mô tả E', Cat_Status: 1 }
-  ];
+  categories: CategoryDto[] = [];
 
   statuses!: SelectItem[];
 
-  clonedCategories: { [id: number]: any } = {};
+  clonedCategories: { [id: number]: CategoryDto } = {};
 
-  searchValue: string | undefined;
-  visible: boolean = false;
+  createCategory: CategoryDto = {};
+
+  searchValue: string = '';
 
   ngOnInit(): void {
     this.statuses = [
-      { label: 'Hoạt động', value: 1 },
-      { label: 'Ngừng bán', value: 0 }
+      { label: 'Hoạt động', value: true },
+      { label: 'Ngừng bán', value: false }
     ];
+    this.loadCategories();
   }
 
   constructor(
     private messageService: MessageService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService,
+    private categoryService: CategoryService) { }
 
   showDialog() {
     this.visible = true;
+  }
+
+  onRowEditInit(category: CategoryDto) {
+    this.clonedCategories[category.id as number] = { ...category };
+  }
+
+  onRowEditSave(category: CategoryDto, index: number) {
+    if (category.name?.trim().length !== 0) {
+      this.editCategory(category);
+      delete this.clonedCategories[category.id as number];
+    } else {
+      this.categories[index] = this.clonedCategories[category.id as number];
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
+    }
+  }
+
+  onRowEditCancel(category: CategoryDto, index: number) {
+    this.categories[index] = this.clonedCategories[category.id as number];
+    delete this.clonedCategories[category.id as number];
+  }
+
+  deleteCategory(category: CategoryDto) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc xóa ' + category.name + ' không?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.categoryService.deleteCategory(category.id as number).subscribe({
+          next: () => {
+            this.categories = this.categories.filter((val) => val.id !== category.id);
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa danh mục', life: 3000 });
+          },
+          error: () => {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+          }
+        });
+      }
+    });
   }
 
   handleInput(event: Event, dt: any): void {
@@ -60,45 +99,49 @@ export class ManageCategoryComponent {
     }
   }
 
-  onRowEditInit(category: any) {
-    this.clonedCategories[category.Cat_ID as number] = { ...category };
-  }
-
-  onRowEditSave(category: any, index: number) {
-    if (category.Cat_Name.trim().length !== 0) {
-      delete this.clonedCategories[category.Cat_ID as number];
-      this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Danh mục đã được cập nhật' });
-    } else {
-      this.categories[index] = this.clonedCategories[category.Cat_ID as number];
-      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
-    }
-  }
-
-  onRowEditCancel(category: any, index: number) {
-    this.categories[index] = this.clonedCategories[category.Cat_ID as number];
-    delete this.clonedCategories[category.Cat_ID as number];
-  }
-
-  deleteCategory(category: any) {
-    this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa ' + category.Cat_Name + ' không?',
-      header: 'Xác nhận',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.categories = this.categories.filter((val) => val.Cat_ID !== category.Cat_ID);
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa danh mục', life: 3000 });
-      }
-    });
-  }
-
-  getSeverity(status: number) {
+  getSeverity(status: boolean) {
     switch (status) {
-      case 1:
+      case true:
         return 'success';
-      case 0:
+      case false:
         return 'danger';
       default:
         return undefined;
     }
+  }
+
+  async loadCategories(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.categoryService.getAllCategorys());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.categories = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching categories', error);
+    }
+  }
+
+  createNewCategory(): void {
+    this.categoryService.createCategory(this.createCategory).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Danh mục đã được tạo' });
+        this.loadCategories(); // Reload categories after creation
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+  }
+
+  editCategory(category: CategoryDto): void {
+    this.categoryService.updateCategory(category).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Danh mục đã được cập nhật' });
+        this.loadCategories(); // Reload categories after update
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
   }
 }

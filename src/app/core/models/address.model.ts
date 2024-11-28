@@ -1,11 +1,11 @@
 export interface AddressDto {
-  address_Id?: number;
-  customer_Id?: string;
-  address_Line?: string;
+  address_ID?: number;
+  customer_ID?: string;
+  addressLine?: string;
   province?: string;
   ward?: string;
   district?: string;
   phone?: string;
   name?: string;
-  status?: boolean;
+  isDefault?: boolean;
 }

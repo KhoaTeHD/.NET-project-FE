@@ -1,3 +1,5 @@
+<!-- Toast sẽ hiển thị ở đây trong 1s, mặc định là top-right -->
+<p-toast [life]="1000"></p-toast>
 <app-header />
 <div class="row personal-info-container mb-5 mx-auto">
     <div class="col-lg-3 d-none d-lg-block">
@@ -24,7 +26,7 @@
             <div class="divided-section-top mx-auto"></div>
             <div class="row mt-4">
                 <div class="col-md-7 col-infor">
-                    <form action="">
+                    <form [formGroup]="record_F" (submit)="updateUser()">
                         
                         <!-- Field: Name -->
                         <div class="row mb-4">
@@ -32,7 +34,12 @@
                                 <label for="name" class="form-label d-block m-0">Họ tên</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" id="name" name="name">
+                                <input type="text" class="form-control" id="name" formControlName="name">
+                                <div *ngIf="record_F['controls']['name'].dirty && record_F['controls']['name'].errors">
+                                    <small *ngIf="record_F['controls']['name'].errors['required']">Tên không được bỏ trống!</small>
+                                    <small *ngIf="record_F['controls']['name'].errors['minlength']">Tên phải chứa tối thiểu 3 kí tự!</small>
+                                    <small *ngIf="record_F['controls']['name'].errors['maxlength']">Tên chỉ chứa tối đa 50 kí tự!</small>
+                                </div>
                             </div>
                         </div>
 
@@ -42,7 +49,12 @@
                                 <label for="email" class="form-label">Email</label>
                             </div>
                             <div class="col-9">
-                                <input type="email" class="form-control" id="email" name="email">
+                                <input type="email" class="form-control" id="email" formControlName="email">
+                                <div *ngIf="record_F['controls']['email'].dirty && record_F['controls']['email'].errors">
+                                    <small *ngIf="record_F['controls']['email'].errors['required']">Email không được bỏ trống!</small>
+                                    <small *ngIf="record_F['controls']['email'].errors['email']">Email không đúng định dạng!</small>
+                                    <small *ngIf="record_F.get('email')?.hasError('unique') && record_F.get('email')?.touched">Email đã tồn tại!</small>
+                                </div>
                             </div>
                         </div>
 
@@ -52,7 +64,12 @@
                                 <label for="phone" class="form-label">Điện thoại</label>
                             </div>
                             <div class="col-9">
-                                <input type="number" class="form-control" id="phone" name="phone">
+                                <input type="text" class="form-control" id="phone" formControlName="phoneNumber" onkeypress="if(event.key.length === 1 && !/[0-9]/.test(event.key)) event.preventDefault();">
+                                <div *ngIf="record_F['controls']['phoneNumber'].dirty && record_F['controls']['phoneNumber'].errors">
+                                    <small *ngIf="record_F['controls']['phoneNumber'].errors['required']">Số điện thoại không được bỏ trống!</small>
+                                    <small *ngIf="record_F['controls']['phoneNumber'].errors['pattern']">Số điện thoại không đúng định dạng!</small>
+                                    <small *ngIf="record_F.get('phoneNumber')?.hasError('unique') && record_F.get('phoneNumber')?.touched">Số điện thoại đã được sử dụng, vui lòng nhập số điện thoại khác!</small>
+                                </div>
                             </div>
                         </div>
 
@@ -62,8 +79,8 @@
                                 <label for="birthday" class="form-label">Ngày sinh</label>
                             </div>
                             <div class="col-9">
-                                <input type="date" class="form-control" id="birthday" name="birthday"
-                                    value="2000-01-01">
+                                <input type="date" class="form-control" id="birthday" formControlName="birthDate"
+                                    [max]="today">
                             </div>
                         </div>
 
@@ -76,15 +93,15 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="form-check">
-                                            <input type="radio" class="form-check-input" id="man" name="gender_radio"
-                                                value="nam" checked>Nam
+                                            <input type="radio" class="form-check-input" id="man" name="gender"
+                                                value="Nam" checked formControlName="gender">Nam
                                             <label class="form-check-label" for="man"></label>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-check">
-                                            <input type="radio" class="form-check-input" id="woman" name="gender_radio"
-                                                value="nữ">Nữ
+                                            <input type="radio" class="form-check-input" id="woman" name="gender"
+                                                value="Nữ" formControlName="gender">Nữ
                                             <label class="form-check-label" for="woman"></label>
                                         </div>
                                     </div>
@@ -92,7 +109,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-dark w-100 mt-3">Lưu thay đổi</button>
+                        <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="record_F.invalid">Lưu thay đổi</button>
                     </form>
                 </div>
                 <div class="col-1 divided-section d-none d-md-block"></div>

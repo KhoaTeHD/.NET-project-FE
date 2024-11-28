@@ -6,12 +6,6 @@
     position: relative;
 }
 
-.custom-dropdown-toggle::after {
-    position: absolute;
-    top: 18px;
-    right: -6px;
-}
-
 .cart-number-notify {
     position: absolute;
     display: inline-flex;
@@ -25,6 +19,18 @@
     color: #fff;
     right: -7px;
     top: -8px;
+}
+
+.truncate-button {
+    max-width: 200px; /* Điều chỉnh chiều rộng theo ý bạn */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+.nav-item {
+    display: flex;
+    align-items: center;
 }
 
 /* Smartphone */

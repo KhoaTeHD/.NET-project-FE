@@ -9,6 +9,10 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
+import { OrderService } from '../../../core/services/order.service';
+import { firstValueFrom } from 'rxjs';
+import { OrderDto } from '../../../core/models/order.model';
+
 @Component({
   selector: 'app-manage-order',
   standalone: true,
@@ -17,87 +21,90 @@ import { DialogModule } from 'primeng/dialog';
   templateUrl: './manage-order.component.html',
   styleUrl: './manage-order.component.css'
 })
-export class ManageOrderComponent{
+export class ManageOrderComponent implements OnInit {
   visible: boolean = false;
 
-  orders: Order[] = [
-    {
-      orderId: '000001',
-      customerId: '00001',
-      discountCode: 'Mã giảm giá',
-      address: '34, Phường Bồng Lai, Thị xã Quế Võ, Tỉnh Bắc Ninh',
-      orderDate: new Date('2024-05-19T05:04:42'),
-      discount: -20000,
-      totalAmount: 7605000,
-      status: 0, // 0 là chưa xác nhận, 1 là đã xác nhận
-      orderDetails: [
-        {
-          productId: 'P001',
-          productName: 'Sản phẩm 1',
-          quantity: 2,
-          price: 3000000
-        },
-        {
-          productId: 'P002',
-          productName: 'Sản phẩm 2',
-          quantity: 1,
-          price: 1605000
-        }
-      ]
-    },
-    {
-      orderId: '000002',
-      customerId: '00002',
-      discountCode: 'Mã giảm giá 2',
-      address: '12, Phường Đình Bảng, Thị xã Từ Sơn, Tỉnh Bắc Ninh',
-      orderDate: new Date('2024-05-20T06:00:00'),
-      discount: -15000,
-      totalAmount: 5000000,
-      status: 1,
-      orderDetails: [
-        {
-          productId: 'P003',
-          productName: 'Sản phẩm 3',
-          quantity: 1,
-          price: 5000000
-        }
-      ]
-    },
-    // Thêm các dữ liệu mẫu khác
-  ];
+  orders: OrderDto[] = [];
 
-  selected_order: Order | null = null;
+  clonedOrders: { [id: number]: OrderDto } = {};
 
-  constructor() { }
+  createOrder: OrderDto = {};
 
-    showDialog(order: Order) {
-      this.visible = true;
-      this.selected_order = order;
-    }
-  
+  searchValue: string = '';
+
+  ngOnInit(): void {
+    this.loadOrders();
+  }
+
+  constructor(
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private orderService: OrderService) { }
+
+  showDialog(order: OrderDto | null) {
+    this.visible = true;
+    if (order) this.createOrder = { ...order };
+    console.log(this.createOrder);
+  }
+
+  deleteOrder(order: OrderDto) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc xóa đơn hàng ' + order.order_ID + ' không?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.orderService.deleteOrder(order.order_ID as number).subscribe({
+          next: () => {
+            this.orders = this.orders.filter((val) => val.order_ID !== order.order_ID);
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa đơn hàng', life: 3000 });
+          },
+          error: () => {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+          }
+        });
+      }
+    });
+  }
+
   handleInput(event: Event, dt: any): void {
     const inputElement = event.target as HTMLInputElement;
     if (inputElement) {
-        dt.filterGlobal(inputElement.value, 'contains');
+      dt.filterGlobal(inputElement.value, 'contains');
     }
   }
-}
 
-interface Order {
-  orderId: string;
-  customerId: string;
-  discountCode: string;
-  address: string;
-  orderDate: Date;
-  discount: number;
-  totalAmount: number;
-  status: number;
-  orderDetails: OrderDetail[];
-}
+  async loadOrders(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.orderService.getAllOrders());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.orders = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching orders', error);
+    }
+  }
 
-interface OrderDetail {
-  productId: string;
-  productName: string;
-  quantity: number;
-  price: number;
+  createNewOrder(): void {
+    this.orderService.createOrder(this.createOrder).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đơn hàng đã được tạo' });
+        this.loadOrders(); // Reload orders after creation
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+  }
+
+  editOrder(order: OrderDto): void {
+    this.orderService.updateOrder(order).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đơn hàng đã được cập nhật' });
+        this.loadOrders(); // Reload orders after update
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+  }
 }
