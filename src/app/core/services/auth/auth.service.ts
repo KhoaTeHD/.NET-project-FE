@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
+import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { RegistrationRequestDto } from '../../models/auth/registration-request-dto.model';
-import { LoginResponseDto } from '../../models/auth/login-response-dto.model';
+import { UserDto } from '../../models/auth/user-dto.model';
+import { ApiResponse } from '../../models/auth/api-resonse.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,8 @@ export class AuthService {
   // Đăng ký
   // Một Observable chứa phản hồi từ API. Angular sử dụng Observable để xử lý các yêu cầu HTTP bất đồng bộ.
   register(registrationRequestDto: RegistrationRequestDto): Observable<any> {
-    console.log('Dữ liệu gửi:', registrationRequestDto);
     // Chuyển đổi birthDate sang ISO-8601
     registrationRequestDto.birthDate = new Date(registrationRequestDto.birthDate).toISOString();
-    registrationRequestDto.phoneNumber = registrationRequestDto.phoneNumber.toString();
     return this.http.post(`${this.baseUrl}/register`, registrationRequestDto).pipe(
       switchMap(() => this.assignRole(registrationRequestDto)) // Gán vai trò sau khi đăng ký thành công
     );
@@ -41,4 +40,26 @@ export class AuthService {
   assignRole(registrationRequestDto: RegistrationRequestDto): Observable<any> {
     return this.http.post(`${this.baseUrl}/AssignRole`, registrationRequestDto);
   }
+
+  // Kiểm tra phone và email
+  checkUnique(field: string, value: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.baseUrl}/checkUnique?field=${field}&value=${value}`);
+  }
+
+  checkDuplicateForUpdate(userId: string, field: string, value: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.baseUrl}/checkDuplicateForUpdate`, { params: { userId, field, value } });
+  }
+
+  updateUser(user: UserDto): Observable<ApiResponse<UserDto>> {
+    const url = `${this.baseUrl}/${user.id}`;
+    user.birthDate = new Date(user.birthDate).toISOString(); // Chuyển đổi birthDate
+    console.log('Payload being sent to API:', user); // Log toàn bộ payload
+    return this.http.put<ApiResponse<UserDto>>(url, user).pipe(
+      catchError((err) => {
+        console.error('Error in updateUser:', err); // Log lỗi chi tiết
+        return throwError(() => err);
+      })
+    );
+  }
+  
 }

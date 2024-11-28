@@ -12,7 +12,7 @@
                         alt="">
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 p-4">
-                    <form [formGroup]="loginF" (submit)="register()">
+                    <form [formGroup]="sign_up_F" (submit)="register()">
                         <div class="row">
                             <div class="col-6">
                                 <label for="name" class="form-label title-sign-up">Đăng ký</label>
@@ -25,10 +25,10 @@
                         <div class="mb-3 mt-2">
                             <label for="name" class="form-label">Họ tên</label>
                             <input type="text" class="form-control" id="name" formControlName="name">
-                            <div *ngIf="loginF['controls']['name'].dirty && loginF['controls']['name'].errors">
-                                <small *ngIf="loginF['controls']['name'].errors['required']">Tên không được bỏ trống!</small>
-                                <small *ngIf="loginF['controls']['name'].errors['minlength']">Tên phải chứa tối thiểu 3 kí tự!</small>
-                                <small *ngIf="loginF['controls']['name'].errors['maxlength']">Tên chỉ chứa tối đa 50 kí tự!</small>
+                            <div *ngIf="sign_up_F['controls']['name'].dirty && sign_up_F['controls']['name'].errors">
+                                <small *ngIf="sign_up_F['controls']['name'].errors['required']">Tên không được bỏ trống!</small>
+                                <small *ngIf="sign_up_F['controls']['name'].errors['minlength']">Tên phải chứa tối thiểu 3 kí tự!</small>
+                                <small *ngIf="sign_up_F['controls']['name'].errors['maxlength']">Tên chỉ chứa tối đa 50 kí tự!</small>
                             </div>
                         </div>
 
@@ -36,9 +36,10 @@
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" formControlName="email">
-                            <div *ngIf="loginF['controls']['email'].dirty && loginF['controls']['email'].errors">
-                                <small *ngIf="loginF['controls']['email'].errors['required']">Email không được bỏ trống!</small>
-                                <small *ngIf="loginF['controls']['email'].errors['email']">Email không đúng định dạng!</small>
+                            <div *ngIf="sign_up_F['controls']['email'].dirty && sign_up_F['controls']['email'].errors">
+                                <small *ngIf="sign_up_F['controls']['email'].errors['required']">Email không được bỏ trống!</small>
+                                <small *ngIf="sign_up_F['controls']['email'].errors['email']">Email không đúng định dạng!</small>
+                                <small *ngIf="sign_up_F.get('email')?.hasError('unique') && sign_up_F.get('email')?.touched">Email đã tồn tại!</small>
                             </div>
                         </div>
 
@@ -46,9 +47,10 @@
                         <div class="mb-3">
                             <label for="phone" class="form-label">Số điện thoại</label>
                             <input type="text" class="form-control" id="phone" formControlName="phoneNumber" onkeypress="if(event.key.length === 1 && !/[0-9]/.test(event.key)) event.preventDefault();">
-                            <div *ngIf="loginF['controls']['phoneNumber'].dirty && loginF['controls']['phoneNumber'].errors">
-                                <small *ngIf="loginF['controls']['phoneNumber'].errors['required']">Số điện thoại không được bỏ trống!</small>
-                                <small *ngIf="loginF['controls']['phoneNumber'].errors['pattern']">Số điện thoại không đúng định dạng!</small>
+                            <div *ngIf="sign_up_F['controls']['phoneNumber'].dirty && sign_up_F['controls']['phoneNumber'].errors">
+                                <small *ngIf="sign_up_F['controls']['phoneNumber'].errors['required']">Số điện thoại không được bỏ trống!</small>
+                                <small *ngIf="sign_up_F['controls']['phoneNumber'].errors['pattern']">Số điện thoại không đúng định dạng!</small>
+                                <small *ngIf="sign_up_F.get('phoneNumber')?.hasError('unique') && sign_up_F.get('phoneNumber')?.touched">Số điện thoại đã được sử dụng, vui lòng nhập số điện thoại khác!</small>
                             </div>
                         </div>
 
@@ -89,11 +91,11 @@
                                     <p>{{PasswordVisible}}</p>
                                 </a>
                             </div>
-                            <div *ngIf="loginF['controls']['password'].dirty && loginF['controls']['password'].errors">
-                                <small *ngIf="loginF['controls']['password'].errors['required']">Mật khẩu không được bỏ trống!</small>
-                                <small *ngIf="loginF['controls']['password'].errors['minlength']">Mật khẩu phải chứa tối thiểu 8 kí tự!</small>
-                                <small *ngIf="loginF['controls']['password'].errors['maxlength']">Mật khẩu chỉ chứa tối đa 20 kí tự!</small>
-                                <small *ngIf="loginF['controls']['password'].errors['pattern']">Mật khẩu phải chứa chữ hoa, chữ thường và kí tự khác!</small>
+                            <div *ngIf="sign_up_F['controls']['password'].dirty && sign_up_F['controls']['password'].errors">
+                                <small *ngIf="sign_up_F['controls']['password'].errors['required']">Mật khẩu không được bỏ trống!</small>
+                                <small *ngIf="sign_up_F['controls']['password'].errors['minlength']">Mật khẩu phải chứa tối thiểu 8 kí tự!</small>
+                                <small *ngIf="sign_up_F['controls']['password'].errors['maxlength']">Mật khẩu chỉ chứa tối đa 20 kí tự!</small>
+                                <small *ngIf="sign_up_F['controls']['password'].errors['pattern']">Mật khẩu phải chứa chữ hoa, chữ thường và kí tự khác!</small>
                             </div>
                         </div>
 
@@ -107,13 +109,13 @@
                                     <p>{{ReInputPasswordVisible}}</p>
                                 </a>
                             </div>
-                            <div *ngIf="loginF['controls']['re_password'].dirty && loginF['controls']['re_password'].errors">
-                                <small *ngIf="loginF['controls']['re_password'].errors['required']">Trường này không được bỏ trống!</small>
-                                <small *ngIf="loginF['controls']['re_password'].errors['mustMatch']">Mật khẩu không khớp!</small>
+                            <div *ngIf="sign_up_F['controls']['re_password'].dirty && sign_up_F['controls']['re_password'].errors">
+                                <small *ngIf="sign_up_F['controls']['re_password'].errors['required']">Trường này không được bỏ trống!</small>
+                                <small *ngIf="sign_up_F['controls']['re_password'].errors['mustMatch']">Mật khẩu không khớp!</small>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="loginF.invalid">Đăng Ký</button>
+                        <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="sign_up_F.invalid">Đăng Ký</button>
                     </form>
                 </div>
             </div>

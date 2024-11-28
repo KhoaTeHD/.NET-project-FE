@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { RegistrationRequestDto } from '../../../core/models/auth/registration-request-dto.model';
 import { AuthService } from '../../../core/services/auth/auth.service';
-import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api'; // Import MessageService
 import { ToastModule } from 'primeng/toast';
 import { Router } from '@angular/router';
+import { catchError, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-sign-up',
@@ -33,7 +34,7 @@ export class SignUpComponent {
     role: 'CUSTOMER'// Optional field
   }
 
-  loginF: FormGroup = new FormGroup({
+  sign_up_F: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]),
     email: new FormControl('', [Validators.required, Validators.email]),
     phoneNumber: new FormControl('', [Validators.required, Validators.pattern(/^\d{10}$/)]),
@@ -50,10 +51,20 @@ export class SignUpComponent {
 
   constructor(private authService: AuthService, private messageService: MessageService, private router: Router) { }
 
+
   ngOnInit() {
     // Lấy ngày hiện tại dưới dạng chuỗi 'YYYY-MM-DD'
     const currentDate = new Date();
     this.today = currentDate.toISOString().split('T')[0]; // Chuỗi định dạng phù hợp với input[type="date"]
+
+    // Thêm Async Validator sau khi FormGroup đã được tạo
+    this.sign_up_F.controls['phoneNumber'].addAsyncValidators(
+      uniqueFieldValidator(this.authService, 'phoneNumber')
+    );
+
+    this.sign_up_F.controls['email'].addAsyncValidators(
+      uniqueFieldValidator(this.authService, 'email')
+    );
   }
 
   togglePasswordVisibility() {
@@ -67,12 +78,13 @@ export class SignUpComponent {
   }
 
   register(): void {
-    if (this.loginF.valid) {
+    if (this.sign_up_F.valid) {
       // Cập nhật registrationRequestDto từ giá trị của form
       this.registrationRequestDto = {
         ...this.registrationRequestDto,
-        ...this.loginF.value // Cập nhật các giá trị từ form vào DTO
+        ...this.sign_up_F.value // Cập nhật các giá trị từ form vào DTO
       };
+
       this.authService.register(this.registrationRequestDto).subscribe({
         next: response => {
           this.messageService.add({
@@ -113,5 +125,17 @@ export function mustMatch(controlName: string, matchingControlName: string): Val
     }
 
     return null;
+  };
+}
+
+export function uniqueFieldValidator(authService: AuthService, field: string): AsyncValidatorFn {
+  return (control: AbstractControl) => {
+    if (!control.value) {
+      return of(null); // Không cần kiểm tra nếu không có giá trị
+    }
+    return authService.checkUnique(field, control.value).pipe(
+      map(isUnique => (isUnique ? null : { unique: true })), // Nếu không unique thì báo lỗi
+      catchError(() => of(null)) // Xử lý lỗi (nếu có) để không ảnh hưởng form
+    );
   };
 }

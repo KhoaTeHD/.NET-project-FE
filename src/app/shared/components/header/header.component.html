@@ -23,10 +23,10 @@
                             <a class="nav-link" href="javascript:void(0)" style="color: #fff;">Khuyến mãi</a>
                         </li>
                         <li class="nav-item">
-                            <div class="dropdown">
-                                <button type="button" class="btn btn-dark dropdown-toggle custom-dropdown-toggle" data-bs-toggle="dropdown">
+                            <div class="dropdown" style="color: #fff;">
+                                <p type="button" class="mb-0 dropdown-toggle custom-dropdown-toggle" data-bs-toggle="dropdown">
                                   Danh mục
-                                </button>
+                                </p>
                                 <ul class="dropdown-menu">
                                   <li><a class="dropdown-item" href="#">Áo thun</a></li>
                                   <li><a class="dropdown-item" href="#">Áo polo</a></li>
@@ -46,10 +46,22 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" [routerLink]="['/sign-in']" style="color: #fff;">
+                            <a class="nav-link" [routerLink]="['/sign-in']" style="color: #fff;" *ngIf="!user">
                                 <i class="fa-solid fa-user me-1"></i>
                                 Đăng nhập/Đăng ký
                             </a>
+                            <div class="dropdown dropdown-hover" style="color: #fff;" *ngIf="user">
+                                <p type="button" class="mb-0 dropdown-toggle truncate-button" data-bs-toggle="dropdown">
+                                    {{ user.name }}
+                                </p>
+                                <ul class="dropdown-menu">
+                                  <li><a class="dropdown-item" [routerLink]="['/record']">Hồ sơ</a></li>
+                                  <li><a class="dropdown-item" href="#">Đơn hàng</a></li>
+                                  <li><a class="dropdown-item" href="#">Sổ địa chỉ</a></li>
+                                  <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
+                                  <li><a class="dropdown-item" (click)="logout()">Đăng xuất</a></li>
+                                </ul>
+                            </div>
                         </li>
                     </ul>
                 </div>
