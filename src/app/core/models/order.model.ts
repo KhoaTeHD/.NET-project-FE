@@ -1,6 +1,6 @@
 export interface OrderDto {
   order_Id?: number;
-  customer_Id?: number;
+  customer_Id?: string;
   coupon_Code?: number;
   address?: string;
   datetime?: Date;
