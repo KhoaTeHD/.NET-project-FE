@@ -25,6 +25,8 @@ export class FilterPriceComponent implements OnInit {
   selectedColors: string[] = [];
   selectedCategory: string = '';
   isfilterColSizeNatPrice: boolean = false;
+  query: string = '';
+  selectedSort: number = -1; // Default value
 
   constructor(
     private router: Router,
@@ -44,6 +46,18 @@ export class FilterPriceComponent implements OnInit {
       ) {
         console.log('đang có bộ lọc- nhìn từ filer-price');
         this.isfilterColSizeNatPrice = true;
+      }
+      if (params['search']) {
+        console.log(params['search']);
+        this.isfilterColSizeNatPrice = false;
+        this.query = params['search'];
+      }
+      if (params['sort']) {
+        const sort = params['sort'];
+        this.selectedSort = sort ? +sort : -1;
+        console.log(this.selectedSort);
+      } else {
+        this.selectedSort = -1; // Default value
       }
     });
   }
@@ -95,11 +109,17 @@ export class FilterPriceComponent implements OnInit {
       queryParamsHandling: 'merge',
     });
   }
-
-  onFilterPriceChange(event: Event) {
+  onFilterPriceChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
-    const selectedCategoryId = +selectElement.value;
-    console.log(selectedCategoryId);
-    this.shareService.setFilerPriceId(selectedCategoryId);
+    const selectedPriceId = +selectElement.value;
+    console.log(selectedPriceId);
+    this.shareService.setFilerPriceId(selectedPriceId);
+
+    // Update the URL with the new price filter value
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { sort: selectedPriceId },
+      queryParamsHandling: 'merge',
+    });
   }
 }

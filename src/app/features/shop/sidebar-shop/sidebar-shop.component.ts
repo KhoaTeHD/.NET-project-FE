@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CategoryDto, CategoryDto_v2 } from '../../../core/models/category.model';
+import {
+  CategoryDto,
+  CategoryDto_v2,
+} from '../../../core/models/category.model';
 import { BrandDto, BrandDto_v2 } from '../../../core/models/brand.model';
 import { ColorDto, ColorDto_v2 } from '../../../core/models/color.model';
 import { SizeDto, SizeDto_v2 } from '../../../core/models/size.model';
@@ -29,7 +32,7 @@ interface Filters {
   styleUrls: ['./sidebar-shop.component.css'],
 })
 export class SidebarShopComponent implements OnInit {
-  @Output() search: EventEmitter<any> = new EventEmitter<any>();
+  @Output() filtersChanged = new EventEmitter<Filters>();
 
   categories: CategoryDto_v2[] = [];
   brands: BrandDto_v2[] = [];
@@ -71,85 +74,92 @@ export class SidebarShopComponent implements OnInit {
       this.products = products;
       this.setPriceRange();
       this.initializeFiltersFromParams(this.route.snapshot.queryParams);
-
     });
   }
 
   initializeFiltersFromParams(params: any): void {
-    this.filters.cat_Id = params['cat_Id'] ? params['cat_Id'].split(',').map(Number) : [];
-    this.filters.bra_Id = params['bra_Id'] ? params['bra_Id'].split(',').map(Number) : [];
-    this.filters.col_Id = params['col_Id'] ? params['col_Id'].split(',').map(Number) : [];
-    this.filters.siz_Id = params['siz_Id'] ? params['siz_Id'].split(',').map(Number) : [];
+    this.filters.cat_Id = params['cat_Id']
+      ? params['cat_Id'].split(',').map(Number)
+      : [];
+    this.filters.bra_Id = params['bra_Id']
+      ? params['bra_Id'].split(',').map(Number)
+      : [];
+    this.filters.col_Id = params['col_Id']
+      ? params['col_Id'].split(',').map(Number)
+      : [];
+    this.filters.siz_Id = params['siz_Id']
+      ? params['siz_Id'].split(',').map(Number)
+      : [];
     this.priceRange = params['price']
       ? params['price'].split(',').map(Number)
       : [this.minPrice, this.maxPrice];
-  
+
     // Update checked state for categories
     this.categories.forEach((category) => {
       category.checked = this.filters.cat_Id.includes(category.id);
     });
-  
+
     // Update checked state for brands
     this.brands.forEach((brand) => {
       brand.checked = this.filters.bra_Id.includes(brand.id);
     });
-  
+
     // Update checked state for colors
     this.colors.forEach((color) => {
       color.checked = this.filters.col_Id.includes(color.id);
     });
-  
+
     // Update checked state for sizes
     this.sizes.forEach((size) => {
       size.checked = this.filters.siz_Id.includes(size.id);
     });
-  
+
     this.onSearch();
   }
 
   onFilterChange(): void {
     const queryParams: any = {};
-  
+
     if (this.filters.cat_Id.length > 0) {
       queryParams['cat_Id'] = this.filters.cat_Id.join(',');
     } else {
       queryParams['cat_Id'] = null; // Remove cat_Id from URL when no categories are selected
     }
-  
+
     if (this.filters.bra_Id.length > 0) {
       queryParams['bra_Id'] = this.filters.bra_Id.join(',');
     } else {
       queryParams['bra_Id'] = null;
     }
-  
+
     if (this.filters.col_Id.length > 0) {
       queryParams['col_Id'] = this.filters.col_Id.join(',');
     } else {
       queryParams['col_Id'] = null;
     }
-  
+
     if (this.filters.siz_Id.length > 0) {
       queryParams['siz_Id'] = this.filters.siz_Id.join(',');
     } else {
       queryParams['siz_Id'] = null;
     }
-  
+
     if (this.priceRange && this.priceRange.length === 2) {
       queryParams['price'] = this.priceRange.join(',');
     } else {
       queryParams['price'] = null; // Remove price from URL when not set
     }
-  
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: queryParams,
       queryParamsHandling: 'merge',
     });
-  
+    this.filtersChanged.emit(this.filters); // Emit the filters
     this.onSearch();
   }
   onSearch(): void {
-    this.search.emit(this.filters);
+    //console.log('Search initiated with filters:', this.filters);
   }
 
   getCategoriesFromObjects(objects: any[]): CategoryDto[] {
@@ -211,8 +221,12 @@ export class SidebarShopComponent implements OnInit {
         return productVariations.map((pv) => pv.price);
       });
       const allPrices = prices.flat();
-      this.minPrice = Math.min(...allPrices.filter(price => price !== undefined));
-      this.maxPrice = Math.max(...allPrices.filter(price => price !== undefined));
+      this.minPrice = Math.min(
+        ...allPrices.filter((price) => price !== undefined)
+      );
+      this.maxPrice = Math.max(
+        ...allPrices.filter((price) => price !== undefined)
+      );
       this.priceRange = [this.minPrice, this.maxPrice];
     }
   }
@@ -229,53 +243,51 @@ export class SidebarShopComponent implements OnInit {
     return uniqueItems;
   }
 
-
-onCategoryChange(category: CategoryDto_v2): void {
-  if (category.checked) {
-    this.filters.cat_Id.push(category.id);
-  } else {
-    const index = this.filters.cat_Id.indexOf(category.id);
-    if (index !== -1) {
-      this.filters.cat_Id.splice(index, 1);
+  onCategoryChange(category: CategoryDto_v2): void {
+    if (category.checked) {
+      this.filters.cat_Id.push(category.id);
+    } else {
+      const index = this.filters.cat_Id.indexOf(category.id);
+      if (index !== -1) {
+        this.filters.cat_Id.splice(index, 1);
+      }
     }
+    this.onFilterChange();
   }
-  this.onFilterChange();
-}
 
-onBrandChange(brand: BrandDto_v2): void {
-  if (brand.checked) {
-    this.filters.bra_Id.push(brand.id);
-  } else {
-    const index = this.filters.bra_Id.indexOf(brand.id);
-    if (index !== -1) {
-      this.filters.bra_Id.splice(index, 1);
+  onBrandChange(brand: BrandDto_v2): void {
+    if (brand.checked) {
+      this.filters.bra_Id.push(brand.id);
+    } else {
+      const index = this.filters.bra_Id.indexOf(brand.id);
+      if (index !== -1) {
+        this.filters.bra_Id.splice(index, 1);
+      }
     }
+    this.onFilterChange();
   }
-  this.onFilterChange();
-}
 
-onColorChange(color: ColorDto_v2): void {
-  if (color.checked) {
-    this.filters.col_Id.push(color.id);
-  } else {
-    const index = this.filters.col_Id.indexOf(color.id);
-    if (index !== -1) {
-      this.filters.col_Id.splice(index, 1);
+  onColorChange(color: ColorDto_v2): void {
+    if (color.checked) {
+      this.filters.col_Id.push(color.id);
+    } else {
+      const index = this.filters.col_Id.indexOf(color.id);
+      if (index !== -1) {
+        this.filters.col_Id.splice(index, 1);
+      }
     }
+    this.onFilterChange();
   }
-  this.onFilterChange();
-}
 
-onSizeChange(size: SizeDto_v2): void {
-  if (size.checked) {
-    this.filters.siz_Id.push(size.id);
-  } else {
-    const index = this.filters.siz_Id.indexOf(size.id);
-    if (index !== -1) {
-      this.filters.siz_Id.splice(index, 1);
+  onSizeChange(size: SizeDto_v2): void {
+    if (size.checked) {
+      this.filters.siz_Id.push(size.id);
+    } else {
+      const index = this.filters.siz_Id.indexOf(size.id);
+      if (index !== -1) {
+        this.filters.siz_Id.splice(index, 1);
+      }
     }
+    this.onFilterChange();
   }
-  this.onFilterChange();
-}
-  
 }

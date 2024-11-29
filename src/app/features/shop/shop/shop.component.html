@@ -5,7 +5,7 @@
 >
   <div class="row">
     <div class="col-lg-3 d-none d-lg-block">
-      <app-sidebar-shop />
+      <app-sidebar-shop (filtersChanged)="onFiltersChanged($event)" />
     </div>
     <div class="d-block d-lg-none">
       <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
@@ -17,7 +17,7 @@
           ></button>
         </div>
         <div class="offcanvas-body">
-          <app-sidebar-shop />
+          <app-sidebar-shop (filtersChanged)="onFiltersChanged($event)" />
         </div>
       </div>
       <!-- Button to open the offcanvas sidebar -->
@@ -38,7 +38,7 @@
         <app-filter-price />
       </div>
       <div>
-        <app-item-shop />
+        <app-item-shop [filters]="filters" />
       </div>
     </div>
   </div>

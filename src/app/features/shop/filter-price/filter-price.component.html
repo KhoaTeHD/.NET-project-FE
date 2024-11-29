@@ -53,7 +53,7 @@
       >Xoá tất cả</span
     >
   </div> -->
-  
+
   <div
     *ngIf="isfilterColSizeNatPrice"
     class="filter-on-url d-flex align-items-center"
@@ -62,7 +62,16 @@
       class="badge text-bg-light"
       (click)="clearFilters()"
       style="cursor: pointer; font-size: 14px"
-      >Xoá bộ lọc</span>
+      >Xoá bộ lọc</span
+    >
+  </div>
+  <div
+    *ngIf="query && query.trim() !== ''"
+    class="filter-on-url d-flex align-items-center"
+  >
+    <span class="badge text-bg-light" style="cursor: pointer; font-size: 14px"
+      >Kết quả cho: {{ query }}</span
+    >
   </div>
   <div></div>
   <select
@@ -70,6 +79,7 @@
     style="width: 200px; font-size: 15px"
     aria-label="Default select example"
     (change)="onFilterPriceChange($event)"
+    [value]="selectedSort"
   >
     <option value="-1" selected>Mặc định</option>
     <option *ngFor="let filter of filterprice" [value]="filter.value">
