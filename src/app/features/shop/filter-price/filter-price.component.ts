@@ -24,6 +24,7 @@ export class FilterPriceComponent implements OnInit {
 
   selectedColors: string[] = [];
   selectedCategory: string = '';
+  isfilterColSizeNatPrice: boolean = false;
 
   constructor(
     private router: Router,
@@ -34,8 +35,16 @@ export class FilterPriceComponent implements OnInit {
   ngOnInit() {
     // Theo dõi các tham số query trong URL
     this.route.queryParams.subscribe((params) => {
-      this.selectedColors = params['color'] ? params['color'].split(' ') : [];
-      this.selectedCategory = params['select'] || '';
+      if (
+        params['price'] !== undefined ||
+        params['bra_Id'] !== undefined ||
+        params['cat_Id'] !== undefined ||
+        params['col_Id'] !== undefined ||
+        params['siz_Id'] !== undefined
+      ) {
+        console.log('đang có bộ lọc- nhìn từ filer-price');
+        this.isfilterColSizeNatPrice = true;
+      }
     });
   }
 
@@ -53,15 +62,18 @@ export class FilterPriceComponent implements OnInit {
   }
 
   clearFilters() {
-    // Reset giá trị filter về mặc định
-    this.selectedColors = [];
-    this.selectedCategory = '';
-
-    // Cập nhật URL
     this.router.navigate([], {
-      queryParams: { color: null, select: null },
-      queryParamsHandling: 'merge',
+      relativeTo: this.route,
+      queryParams: {
+        price: null,
+        bra_Id: null,
+        cat_Id: null,
+        col_Id: null,
+        siz_Id: null,
+      },
+      queryParamsHandling: 'merge', // Sử dụng 'merge' để giữ lại các query params khác không bị thay đổi
     });
+    this.isfilterColSizeNatPrice = false;
   }
 
   clearColorFilter(color: string) {

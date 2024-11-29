@@ -38,17 +38,38 @@ export class RelatedProductsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchProducts();
+    this.route.paramMap.subscribe((params) => {
+      const productId = params.get('id');
+      if (productId) {
+        this.fetchProductById(Number(productId));
+      }
+    });
   }
 
-  private fetchProducts(): void {
+  private fetchProductById(productId: number): void {
+    this.productService.getProductById(productId).subscribe({
+      next: (product) => {
+        if (product && product.result && product.result.cat_Id) {
+          this.fetchRelatedProducts(product.result.cat_Id);
+        }
+      },
+      error: (err) => {
+        this.error = 'Không thể tải thông tin sản phẩm.';
+        this.loading = false;
+        console.error(err);
+      },
+    });
+  }
+
+  private fetchRelatedProducts(catId: number): void {
     this.products$ = this.productService.getAllProducts().pipe(
-      map((response) => response.result ?? []) // Assuming 'data' is the property containing the array of products
-    ); // Gọi API lấy sản phẩm từ service
+      map((response) => response.result ?? []),
+      map((products) => products.filter((product) => product.cat_Id === catId).slice(0, 8))
+    );
     this.products$.subscribe({
       next: () => (this.loading = false),
       error: (err) => {
-        this.error = 'Không thể tải danh sách sản phẩm.';
+        this.error = 'Không thể tải danh sách sản phẩm liên quan.';
         this.loading = false;
         console.error(err);
       },

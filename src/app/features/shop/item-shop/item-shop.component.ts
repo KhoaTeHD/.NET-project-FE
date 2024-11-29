@@ -50,6 +50,17 @@ export class ItemShopComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       // Lấy số trang từ URL (nếu không có thì mặc định là 1)
       this.page = +params['page'] || 1;
+
+      if (
+        params['price'] !== undefined ||
+        params['bra_Id'] !== undefined ||
+        params['cat_Id'] !== undefined ||
+        params['col_Id'] !== undefined ||
+        params['siz_Id'] !== undefined
+      ) {
+        console.log('đang có bộ lọc');
+      }
+
       this.fetchProducts();
       this.productService.getAllProducts().subscribe((response) => {
         this.products = response.result || [];

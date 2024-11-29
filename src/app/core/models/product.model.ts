@@ -1,4 +1,8 @@
 import { ProductVariationDto } from "./productVariation.model";
+import { BrandDto } from "./brand.model";
+import { CategoryDto } from "./category.model";
+import { NationDto } from "./nation.model";
+import { SupplierDto } from "./supplier.model";
 
 export interface PlaceholderItem extends ProductDto {
   isPlaceholder: boolean;
@@ -7,9 +11,13 @@ export interface PlaceholderItem extends ProductDto {
 export interface ProductDto {
   id?: number;
   cat_Id?: number;
+  category?: CategoryDto;
   nat_Id?: number;
+  nation?: NationDto;
   bra_Id?: number;
+  brand?: BrandDto;
   sup_Id?: number;
+  supplier?: SupplierDto;
   name?: string;
   status?: boolean;
   productVariations?: ProductVariationDto[];

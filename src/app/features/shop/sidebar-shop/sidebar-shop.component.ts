@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CategoryDto } from '../../../core/models/category.model';
-import { BrandDto } from '../../../core/models/brand.model';
-import { ColorDto } from '../../../core/models/color.model';
-import { SizeDto } from '../../../core/models/size.model';
+import { CategoryDto, CategoryDto_v2 } from '../../../core/models/category.model';
+import { BrandDto, BrandDto_v2 } from '../../../core/models/brand.model';
+import { ColorDto, ColorDto_v2 } from '../../../core/models/color.model';
+import { SizeDto, SizeDto_v2 } from '../../../core/models/size.model';
 import { SliderModule } from 'primeng/slider';
 import { ProductService } from '../../../core/services/product.service';
 import { ProductDto } from '../../../core/models/product.model';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface Filters {
   [key: string]: any;
@@ -30,10 +31,10 @@ interface Filters {
 export class SidebarShopComponent implements OnInit {
   @Output() search: EventEmitter<any> = new EventEmitter<any>();
 
-  categories: CategoryDto[] = [];
-  brands: BrandDto[] = [];
-  colors: ColorDto[] = [];
-  sizes: SizeDto[] = [];
+  categories: CategoryDto_v2[] = [];
+  brands: BrandDto_v2[] = [];
+  colors: ColorDto_v2[] = [];
+  sizes: SizeDto_v2[] = [];
   nations: any[] = [];
   suppliers: any[] = [];
   filters: Filters = {
@@ -45,22 +46,110 @@ export class SidebarShopComponent implements OnInit {
     nat_Id: null,
     sup_Id: null,
   };
-  minPrice: number | undefined;
-  maxPrice: number | undefined;
+  minPrice: number = 0;
+  maxPrice: number = 0;
   priceRange: number[] = [0, 0];
   productVariations: any[] = [];
+  products: ProductDto[] = [];
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private route: ActivatedRoute, // Inject ActivatedRoute
+    private router: Router // Inject Router
+  ) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.initializeFiltersFromParams(params);
+    });
     this.productService.getAllProducts().subscribe((response) => {
       const products = response.result || [];
       this.categories = this.getCategoriesFromObjects(products);
       this.brands = this.getBrandsFromObjects(products);
       this.colors = this.getColorFromObjects(products);
       this.sizes = this.getSizesFromObjects(products);
+      this.products = products;
       this.setPriceRange();
+      this.initializeFiltersFromParams(this.route.snapshot.queryParams);
+
     });
+  }
+
+  initializeFiltersFromParams(params: any): void {
+    this.filters.cat_Id = params['cat_Id'] ? params['cat_Id'].split(',').map(Number) : [];
+    this.filters.bra_Id = params['bra_Id'] ? params['bra_Id'].split(',').map(Number) : [];
+    this.filters.col_Id = params['col_Id'] ? params['col_Id'].split(',').map(Number) : [];
+    this.filters.siz_Id = params['siz_Id'] ? params['siz_Id'].split(',').map(Number) : [];
+    this.priceRange = params['price']
+      ? params['price'].split(',').map(Number)
+      : [this.minPrice, this.maxPrice];
+  
+    // Update checked state for categories
+    this.categories.forEach((category) => {
+      category.checked = this.filters.cat_Id.includes(category.id);
+    });
+  
+    // Update checked state for brands
+    this.brands.forEach((brand) => {
+      brand.checked = this.filters.bra_Id.includes(brand.id);
+    });
+  
+    // Update checked state for colors
+    this.colors.forEach((color) => {
+      color.checked = this.filters.col_Id.includes(color.id);
+    });
+  
+    // Update checked state for sizes
+    this.sizes.forEach((size) => {
+      size.checked = this.filters.siz_Id.includes(size.id);
+    });
+  
+    this.onSearch();
+  }
+
+  onFilterChange(): void {
+    const queryParams: any = {};
+  
+    if (this.filters.cat_Id.length > 0) {
+      queryParams['cat_Id'] = this.filters.cat_Id.join(',');
+    } else {
+      queryParams['cat_Id'] = null; // Remove cat_Id from URL when no categories are selected
+    }
+  
+    if (this.filters.bra_Id.length > 0) {
+      queryParams['bra_Id'] = this.filters.bra_Id.join(',');
+    } else {
+      queryParams['bra_Id'] = null;
+    }
+  
+    if (this.filters.col_Id.length > 0) {
+      queryParams['col_Id'] = this.filters.col_Id.join(',');
+    } else {
+      queryParams['col_Id'] = null;
+    }
+  
+    if (this.filters.siz_Id.length > 0) {
+      queryParams['siz_Id'] = this.filters.siz_Id.join(',');
+    } else {
+      queryParams['siz_Id'] = null;
+    }
+  
+    if (this.priceRange && this.priceRange.length === 2) {
+      queryParams['price'] = this.priceRange.join(',');
+    } else {
+      queryParams['price'] = null; // Remove price from URL when not set
+    }
+  
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge',
+    });
+  
+    this.onSearch();
+  }
+  onSearch(): void {
+    this.search.emit(this.filters);
   }
 
   getCategoriesFromObjects(objects: any[]): CategoryDto[] {
@@ -116,10 +205,14 @@ export class SidebarShopComponent implements OnInit {
   }
 
   setPriceRange(): void {
-    if (this.productVariations.length > 0) {
-      const prices = this.productVariations.map((variation) => variation.price);
-      this.minPrice = Math.min(...prices);
-      this.maxPrice = Math.max(...prices);
+    if (this.products.length > 0) {
+      const prices = this.products.map((product) => {
+        const productVariations = product.productVariations || [];
+        return productVariations.map((pv) => pv.price);
+      });
+      const allPrices = prices.flat();
+      this.minPrice = Math.min(...allPrices.filter(price => price !== undefined));
+      this.maxPrice = Math.max(...allPrices.filter(price => price !== undefined));
       this.priceRange = [this.minPrice, this.maxPrice];
     }
   }
@@ -136,16 +229,53 @@ export class SidebarShopComponent implements OnInit {
     return uniqueItems;
   }
 
-  onFilterChange(filterKey: string, value: any, checked: boolean): void {
-    if (checked) {
-      this.filters[filterKey] = value;
-    } else {
-      this.filters[filterKey] = null;
-    }
-    this.onSearch();
-  }
 
-  onSearch(): void {
-    this.search.emit(this.filters);
+onCategoryChange(category: CategoryDto_v2): void {
+  if (category.checked) {
+    this.filters.cat_Id.push(category.id);
+  } else {
+    const index = this.filters.cat_Id.indexOf(category.id);
+    if (index !== -1) {
+      this.filters.cat_Id.splice(index, 1);
+    }
   }
+  this.onFilterChange();
+}
+
+onBrandChange(brand: BrandDto_v2): void {
+  if (brand.checked) {
+    this.filters.bra_Id.push(brand.id);
+  } else {
+    const index = this.filters.bra_Id.indexOf(brand.id);
+    if (index !== -1) {
+      this.filters.bra_Id.splice(index, 1);
+    }
+  }
+  this.onFilterChange();
+}
+
+onColorChange(color: ColorDto_v2): void {
+  if (color.checked) {
+    this.filters.col_Id.push(color.id);
+  } else {
+    const index = this.filters.col_Id.indexOf(color.id);
+    if (index !== -1) {
+      this.filters.col_Id.splice(index, 1);
+    }
+  }
+  this.onFilterChange();
+}
+
+onSizeChange(size: SizeDto_v2): void {
+  if (size.checked) {
+    this.filters.siz_Id.push(size.id);
+  } else {
+    const index = this.filters.siz_Id.indexOf(size.id);
+    if (index !== -1) {
+      this.filters.siz_Id.splice(index, 1);
+    }
+  }
+  this.onFilterChange();
+}
+  
 }

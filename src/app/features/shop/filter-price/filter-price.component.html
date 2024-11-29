@@ -53,6 +53,17 @@
       >Xoá tất cả</span
     >
   </div> -->
+  
+  <div
+    *ngIf="isfilterColSizeNatPrice"
+    class="filter-on-url d-flex align-items-center"
+  >
+    <span
+      class="badge text-bg-light"
+      (click)="clearFilters()"
+      style="cursor: pointer; font-size: 14px"
+      >Xoá bộ lọc</span>
+  </div>
   <div></div>
   <select
     class="form-select"
