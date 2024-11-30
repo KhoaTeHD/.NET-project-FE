@@ -33,9 +33,8 @@ export class ManageColorComponent implements OnInit {
 
   clonedColors: { [id: number]: ColorDto } = {};
 
- //reateColor: ColorDto = {};
 
- createColor: ColorDto = { id: 0, name: '', status: true };
+  createColor: ColorDto = {};
 
   searchValue: string = '';
 
@@ -54,6 +53,7 @@ export class ManageColorComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
+    this.createColor = { status: true };
   }
 
   onRowEditInit(color: ColorDto) {

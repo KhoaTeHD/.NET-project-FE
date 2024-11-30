@@ -51,6 +51,7 @@ export class ManageSupplierComponent {
 
     showDialog() {
       this.visible = true;
+      this.createSupplier = { status: true };
     }
 
   handleInput(event: Event, dt: any): void {
@@ -66,6 +67,7 @@ export class ManageSupplierComponent {
 
   onRowEditSave(supplier: SupplierDto, index: number) {
     if (supplier.supplierName?.trim().length !== 0) {
+      this.editSupplier(supplier);
       delete this.clonedSuppliers[supplier.supplier_ID as number];
     } else {
       this.suppliers[index] = this.clonedSuppliers[supplier.supplier_ID as number];
@@ -119,6 +121,18 @@ export class ManageSupplierComponent {
       next: response => {
         // Toast
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhà cung cấp đã được tạo' });
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+  }
+
+  editSupplier(supplier: SupplierDto): void {
+    this.supplierService.updateSupplier(supplier).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhà cung cấp đã được cập nhật' });
+        this.loadSuppliers(); // Reload colors after update
       },
       error: err => {
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
