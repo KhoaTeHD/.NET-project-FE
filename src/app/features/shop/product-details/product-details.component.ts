@@ -24,10 +24,7 @@ import { BRANDS } from '../../../data_test/brand/brand-data';
 import { ApiResponse } from '../../../core/models/auth/api-resonse.model';
 import { ProductService } from '../../../core/services/product.service';
 import { ProductDto } from '../../../core/models/product.model';
-import {
-  ProductVariationDto,
-  ProductVariationDto_v2,
-} from '../../../core/models/productVariation.model';
+import { ProductVariationDto } from '../../../core/models/productVariation.model';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CartDto } from '../../../core/models/cart.model';
@@ -125,11 +122,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     return undefined;
   }
 
-  getVariationBySizeAndColor(): ProductVariationDto_v2 | undefined {
+  getVariationBySizeAndColor(): ProductVariationDto | undefined {
     if (this.product && this.product.productVariations) {
       if (this.selectedSizeId && this.selectedColorId) {
         const variation = this.product.productVariations.find(
-          (variation: ProductVariationDto_v2) => {
+          (variation: ProductVariationDto) => {
             return (
               variation.col_Id === this.selectedColorId &&
               variation.siz_Id === this.selectedSizeId
@@ -339,9 +336,20 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     this.cartService.createCart(cartDto).subscribe({
       next: (response) => {
         console.log('Cart created successfully:', response);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Thành công',
+          detail: 'Bạn vừa thêm ' + variation.name + ' vào giỏ hàng!',
+        });
       },
       error: (error) => {
         console.error('Error creating cart:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thất bại',
+          detail:
+            'Đã có lỗi xảy ra khi thêm ' + variation.name + ' vào giỏ hàng!',
+        });
       },
     });
 

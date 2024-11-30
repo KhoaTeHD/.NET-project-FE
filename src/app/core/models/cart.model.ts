@@ -1,14 +1,11 @@
-import {
-  ProductVariationDto,
-  ProductVariationDto_v2,
-} from './productVariation.model';
+import { ProductVariationDto } from './productVariation.model';
 
 export interface CartDto {
   item_Id?: number;
   cus_Id?: string;
   price?: number;
   quantity?: number;
-  productVariation?: ProductVariationDto_v2;
+  productVariation?: ProductVariationDto;
 }
 
 export interface CartDtoExtendStatus extends CartDto {

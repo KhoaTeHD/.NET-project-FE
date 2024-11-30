@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { CartDto } from '../models/cart.model'; // Đường dẫn tới CartDto interface
+import { BehaviorSubject, Observable } from 'rxjs';
+import { CartDto, CartDtoExtendStatus } from '../models/cart.model'; // Đường dẫn tới CartDto interface
 import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường dẫn tới ApiResponse interface
 
 @Injectable({
