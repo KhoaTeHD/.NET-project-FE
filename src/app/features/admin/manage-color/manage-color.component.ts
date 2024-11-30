@@ -33,7 +33,9 @@ export class ManageColorComponent implements OnInit {
 
   clonedColors: { [id: number]: ColorDto } = {};
 
-  createColor: ColorDto = {};
+ //reateColor: ColorDto = {};
+
+ createColor: ColorDto = { id: 0, name: '', status: true };
 
   searchValue: string = '';
 

@@ -1,230 +1,293 @@
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { ImportsModule } from '../../../data_test/primeng/imports';
-import { Item } from '../../../data_test/item/item-interface';
-import { ITEMS } from '../../../data_test/item/item-data';
-import { ItemService } from '../../../data_test/item/item-service';
-import { Router, ActivatedRoute } from '@angular/router';
-interface Category {
-  name: string;
-  quantity: number;
-  detailsCategory: Array<{ name: string; link: string }>;
-}
+import {
+  CategoryDto,
+  CategoryDto_v2,
+} from '../../../core/models/category.model';
+import { BrandDto, BrandDto_v2 } from '../../../core/models/brand.model';
+import { ColorDto, ColorDto_v2 } from '../../../core/models/color.model';
+import { SizeDto, SizeDto_v2 } from '../../../core/models/size.model';
+import { SliderModule } from 'primeng/slider';
+import { ProductService } from '../../../core/services/product.service';
+import { ProductDto } from '../../../core/models/product.model';
+import { ActivatedRoute, Router } from '@angular/router';
 
-interface Color {
-  name: String;
-  value: String;
-}
-
-interface Brand {
-  name: String;
-}
-
-interface Size {
-  name: String;
+interface Filters {
+  [key: string]: any;
+  cat_Id: any;
+  bra_Id: any;
+  col_Id: any;
+  siz_Id: any;
+  price: any;
+  nat_Id: any;
+  sup_Id: any;
 }
 
 @Component({
   selector: 'app-sidebar-shop',
   standalone: true,
-  imports: [FormsModule, CommonModule, ImportsModule],
+  imports: [FormsModule, CommonModule, SliderModule],
   templateUrl: './sidebar-shop.component.html',
-  styleUrls: ['./sidebar-shop.component.css'] // Sửa styleUrl thành styleUrls
+  styleUrls: ['./sidebar-shop.component.css'],
 })
+export class SidebarShopComponent implements OnInit {
+  @Output() filtersChanged = new EventEmitter<Filters>();
 
-export class SidebarShopComponent implements OnInit{
+  categories: CategoryDto_v2[] = [];
+  brands: BrandDto_v2[] = [];
+  colors: ColorDto_v2[] = [];
+  sizes: SizeDto_v2[] = [];
+  nations: any[] = [];
+  suppliers: any[] = [];
+  filters: Filters = {
+    cat_Id: null,
+    bra_Id: null,
+    col_Id: null,
+    siz_Id: null,
+    price: null,
+    nat_Id: null,
+    sup_Id: null,
+  };
+  minPrice: number = 0;
+  maxPrice: number = 0;
+  priceRange: number[] = [0, 0];
+  productVariations: any[] = [];
+  products: ProductDto[] = [];
 
-  items: Item[] = ITEMS;
-  
-  uniqueTypes: { name: string; quantity: number }[] = [];
+  constructor(
+    private productService: ProductService,
+    private route: ActivatedRoute, // Inject ActivatedRoute
+    private router: Router // Inject Router
+  ) {}
 
-  selectedCategory: string = 'all';
-
-  uniqueColors: {name: string}[] = [];
-
-  selectedColors: string[] = [];
-
-  constructor(private itemService: ItemService, private router: Router, private route: ActivatedRoute) {
-    this.getUniqueTypesWithQuantity();
-    this.getUniqueColorsWithQuantity();
-  }
-
-  ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.selectedCategory = params['select'] || 'all';
-      this.selectedColors = params['color'] ? params['color'].split(' ') : [];
-
-          // Cập nhật lại trạng thái checkbox
-    this.updateCheckboxStates();
-  
-      // Cập nhật các items theo bộ lọc hiện tại
-      this.itemService.updateItemsByCategory(this.selectedCategory);
-      this.itemService.updateItemsByColors(this.selectedColors);
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.initializeFiltersFromParams(params);
     });
-  
+    this.productService.getAllProducts().subscribe((response) => {
+      const products = response.result || [];
+      this.categories = this.getCategoriesFromObjects(products);
+      this.brands = this.getBrandsFromObjects(products);
+      this.colors = this.getColorFromObjects(products);
+      this.sizes = this.getSizesFromObjects(products);
+      this.products = products;
+      this.setPriceRange();
+      this.initializeFiltersFromParams(this.route.snapshot.queryParams);
+    });
   }
-  
-// Hàm để cập nhật trạng thái checkbox dựa trên selectedColors
-updateCheckboxStates() {
-  this.uniqueColors.forEach(color => {
-    const checkbox = document.getElementById('color-' + color.name) as HTMLInputElement;
-    if (checkbox) {
-      checkbox.checked = this.selectedColors.includes(color.name);
-    }
-  });
-}
-  getUniqueColorsWithQuantity() {
-    const colorSet = new Set<string>(); // Sử dụng Set để lưu trữ màu sắc duy nhất
-      this.items.forEach(item => {
-        item.color.forEach(color => {
-          colorSet.add(color.value); // Thêm màu vào Set
-        });
-      });
-      // Chuyển Set thành mảng và định dạng lại
-      this.uniqueColors = Array.from(colorSet).map(color => ({ name: color }));
 
-  }
-  getUniqueTypesWithQuantity() {
-    const typeMap = new Map<string, number>();
+  initializeFiltersFromParams(params: any): void {
+    this.filters.cat_Id = params['cat_Id']
+      ? params['cat_Id'].split(',').map(Number)
+      : [];
+    this.filters.bra_Id = params['bra_Id']
+      ? params['bra_Id'].split(',').map(Number)
+      : [];
+    this.filters.col_Id = params['col_Id']
+      ? params['col_Id'].split(',').map(Number)
+      : [];
+    this.filters.siz_Id = params['siz_Id']
+      ? params['siz_Id'].split(',').map(Number)
+      : [];
+    this.priceRange = params['price']
+      ? params['price'].split(',').map(Number)
+      : [this.minPrice, this.maxPrice];
 
-    // Duyệt qua từng item để tính số lượng cho từng loại
-    this.items.forEach(item => {
-      if (typeMap.has(item.type)) {
-        typeMap.set(item.type, typeMap.get(item.type)! + 1);
-      } else {
-        typeMap.set(item.type, 1);
-      }
+    // Update checked state for categories
+    this.categories.forEach((category) => {
+      category.checked = this.filters.cat_Id.includes(category.id);
     });
 
-    // Chuyển typeMap thành mảng để gán vào uniqueTypes
-    this.uniqueTypes = Array.from(typeMap, ([name, quantity]) => ({ name, quantity }));
+    // Update checked state for brands
+    this.brands.forEach((brand) => {
+      brand.checked = this.filters.bra_Id.includes(brand.id);
+    });
+
+    // Update checked state for colors
+    this.colors.forEach((color) => {
+      color.checked = this.filters.col_Id.includes(color.id);
+    });
+
+    // Update checked state for sizes
+    this.sizes.forEach((size) => {
+      size.checked = this.filters.siz_Id.includes(size.id);
+    });
+
+    this.onSearch();
   }
 
-  categories: Category[] = [
-    {
-      name: 'Light Stick',
-      quantity: 100,
-      detailsCategory: [
-        { name: 'J97',
-          link: 'j97'
-        },
-        { name: 'Sơn Tùng M-TP',
-          link: 'sontungmtp'
-        },
-        { name: 'BlackPink',
-          link: 'blackpink'
-        }
-      ]
-    },
-    {
-      name: 'Áo mùa đông',
-      quantity: 50,
-      detailsCategory: [
-        { name: 'Áo lông J97',
-          link: 'aolongj97'
-         },
-        { name: 'Áo khoác J97',
-          link: 'aokhoacj97'
-        }
-      ]
-    },
-    {
-      name: 'Quần thời thượng',
-      quantity: 80,
-      detailsCategory: [
-        { name: 'Quần Jean J97',
-          link: 'quanjeanj97'
-         },
-        { name: 'Quần Free Fire',
-          link: 'quanfreefire'
-         },
-        { name: 'Quần bò J97',
-          link: 'quanboj97'
-         }
-      ]
-    }
-  ];
+  onFilterChange(): void {
+    const queryParams: any = {};
 
-  colors: Color[] = [
-    {
-      name: 'Hồng',
-      value: 'pink'
-    },
-    {
-      name: 'Xanh',
-      value: 'blue'
-    },
-    {
-      name: 'Đỏ',
-      value: 'red'
-    }
-  ];
-
-  brands: Brand[] = [
-    {
-      name: 'J97',
-    },
-    {
-      name: 'Sơn Tùng M-TP',
-    },
-    {
-      name: 'Trịnh Trần Phương Tuấn',
-    }
-  ];
-
-  sizes: Size[] = [
-    {
-      name: 'S',
-    },
-    {
-      name: 'M',
-    },
-    {
-      name: 'L',
-    },
-    {
-      name: 'Over Size',
-    }
-  ];
-  
-  onCategoryChange(event: any) {
-    this.selectedCategory = event.target.value;
-    this.updateUrl();
-    this.itemService.updateItemsByCategory(this.selectedCategory);
-    // Gọi updateItemsByColors để đảm bảo danh sách sản phẩm được cập nhật
-    this.itemService.updateItemsByColors(this.selectedColors);
-  }
-  
-  onColorChange(event: any) {
-    const colorValue = event.target.value;
-    if (!colorValue) return;
-  
-    if (event.target.checked) {
-      if (!this.selectedColors.includes(colorValue)) {
-        this.selectedColors.push(colorValue);
-      }
+    if (this.filters.cat_Id.length > 0) {
+      queryParams['cat_Id'] = this.filters.cat_Id.join(',');
     } else {
-      this.selectedColors = this.selectedColors.filter(color => color !== colorValue);
+      queryParams['cat_Id'] = null; // Remove cat_Id from URL when no categories are selected
     }
-  
-    this.updateUrl();
-    this.itemService.updateItemsByColors(this.selectedColors);
-  }
-  
 
-  updateUrl() {
-    // Cập nhật URL với các giá trị đã chọn
+    if (this.filters.bra_Id.length > 0) {
+      queryParams['bra_Id'] = this.filters.bra_Id.join(',');
+    } else {
+      queryParams['bra_Id'] = null;
+    }
+
+    if (this.filters.col_Id.length > 0) {
+      queryParams['col_Id'] = this.filters.col_Id.join(',');
+    } else {
+      queryParams['col_Id'] = null;
+    }
+
+    if (this.filters.siz_Id.length > 0) {
+      queryParams['siz_Id'] = this.filters.siz_Id.join(',');
+    } else {
+      queryParams['siz_Id'] = null;
+    }
+
+    if (this.priceRange && this.priceRange.length === 2) {
+      queryParams['price'] = this.priceRange.join(',');
+    } else {
+      queryParams['price'] = null; // Remove price from URL when not set
+    }
+
     this.router.navigate([], {
-      queryParams: {
-        select: this.selectedCategory !== 'all' ? this.selectedCategory : null,
-        color: this.selectedColors.length > 0 ? this.selectedColors.join(' ') : null
-      },
+      relativeTo: this.route,
+      queryParams: queryParams,
       queryParamsHandling: 'merge',
-      relativeTo: this.route
     });
+    this.filtersChanged.emit(this.filters); // Emit the filters
+    this.onSearch();
   }
-  
+  onSearch(): void {
+    //console.log('Search initiated with filters:', this.filters);
+  }
 
-  rangeValues: number[] = [20, 80];
+  getCategoriesFromObjects(objects: any[]): CategoryDto[] {
+    const categories: CategoryDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      if (object.category && !map.has(object.category.id)) {
+        map.set(object.category.id, true);
+        categories.push(object.category);
+      }
+    }
+    return categories;
+  }
+
+  getBrandsFromObjects(objects: any[]): BrandDto[] {
+    const brands: BrandDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      if (object.brand && !map.has(object.brand.id)) {
+        map.set(object.brand.id, true);
+        brands.push(object.brand);
+      }
+    }
+    return brands;
+  }
+
+  getColorFromObjects(objects: any[]): ColorDto[] {
+    const colors: ColorDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      for (const productVariation of object.productVariations) {
+        if (productVariation.color && !map.has(productVariation.color.id)) {
+          map.set(productVariation.color.id, true);
+          colors.push(productVariation.color);
+        }
+      }
+    }
+    return colors.filter((color) => color !== undefined);
+  }
+
+  getSizesFromObjects(objects: any[]): SizeDto[] {
+    const sizes: SizeDto[] = [];
+    const map = new Map();
+    for (const object of objects) {
+      for (const productVariation of object.productVariations) {
+        if (productVariation.size && !map.has(productVariation.size.id)) {
+          map.set(productVariation.size.id, true);
+          sizes.push(productVariation.size);
+        }
+      }
+    }
+    return sizes;
+  }
+
+  setPriceRange(): void {
+    if (this.products.length > 0) {
+      const prices = this.products.map((product) => {
+        const productVariations = product.productVariations || [];
+        return productVariations.map((pv) => pv.price);
+      });
+      const allPrices = prices.flat();
+      this.minPrice = Math.min(
+        ...allPrices.filter((price) => price !== undefined)
+      );
+      this.maxPrice = Math.max(
+        ...allPrices.filter((price) => price !== undefined)
+      );
+      this.priceRange = [this.minPrice, this.maxPrice];
+    }
+  }
+
+  extractUnique<T>(items: T[], key: keyof T): T[] {
+    const uniqueItems = [];
+    const map = new Map();
+    for (const item of items) {
+      if (!map.has(item[key])) {
+        map.set(item[key], true);
+        uniqueItems.push(item);
+      }
+    }
+    return uniqueItems;
+  }
+
+  onCategoryChange(category: CategoryDto_v2): void {
+    if (category.checked) {
+      this.filters.cat_Id.push(category.id);
+    } else {
+      const index = this.filters.cat_Id.indexOf(category.id);
+      if (index !== -1) {
+        this.filters.cat_Id.splice(index, 1);
+      }
+    }
+    this.onFilterChange();
+  }
+
+  onBrandChange(brand: BrandDto_v2): void {
+    if (brand.checked) {
+      this.filters.bra_Id.push(brand.id);
+    } else {
+      const index = this.filters.bra_Id.indexOf(brand.id);
+      if (index !== -1) {
+        this.filters.bra_Id.splice(index, 1);
+      }
+    }
+    this.onFilterChange();
+  }
+
+  onColorChange(color: ColorDto_v2): void {
+    if (color.checked) {
+      this.filters.col_Id.push(color.id);
+    } else {
+      const index = this.filters.col_Id.indexOf(color.id);
+      if (index !== -1) {
+        this.filters.col_Id.splice(index, 1);
+      }
+    }
+    this.onFilterChange();
+  }
+
+  onSizeChange(size: SizeDto_v2): void {
+    if (size.checked) {
+      this.filters.siz_Id.push(size.id);
+    } else {
+      const index = this.filters.siz_Id.indexOf(size.id);
+      if (index !== -1) {
+        this.filters.siz_Id.splice(index, 1);
+      }
+    }
+    this.onFilterChange();
+  }
 }

@@ -1,59 +1,123 @@
 <div class="container-fluid bg-dark header">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 fixed-top">
-        <div class="container navbar-container">
-            <div style="margin-right:  30px !important;">
-                <img width="100%" src="../../../../assets/images/logo/logo.png" alt="Logo" style="cursor: pointer;" [routerLink]="['/']"/>
-            </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                <span class="navbar-toggler-icon"></span>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 fixed-top">
+    <div class="container navbar-container">
+      <div style="margin-right: 30px !important">
+        <img
+          width="100%"
+          src="../../../../assets/images/logo/logo.png"
+          alt="Logo"
+          style="cursor: pointer"
+          [routerLink]="['/']"
+        />
+      </div>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#mynavbar"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mynavbar">
+        <div class="d-flex justify-content-between ms-auto nav-hidden">
+          <form class="d-flex me-4 search-area" (submit)="onSearch()">
+            <input
+              class="form-control me-2 input-search my-1"
+              type="text"
+              placeholder="Tên sản phẩm"
+              [(ngModel)]="searchQuery"
+              name="searchQuery"
+            />
+            <button
+              class="btn btn-primary px-3 my-1"
+              type="button"
+              style="background-color: #184afa; border: none"
+              (click)="onSearch()"
+            >
+              <i
+                class="fa-solid fa-magnifying-glass"
+                style="font-size: 18px"
+              ></i>
             </button>
-            <div class="collapse navbar-collapse" id="mynavbar">
-                <div class="d-flex justify-content-between ms-auto nav-hidden">
-                    <form class="d-flex me-4 search-area">
-                        <input class="form-control me-2 input-search my-1 " type="text" placeholder="Tên sản phẩm">
-                        <button class="btn btn-primary px-3 my-1" type="button" style="background-color: #184AFA; border: none;">
-                            <i class="fa-solid fa-magnifying-glass" style="font-size: 18px;"></i>
-                        </button>
-                    </form>
-                    <ul class="navbar-nav navbar-menu-header">
-                        <li class="nav-item">
-                            <a class="nav-link" [routerLink]="['/shop']" style="color: #fff;">Sản phẩm</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="javascript:void(0)" style="color: #fff;">Khuyến mãi</a>
-                        </li>
-                        <li class="nav-item">
-                            <div class="dropdown">
-                                <button type="button" class="btn btn-dark dropdown-toggle custom-dropdown-toggle" data-bs-toggle="dropdown">
-                                  Danh mục
-                                </button>
-                                <ul class="dropdown-menu">
-                                  <li><a class="dropdown-item" href="#">Áo thun</a></li>
-                                  <li><a class="dropdown-item" href="#">Áo polo</a></li>
-                                  <li><a class="dropdown-item" href="#">Quần jeans</a></li>
-                                  <li><a class="dropdown-item" href="#">Áo sơ mi</a></li>
-                                </ul>
-                              </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" [routerLink]="['/cart']" style="color: #fff;">
-                                <div class="" style="position: relative; display: inline-flex;">
-                                    <i class="fa-solid fa-cart-shopping"></i>
-                                    <div class="cart-number-notify">
-                                        <span>{{ cart.item_quantity }}</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" [routerLink]="['/sign-in']" style="color: #fff;">
-                                <i class="fa-solid fa-user me-1"></i>
-                                Đăng nhập/Đăng ký
-                            </a>
-                        </li>
-                    </ul>
+          </form>
+          <ul class="navbar-nav navbar-menu-header">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/shop']" style="color: #fff"
+                >Sản phẩm</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" style="color: #fff"
+                >Khuyến mãi</a
+              >
+            </li>
+            <li class="nav-item">
+              <div class="dropdown" style="color: #fff">
+                <p
+                  type="button"
+                  class="mb-0 dropdown-toggle custom-dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                >
+                  Danh mục
+                </p>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Áo thun</a></li>
+                  <li><a class="dropdown-item" href="#">Áo polo</a></li>
+                  <li><a class="dropdown-item" href="#">Quần jeans</a></li>
+                  <li><a class="dropdown-item" href="#">Áo sơ mi</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/cart']" style="color: #fff">
+                <div class="" style="position: relative; display: inline-flex">
+                  <i class="fa-solid fa-cart-shopping"></i>
+                  <div class="cart-number-notify">
+                    <span>{{ cart.item_quantity }}</span>
+                  </div>
                 </div>
-            </div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                [routerLink]="['/sign-in']"
+                style="color: #fff"
+                *ngIf="!user"
+              >
+                <i class="fa-solid fa-user me-1"></i>
+                Đăng nhập/Đăng ký
+              </a>
+              <div
+                class="dropdown dropdown-hover"
+                style="color: #fff"
+                *ngIf="user"
+              >
+                <p
+                  type="button"
+                  class="mb-0 dropdown-toggle truncate-button"
+                  data-bs-toggle="dropdown"
+                >
+                  {{ user.name }}
+                </p>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" [routerLink]="['/record']"
+                      >Hồ sơ</a
+                    >
+                  </li>
+                  <li><a class="dropdown-item" href="#">Đơn hàng</a></li>
+                  <li><a class="dropdown-item" href="#">Sổ địa chỉ</a></li>
+                  <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
+                  <li>
+                    <a class="dropdown-item" (click)="logout()">Đăng xuất</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
         </div>
-    </nav>
+      </div>
+    </div>
+  </nav>
 </div>

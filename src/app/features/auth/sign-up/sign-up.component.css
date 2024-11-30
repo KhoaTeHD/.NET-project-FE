@@ -53,6 +53,13 @@
     cursor: pointer;
 }
 
+small {
+    display: block;
+    margin-top: 4px;
+    color: #F03B13;
+    font-size: 12px;
+}
+
 /* DT */
 @media (max-width: 767px) {
     .sign-up-modal {

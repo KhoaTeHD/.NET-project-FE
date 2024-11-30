@@ -1,90 +1,94 @@
-<div class="custom-sidebar-css">
-  <section class="mb-3">
-    <h1 style="font-family: 'Roboto'" class="h5 pb-4">DANH MỤC SẢN PHẨM</h1>
-    <select
-      style="font-family: 'Roboto'"
-      class="form-select"
-      aria-label="Default select example"
-      (change)="onCategoryChange($event)"
-      [value]="selectedCategory"
+<!-- In sidebar-shop.component.html -->
+
+<!-- Category Filter -->
+<section class="mb-4 mt-3">
+  <h1 style="font-family: 'Roboto'" class="h5 pb-2">LỌC THEO DANH MỤC</h1>
+  <div class="form-check" *ngFor="let category of categories">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      [value]="category.id"
+      [(ngModel)]="category.checked"
+      (change)="onCategoryChange(category)"
+    />
+    <label style="font-family: 'Roboto'" class="form-check-label">
+      {{ category.name }}
+    </label>
+  </div>
+</section>
+
+<!-- Brand Filter -->
+<section class="mb-4">
+  <h1 style="font-family: 'Roboto'" class="h5 pb-2">LỌC THEO THƯƠNG HIỆU</h1>
+  <div class="form-check" *ngFor="let brand of brands">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      [value]="brand.id"
+      [(ngModel)]="brand.checked"
+      (change)="onBrandChange(brand)"
+    />
+    <label style="font-family: 'Roboto'" class="form-check-label">
+      {{ brand.name }}
+    </label>
+  </div>
+</section>
+
+<!-- Color Filter -->
+<section class="mb-4">
+  <h1 style="font-family: 'Roboto'" class="h5 pb-2">LỌC THEO MÀU SẮC</h1>
+  <div class="form-check" *ngFor="let color of colors">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      [value]="color.id"
+      [(ngModel)]="color.checked"
+      (change)="onColorChange(color)"
+    />
+    <label style="font-family: 'Roboto'" class="form-check-label">
+      {{ color.name }}
+    </label>
+  </div>
+</section>
+
+<!-- Size Filter -->
+<section class="mb-4">
+  <h1 style="font-family: 'Roboto'" class="h5 pb-2">LỌC THEO KÍCH THƯỚC</h1>
+  <div class="form-check" *ngFor="let size of sizes">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      [value]="size.id"
+      [(ngModel)]="size.checked"
+      (change)="onSizeChange(size)"
+    />
+    <label style="font-family: 'Roboto'" class="form-check-label">
+      {{ size.name }}
+    </label>
+  </div>
+</section>
+
+<!-- Price Range Slider -->
+<section class="mb-3">
+  <h1 style="font-family: 'Roboto'" class="h5 pb-4">LỌC THEO GIÁ</h1>
+  <div class="card flex justify-content-center">
+    <p-slider
+      [(ngModel)]="priceRange"
+      [min]="minPrice"
+      [max]="maxPrice"
+      [range]="true"
+      (onChange)="onFilterChange()"
     >
-      <option value="all">Tất cả</option>
-      <option *ngFor="let category of uniqueTypes" [value]="category.name">
-        {{ category.name }} ({{ category.quantity }})
-      </option>
-    </select>
-  </section>
-
-  <section class="mb-3">
-    <h1 style="font-family: 'Roboto'" class="h5 pb-4">LỌC THEO GIÁ</h1>
-    <div class="card flex justify-content-center">
-      <p-slider [(ngModel)]="rangeValues" [range]="true" styleClass="w-14rem">
-        <ng-template let-rangeValues>
-          <div class="d-flex justify-content-between">
-            <span>{{ rangeValues[0] }}</span>
-            <span>{{ rangeValues[1] }}</span>
-          </div>
-        </ng-template>
-      </p-slider>
-    </div>
-  </section>
-
-  <section class="mb-3">
-    <h1 style="font-family: 'Roboto'" class="h5 pb-4">LỌC THEO MÀU SẮC</h1>
-    <div class="form-check" *ngFor="let color of uniqueColors">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        [value]="color.name"
-        id="color-{{ color.name }}"
-        (change)="onColorChange($event)"
-        [checked]="selectedColors.includes(color.name)"
-      />
-      <label
-        style="font-family: 'Roboto'"
-        class="form-check-label"
-        [for]="'color-' + color.name"
-      >
-        {{ color.name }}
-      </label>
-    </div>
-  </section>
-
-  <section class="mb-3">
-    <h1 style="font-family: 'Roboto'" class="h5 pb-4">LỌC THEO THƯƠNG HIỆU</h1>
-    <div class="form-check" *ngFor="let brand of brands">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        value=""
-        id="flexCheckDefault"
-      />
-      <label
-        style="font-family: 'Roboto'"
-        class="form-check-label"
-        for="flexCheckDefault"
-      >
-        {{ brand.name }}
-      </label>
-    </div>
-  </section>
-
-  <section class="mb-3">
-    <h1 style="font-family: 'Roboto'" class="h5 pb-4">LỌC THEO SIZE</h1>
-    <div class="form-check" *ngFor="let size of sizes">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        value=""
-        id="flexCheckDefault"
-      />
-      <label
-        style="font-family: 'Roboto'"
-        class="form-check-label"
-        for="flexCheckDefault"
-      >
-        {{ size.name }}
-      </label>
-    </div>
-  </section>
-</div>
+      <ng-template let-rangeValues>
+        <div class="d-flex justify-content-between">
+          <span>{{ rangeValues[0] }}</span>
+          <span>{{ rangeValues[1] }}</span>
+        </div>
+      </ng-template>
+    </p-slider>
+  </div>
+  <div class="d-flex justify-content-between mt-2">
+    <span>Tối thiểu: {{ priceRange[0] | currency : "VND" : "symbol"}}</span>
+    <span>Tối đa: {{ priceRange[1] | currency : "VND" : "symbol"}}</span>
+  </div>
+</section>

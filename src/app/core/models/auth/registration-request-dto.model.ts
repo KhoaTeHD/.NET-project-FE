@@ -2,7 +2,6 @@ export interface RegistrationRequestDto {
     name: string;
     email: string;
     phoneNumber: string;
-    birthDateTemp: Date;
     birthDate: string;
     gender: string;
     password: string;
