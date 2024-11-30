@@ -24,7 +24,7 @@ export class ProductService {
 
   // Thêm mới một Product (POST /api/Product/create)
   createProduct(product: ProductDto): Observable<ApiResponse<ProductDto>> {
-    return this.http.post<ApiResponse<ProductDto>>(`${this.baseUrl}/create`, product);
+    return this.http.post<ApiResponse<ProductDto>>(`${this.baseUrl}`, product);
   }
 
   // Thêm mới Product kèm theo variation (POST /api/Product/create-with-variation)

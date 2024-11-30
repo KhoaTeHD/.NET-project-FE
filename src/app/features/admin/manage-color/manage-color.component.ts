@@ -52,6 +52,7 @@ export class ManageColorComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
+    this.createColor = { status: true };
   }
 
   onRowEditInit(color: ColorDto) {

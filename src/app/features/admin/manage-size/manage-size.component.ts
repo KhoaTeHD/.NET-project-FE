@@ -52,6 +52,7 @@ export class ManageSizeComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
+    this.createSize = { status: true};
   }
 
   onRowEditInit(size: SizeDto) {

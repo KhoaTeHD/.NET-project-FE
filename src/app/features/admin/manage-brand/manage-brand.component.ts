@@ -53,6 +53,7 @@ export class ManageBrandComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
+    this.createBrand = { status: true };
   }
 
   onRowEditInit(brand: BrandDto) {

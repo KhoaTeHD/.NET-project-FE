@@ -9,7 +9,7 @@
         <p-toast></p-toast>
         <p-confirmDialog />
         <div class="card-body">
-          <p-table #table [value]="products" dataKey="Pro_ID" [tableStyle]="{ 'min-width': '50rem' }"
+          <p-table #table [value]="products" dataKey="id" [tableStyle]="{ 'min-width': '50rem' }"
             class="table table-striped table-bordered">
             <ng-template pTemplate="header">
               <tr>
@@ -25,14 +25,13 @@
                 <td>
                   <p-button type="button" pRipple [pRowToggler]="product" [text]="true" [rounded]="true" [plain]="true"
                     [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-                  <!-- <button type="button" pButton icon="pi pi-chevron-down" (click)="table.toggleRow(product)">Xem</button> -->
                 </td>
-                <td>{{ product.Pro_ID }}</td>
-                <td>{{ product.Pro_name }}</td>
-                <td>{{ product.Pro_status ? 'Hoạt động' : 'Ngừng bán' }}</td>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.status ? 'Hoạt động' : 'Ngừng bán' }}</td>
                 <td>
                   <div class="flex align-items-center justify-content-center gap-2">
-                    <button pButton pRipple type="button" icon="pi pi-plus" (click)="showDialogVariation('Add', {})"
+                    <button pButton pRipple type="button" icon="pi pi-plus" (click)="showDialogVariation('Add', { pro_Id: product.id})"
                       class="p-button-rounded p-button-text p-button-success">
                     </button>
                     <button pButton pRipple type="button" icon="pi pi-pencil" (click)="showDialogProduct('Edit', product)" class="p-button-rounded p-button-text">
@@ -42,15 +41,13 @@
                     </button>
                   </div>
                 </td>
-
               </tr>
             </ng-template>
 
             <ng-template pTemplate="rowexpansion" let-product>
               <td colspan="5">
                 <div class="p-2">
-                  <!-- Bảng hiển thị danh sách các biến thể sản phẩm -->
-                  <p-table [value]="product.variations">
+                  <p-table [value]="product.productVariations">
                     <ng-template pTemplate="header">
                       <tr>
                         <th style="width: 10rem;">Mã biến thể</th>
@@ -66,13 +63,13 @@
 
                     <ng-template pTemplate="body" let-variation>
                       <tr>
-                        <td>{{ variation.ProV_ID }}</td>
-                        <td>{{ variation.Col_ID }}</td>
-                        <td>{{ variation.Siz_ID }}</td>
-                        <td>{{ variation.ProV_Price | currency: 'VND' }}</td>
-                        <td>{{ variation.ProV_Quantity }}</td>
-                        <td>{{ variation.ProV_Discount }}%</td>
-                        <td>{{ variation.ProV_Status ? 'Hoạt động' : 'Ngừng bán' }}</td>
+                        <td>{{ variation.id }}</td>
+                        <td>{{ variation.color.name }}</td>
+                        <td>{{ variation.size.name }}</td>
+                        <td>{{ variation.price | currency: 'VND' }}</td>
+                        <td>{{ variation.quantity }}</td>
+                        <td>{{ variation.discount }}%</td>
+                        <td>{{ variation.status ? 'Hoạt động' : 'Ngừng bán' }}</td>
                         <td>
                           <div class="flex align-items-center justify-content-center gap-2">
                             <button pButton pRipple type="button" icon="pi pi-pencil" (click)="showDialogVariation('Edit', variation)" class="p-button-rounded p-button-text">
@@ -98,97 +95,78 @@
 
 <p-dialog header="{{ dialogTitle }} sản phẩm" [modal]="true" [(visible)]="visibleDialogProduct" [style]="{ width: '30rem' }"
   styleClass="p-fluid">
-
   <div class="mb-4">
     <label for="id" class="form-label">Mã sản phẩm</label>
-    <input type="text" class="form-control" [(ngModel)]="product.Pro_ID" id="id" name="id" disabled>
+    <input type="text" class="form-control" [(ngModel)]="product.id" id="id" name="id" disabled>
   </div>
-
   <div class="mb-4">
     <label for="name" class="form-label">Tên sản phẩm</label>
-    <input type="text" class="form-control" [(ngModel)]="product.Pro_name" id="name" placeholder="Nhập tên" name="name">
+    <input type="text" class="form-control" [(ngModel)]="product.name" id="name" placeholder="Nhập tên" name="name">
   </div>
-
   <div class="mb-4">
     <label class="form-check-label me-2" for="active">Trạng thái:</label>
-    <input class="form-check-input" type="radio" name="active" id="visible"> Hoạt động
-    <input class="form-check-input ms-2" type="radio" name="active" id="disable"> Ngừng bán
+    <input class="form-check-input" type="radio" name="active" id="visible" [(ngModel)]="product.status" [value]="true"> Hoạt động
+    <input class="form-check-input ms-2" type="radio" name="active" id="disable" [(ngModel)]="product.status" [value]="false"> Ngừng bán
   </div>
-
   <div class="d-flex justify-content-end gap-2 mt-4">
     <p-button label="Hủy" severity="secondary" (onClick)="visibleDialogProduct = false" />
-    <p-button label="Lưu" (onClick)="visibleDialogProduct = false" />
+    <p-button label="Lưu" (onClick)="dialogTitle === 'Thêm' ? createNewProduct() : editProduct()" />
   </div>
-
 </p-dialog>
-
-<!-- Dialog cho biến thể -->
 
 <p-dialog header="{{ dialogTitle }} biến thể" [modal]="true" [(visible)]="visibleDialogVariation" [style]="{ width: '55rem' }"
   styleClass="p-fluid">
-
   <div id="variationsContainer">
     <div class="variation-item mb-3">
       <div class="row">
-        <div class="col-md-4">
-          <label for="id" class="form-label">Mã biến thể</label>
-          <input type="text" class="form-control" [(ngModel)]="variations.ProV_ID" id="id" name="id" disabled>
-        </div>
-        <div class="col-md-4">
-          <label for="Col_ID" class="form-label">Color</label>
-          <p-dropdown 
-            [(ngModel)]="variations.Col_ID" 
-            [options]="colors" 
-            optionValue="Col_Name">
-            
-            <ng-template pTemplate="selectedItem">
-              <div *ngIf="variations.Col_ID">
-                {{ variations.Col_ID }}
+        <div class="col-md-6">
+          <label for="col_Id" class="form-label">Màu sắc</label>
+          <p-dropdown [(ngModel)]="variation.col_Id" [options]="colors" optionValue="id" optionLabel="name">
+            <!-- <ng-template pTemplate="selectedItem">
+              <div *ngIf="variation.col_Id">
+                {{ variation.color?.name }}
               </div>
-            </ng-template>
-            
-            <ng-template let-color pTemplate="item">
-              {{ color.Col_Name }}
-            </ng-template>
-
+            </ng-template> -->
+            <!-- <ng-template let-color pTemplate="item">
+              {{ color.name }}
+            </ng-template> -->
           </p-dropdown>
-          <!-- <input type="text" class="form-control" name="Col_ID" /> -->
         </div>
-        <div class="col-md-4">
-          <label for="Siz_ID" class="form-label">Size</label>
-          <p-dropdown 
-            [(ngModel)]="variations.Siz_ID" 
-            [options]="sizes" 
-            optionValue="Siz_Name">
-            
-            <ng-template pTemplate="selectedItem">
-              <div *ngIf="variations.Siz_ID">
-                {{ variations.Siz_ID }}
+        <div class="col-md-6">
+          <label for="siz_Id" class="form-label">Kích thước</label>
+          <p-dropdown [(ngModel)]="variation.siz_Id" [options]="sizes" optionValue="id" optionLabel="name">
+            <!-- <ng-template pTemplate="selectedItem">
+              <div *ngIf="variation.siz_Id">
+                {{ variation.size?.name }}
               </div>
             </ng-template>
-            
             <ng-template let-size pTemplate="item">
-              {{ size.Siz_Name }}
-            </ng-template>
-            
+              {{ size.name }}
+            </ng-template> -->
           </p-dropdown>
         </div>
         <div class="col-md-4 mt-3">
-          <label for="ProV_Price" class="form-label">Đơn giá</label>
-          <input type="number" [(ngModel)]="variations.ProV_Price"  class="form-control" name="ProV_Price" />
+          <label for="price" class="form-label">Đơn giá</label>
+          <!-- <input type="number" [(ngModel)]="variation.price" class="form-control" name="price" /> -->
+          <p-inputNumber 
+            inputId="price" 
+            [(ngModel)]="variation.price"
+            mode="currency" 
+            currency="VND" 
+            locale="vi-VN"  /> 
         </div>
         <div class="col-md-4 mt-3">
-          <label for="ProV_Quantity" class="form-label">Số lượng</label>
-          <input type="number" [(ngModel)]="variations.ProV_Quantity" class="form-control" name="ProV_Quantity" disabled/>
+          <label for="quantity" class="form-label">Số lượng</label>
+          <input type="number" [(ngModel)]="variation.quantity" class="form-control" name="quantity" />
         </div>
         <div class="col-md-4 mt-3">
-          <label for="ProV_Discount" class="form-label">Khuyến mãi</label>
-          <input type="number" [(ngModel)]="variations.ProV_Discount" class="form-control" name="ProV_Discount" />
+          <label for="discount" class="form-label">Khuyến mãi</label>
+          <input type="number" [(ngModel)]="variation.discount" class="form-control" name="discount" />
         </div>
         <div class="col-md-4 mt-3">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="ProV_Status" />
-            <label class="form-check-label" for="ProV_Status">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="variation.status" name="status" />
+            <label class="form-check-label" for="status">
               Hoạt động
             </label>
           </div>
@@ -198,6 +176,6 @@
   </div>
   <div class="d-flex justify-content-end gap-2 mt-4">
     <p-button label="Hủy" severity="secondary" (onClick)="visibleDialogVariation = false" />
-    <p-button label="Lưu" (onClick)="visibleDialogVariation = false" />
+    <p-button label="Lưu" (onClick)="dialogTitle === 'Thêm' ? createNewVariation() : editVariation()" />
   </div>
 </p-dialog>

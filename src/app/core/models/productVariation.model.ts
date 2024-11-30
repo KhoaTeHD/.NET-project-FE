@@ -1,4 +1,6 @@
+import { ColorDto } from "./color.model";
 import { ProductDto } from "./product.model";
+import { SizeDto } from "./size.model";
 
 export interface ProductVariationDto {
     id?: number;
@@ -13,4 +15,6 @@ export interface ProductVariationDto {
     discount?: number;
     status?: boolean;
     product?: ProductDto;
+    color?: ColorDto;
+    size?: SizeDto;
 }
