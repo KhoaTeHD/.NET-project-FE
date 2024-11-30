@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { SharedService } from '../../../core/services/share.service';
-
+import { FormsModule } from '@angular/forms';
 interface FilterPrice {
   name: string;
   value: number;
@@ -12,7 +12,7 @@ interface FilterPrice {
 @Component({
   selector: 'app-filter-price',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './filter-price.component.html',
   styleUrls: ['./filter-price.component.css'],
 })

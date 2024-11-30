@@ -150,6 +150,16 @@ export class SidebarShopComponent implements OnInit {
       queryParams['price'] = null; // Remove price from URL when not set
     }
 
+    if (
+      queryParams['cat_Id'] ||
+      queryParams['price'] ||
+      queryParams['bra_Id'] ||
+      queryParams['col_Id'] ||
+      queryParams['siz_Id']
+    ) {
+      queryParams['search'] = null;
+    }
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: queryParams,

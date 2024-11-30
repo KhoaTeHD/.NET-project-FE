@@ -69,11 +69,11 @@
               </div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" [routerLink]="['/cart']" style="color: #fff">
+              <a class="nav-link" (click)="checkUser()" style="color: #fff">
                 <div class="" style="position: relative; display: inline-flex">
                   <i class="fa-solid fa-cart-shopping"></i>
                   <div class="cart-number-notify">
-                    <span>{{ cart.item_quantity }}</span>
+                    <span>{{ cartItems.length }}</span>
                   </div>
                 </div>
               </a>
