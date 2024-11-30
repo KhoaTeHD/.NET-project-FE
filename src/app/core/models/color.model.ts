@@ -1,5 +1,5 @@
 export interface ColorDto {
-  id: number;
+  id?: number;
   name?: string;
   status?: boolean;
 }
