@@ -1,6 +1,6 @@
 <p-toast />
 <app-header />
-<section class="gradient-custom" style="min-height: 80vh;">
+<section class="gradient-custom" style="min-height: 80vh">
   <div class="container py-5">
     <div class="row d-flex justify-content-center my-4">
       <div class="col-md-12 col-lg-8">
@@ -141,8 +141,28 @@
             <!-- Single item -->
           </div>
           <ng-template #emptyCart>
-            <div class="row mb-20" style="display: flex;flex-direction: column;justify-content: space-around;align-items: center;">
-              <p style="font-family: 'Roboto'; display: flex;justify-content: space-around;margin-bottom: 0;">Mua hàng đi bro</p>
+            <div
+              class="row mb-20"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                align-items: center;
+              "
+            >
+              <p
+                style="
+                  font-family: 'Roboto';
+                  display: flex;
+                  justify-content: center;
+                  margin-bottom: 0;
+                "
+              >
+                Giỏ hàng trống.
+                <a [routerLink]="['/shop']" style="text-decoration: none">
+                  &nbsp;Hãy thêm sản phẩm yêu thích vào giỏ hàng!</a
+                >
+              </p>
             </div>
           </ng-template>
         </div>
