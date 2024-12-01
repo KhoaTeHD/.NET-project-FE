@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 export class SignInComponent {
   isPasswordVisible: boolean = false;
   PasswordVisible = "Hiện";
+  isLoading: boolean = false;
   loginF: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, 
@@ -39,9 +40,15 @@ export class SignInComponent {
     this.PasswordVisible = this.isPasswordVisible === true ? "Ẩn" : "Hiện";
   }
 
+  preventPaste(event: ClipboardEvent): void {
+    event.preventDefault(); // Ngăn không cho dán nội dung
+  }
+
   signIn(): void {
+    this.isLoading = true;
     this.authService.login(this.loginF.value.email.trim(), this.loginF.value.password.trim()).subscribe({
       next: (response: any) => {
+        this.isLoading = false;
         this.tokenStorageService.saveToken(response.result.token);
         this.tokenStorageService.saveUser(response.result.user);
         this.messageService.add({

@@ -36,4 +36,8 @@ export class OrderService {
   deleteOrder(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
   }
+
+  getOrdersByCustomerId(customerId: string): Observable<ApiResponse<OrderDto[]>> {
+    return this.http.get<ApiResponse<OrderDto[]>>(`${this.baseUrl}/customer/${customerId}`);
+  }
 }

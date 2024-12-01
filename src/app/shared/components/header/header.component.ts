@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Item } from '../../../data_test/item/item-interface';
 import { ITEMS } from '../../../data_test/item/item-data';
 import { CartService } from '../../../data_test/cart/cart-service'; // Nhập CartService
@@ -22,7 +22,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-    private tokenStorageService: TokenStorageService
+    private tokenStorageService: TokenStorageService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -37,5 +38,6 @@ export class HeaderComponent implements OnInit {
     this.tokenStorageService.clearToken();
     this.tokenStorageService.deleteUser();
     this.user = null;
+    this.router.navigate(['/']);
   }
 }

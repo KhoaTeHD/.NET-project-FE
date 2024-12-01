@@ -4,6 +4,7 @@ import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { RegistrationRequestDto } from '../../models/auth/registration-request-dto.model';
 import { UserDto } from '../../models/auth/user-dto.model';
 import { ApiResponse } from '../../models/auth/api-resonse.model';
+import { LoginResponseDto } from '../../models/auth/login-response-dto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -50,16 +51,22 @@ export class AuthService {
     return this.http.get<boolean>(`${this.baseUrl}/checkDuplicateForUpdate`, { params: { userId, field, value } });
   }
 
-  updateUser(user: UserDto): Observable<ApiResponse<UserDto>> {
+  updateUser(user: UserDto): Observable<ApiResponse<LoginResponseDto>> {
     const url = `${this.baseUrl}/${user.id}`;
     user.birthDate = new Date(user.birthDate).toISOString(); // Chuyển đổi birthDate
-    console.log('Payload being sent to API:', user); // Log toàn bộ payload
-    return this.http.put<ApiResponse<UserDto>>(url, user).pipe(
+    return this.http.put<ApiResponse<LoginResponseDto>>(url, user).pipe(
       catchError((err) => {
         console.error('Error in updateUser:', err); // Log lỗi chi tiết
         return throwError(() => err);
       })
     );
+  }
+
+  changePassword(oldPassword: string, newPassword: string): Observable<any> {
+    const url = `${this.baseUrl}/change-password`; // Endpoint API
+    const requestBody = { oldPassword, newPassword }; // Dữ liệu yêu cầu
+  
+    return this.http.post(url, requestBody); // Gửi yêu cầu POST
   }
   
 }

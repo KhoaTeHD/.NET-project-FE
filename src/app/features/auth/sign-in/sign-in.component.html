@@ -37,7 +37,7 @@
                             <label for="password" class="form-label d-block mb-3">Mật khẩu</label>
                             <div class="password-container">
                                 <input class="form-control" id="password"
-                                    [type]="isPasswordVisible ? 'text' : 'password'" formControlName="password">
+                                    [type]="isPasswordVisible ? 'text' : 'password'" formControlName="password" (paste)="preventPaste($event)">
                                 <a (click)="togglePasswordVisibility()" class="eye-icon-password">
                                     <p>{{PasswordVisible}}</p>
                                 </a>
@@ -52,7 +52,11 @@
 
                         <a class="forget-password d-block float-end" style="cursor: pointer;">Quên mật khẩu?</a>
 
-                        <button type="submit" class="btn btn-dark w-100 mt-5" [disabled]="loginF.invalid">Đăng Nhập</button>
+                        <button type="submit" class="btn btn-dark w-100 mt-5" [disabled]="loginF.invalid || isLoading">
+                            <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
+                                aria-hidden="true"></span>
+                            <span *ngIf="!isLoading">Đăng nhập</span>
+                        </button>
                     </form>
                 </div>
             </div>
