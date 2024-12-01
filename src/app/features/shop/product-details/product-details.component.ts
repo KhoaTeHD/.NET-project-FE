@@ -24,7 +24,9 @@ import { BRANDS } from '../../../data_test/brand/brand-data';
 import { ApiResponse } from '../../../core/models/auth/api-resonse.model';
 import { ProductService } from '../../../core/services/product.service';
 import { ProductDto } from '../../../core/models/product.model';
-import { ProductVariationDto } from '../../../core/models/productVariation.model';
+import {
+  ProductVariationDto
+} from '../../../core/models/productVariation.model';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CartDto } from '../../../core/models/cart.model';
@@ -122,15 +124,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     return undefined;
   }
 
-  getVariationBySizeAndColor(): ProductVariationDto | undefined {
+  getVariationBySizeAndColor(
+  ): ProductVariationDto | undefined {
     if (this.product && this.product.productVariations) {
       if (this.selectedSizeId && this.selectedColorId) {
         const variation = this.product.productVariations.find(
           (variation: ProductVariationDto) => {
-            return (
-              variation.col_Id === this.selectedColorId &&
-              variation.siz_Id === this.selectedSizeId
-            );
+            return variation.col_Id === this.selectedColorId && variation.siz_Id === this.selectedSizeId;
           }
         );
         //console.log("Get variation by size " + this.selectedSizeId + " and color " + this.selectedColorId, variation);

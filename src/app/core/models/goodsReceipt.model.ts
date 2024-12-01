@@ -1,3 +1,5 @@
+import { ProductVariationDto } from "./productVariation.model";
+
 export interface GoodsReceiptDto {
   goo_ID?: number;
   supplier_ID?: number;
@@ -11,4 +13,5 @@ export interface DetailGoodsReceiptDto {
   product_ID?: number;
   quantity?: number;
   unit_Price?: number;
+  productVariation?: ProductVariationDto;
 }
