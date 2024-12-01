@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MessageService } from 'primeng/api';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { CommonModule } from '@angular/common';
@@ -8,20 +9,24 @@ import { CookieService } from 'ngx-cookie-service'; // Import CookieService
 import { TokenStorageService } from '../../core/services/auth/token-storage.service';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule, Routes } from '@angular/router';
+
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
   imports: [
+    ToastModule,
     HeaderComponent,
     FooterComponent,
     CommonModule,
     FormsModule,
-    RouterModule,
+    RouterModule
   ],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css'],
+  providers: [MessageService],
 })
 export class CartComponent implements OnInit {
   cartItems: CartDtoExtendStatus[] = []; // Khởi tạo
@@ -30,7 +35,9 @@ export class CartComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private cookieService: CookieService,
-    private tokenStorageService: TokenStorageService
+    private tokenStorageService: TokenStorageService,
+    protected router: Router,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit() {
@@ -148,7 +155,17 @@ export class CartComponent implements OnInit {
 
   checkout() {
     const checkedItems = this.cartItems.filter((item) => item.status);
+    if(checkedItems.length === 0) {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Thông báo',
+        detail: 'Bạn chưa chọn sản phẩm nào để thanh toán!',
+      });
+      return;
+    }
+    this.cartService.setCheckedItems(checkedItems);
     console.log('Checked items:', checkedItems);
     console.log('Total price:', this.totalPrice);
+    this.router.navigate(['/payment']); // Redirect to payment component
   }
 }

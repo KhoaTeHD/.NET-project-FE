@@ -67,125 +67,45 @@
         </div>
         <div class="payment-container right">
             <p class="bg-dark text-light infor-payment-title mb-0">Danh sách sản phẩm</p>
-            <div class="row payment-container-left-below">
+            <div class="row payment-container-left-below" >
                 <div class="scrollable-products">
-                    <div class="row mt-4">
+                    <div class="row mt-4" *ngFor="let item of checkedItems">
                         <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu" style="height: 60px; width: 60px;">
+                            <img width="100%" [src]="item.productVariation?.pic" alt="áo mẫu" style="height: 60px; width: 60px;">
                         </div>
                         <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">Sơ mi dài tay trơn FATB002</p>
+                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">{{item.productVariation?.product?.name}}</p>
                             <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">Xanh da trời nhạt, L</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">10.000.000 đ x 1</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu" style="height: 60px; width: 60px;">
-                        </div>
-                        <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">Sơ mi dài tay trơn FATB002</p>
-                            <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">Xanh da trời nhạt, L</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">10.000.000 đ x 1</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu" style="height: 60px; width: 60px;">
-                        </div>
-                        <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">Sơ mi dài tay trơn FATB002</p>
-                            <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">Xanh da trời nhạt, L</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">10.000.000 đ x 1</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu" style="height: 60px; width: 60px;">
-                        </div>
-                        <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">Sơ mi dài tay trơn FATB002</p>
-                            <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">Xanh da trời nhạt, L</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">10.000.000 đ x 1</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu" style="height: 60px; width: 60px;">
-                        </div>
-                        <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">Sơ mi dài tay trơn FATB002</p>
-                            <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">Xanh da trời nhạt, L</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">10.000.000 đ x 1</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu" style="height: 60px; width: 60px;">
-                        </div>
-                        <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">Sơ mi dài tay trơn FATB002</p>
-                            <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">Xanh da trời nhạt, L</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">10.000.000 đ x 1</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" src="../../../assets/images/record/ao_mau.png" alt="áo mẫu" style="height: 60px; width: 60px;">
-                        </div>
-                        <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">Sơ mi dài tay trơn FATB002</p>
-                            <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">Xanh da trời nhạt, XXL</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">10.000.000 đ x 1</p>
+                                <p class="col-7 mb-0">{{item.productVariation?.color?.name}},{{item.productVariation?.size?.name}}</p>
+                                <p class="col-5 mb-0" style="color: #F03B13;">{{item.productVariation?.price - (item.productVariation?.price * item.productVariation?.discount / 100) | currency : "VND" : "symbol"}} x {{item.quantity}}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                
-
                 <div class="mt-4">
                     <div class="divided-section first mt-4"></div>
 
                     <div class="row px-2 pt-3">
-                        <p class="col-6 mb-0" style="font-weight: 500;">Tạm tính (6 sản phẩm):</p>
-                        <p class="col-6 mb-0 text-end">96.720.000 đ</p>
+                        <p class="col-6 mb-0" style="font-weight: 500;">Tạm tính ({{checkedItems.length}} sản phẩm):</p>
+                        <p class="col-6 mb-0 text-end">{{totalAmount_temp() | currency : "VND" : "symbol"}}</p>
                     </div>
 
                     <div class="row px-2 py-3">
                         <p class="col-6 mb-0" style="font-weight: 500;">Phí vận chuyển:</p>
-                        <p class="col-6 mb-0 text-end" style="color: #184AFA;">+ 15.500 đ</p>
+                        <p class="col-6 mb-0 text-end" style="color: #184AFA;">+ {{delivery | currency : "VND" : "symbol"}}</p>
                     </div>
 
                     <div class="row px-2 pb-3">
                         <p class="col-6 mb-0" style="font-weight: 500;">Tổng khuyến mãi:</p>
-                        <p class="col-6 mb-0 text-end" style="color: #F03B13;">- 220.000 đ</p>
+                        <p class="col-6 mb-0 text-end" style="color: #F03B13;">- {{voucher | currency : "VND" : "symbol"}}</p>
                     </div>
 
                     <div class="divided-section"></div>
 
                     <div class="row px-2 mt-3">
                         <p class="col-6 mb-0" style="font-weight: 500;">Tổng thanh toán:</p>
-                        <p class="col-6 mb-0 text-end" style="color: green; font-weight: 500;">96.515.500 đ</p>
+                        <p class="col-6 mb-0 text-end" style="color: green; font-weight: 500;">{{totalAmount() | currency : "VND" : "symbol"}}</p>
                     </div>
                 </div>
             </div>
