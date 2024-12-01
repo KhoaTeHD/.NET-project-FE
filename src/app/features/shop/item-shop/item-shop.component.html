@@ -108,6 +108,13 @@
       </div>
     </div>
   </div>
+  <div *ngIf="displayedProducts.length === 0">
+    <div class="no-item" style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;">Không tìm thấy sản phẩm nào. <strong [routerLink]="['/shop']"> &nbsp;Làm mới trang</strong></div>
+  </div>
   <pagination-controls
     class="pagination-controls"
     (pageChange)="onPageChange($event)"

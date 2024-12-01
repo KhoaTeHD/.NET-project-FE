@@ -9,6 +9,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../core/services/cart.service';
 import { CartDtoExtendStatus } from '../../../core/models/cart.model';
+import { CategoryDto } from '../../../core/models/category.model';
+import { CategoryService } from '../../../core/services/category.service';
 
 @Component({
   selector: 'app-header',
@@ -19,13 +21,15 @@ import { CartDtoExtendStatus } from '../../../core/models/cart.model';
 })
 export class HeaderComponent implements OnInit {
   cartItems: CartDtoExtendStatus[] = []; // Khởi tạo
+  categories: CategoryDto[] = [];
 
   user: UserDto | null = null;
   searchQuery: string = '';
   constructor(
     private cartService: CartService,
     private tokenStorageService: TokenStorageService,
-    private router: Router
+    private router: Router,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit() {
@@ -34,6 +38,10 @@ export class HeaderComponent implements OnInit {
     //   this.cart = updatedCart; // Cập nhật dữ liệu giỏ hàng
     // });
     this.user = this.tokenStorageService.getUser();
+
+    this.categoryService.getAllCategorys().subscribe((response) => {
+      this.categories = response.result || [];
+    });
 
     const userId = this.tokenStorageService.getUser()?.id;
     if (userId) {
