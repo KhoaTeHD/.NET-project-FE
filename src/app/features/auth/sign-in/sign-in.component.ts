@@ -61,6 +61,7 @@ export class SignInComponent {
         }, 1000); // 1000ms = 1 giây
       },
       error: err => {
+        this.isLoading = false;
         this.messageService.add({
           severity: 'error',
           summary: 'Đăng nhập thất bại!',
