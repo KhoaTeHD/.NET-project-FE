@@ -10,179 +10,184 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
-
+import { ProductService } from '../../../core/services/product.service';
+import { ProductVariationService } from '../../../core/services/productVariation.service';
+import { firstValueFrom } from 'rxjs';
+import { ProductDto } from '../../../core/models/product.model';
+import { ProductVariationDto } from '../../../core/models/productVariation.model';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SizeService } from '../../../core/services/size.service';
+import { ColorService } from '../../../core/services/color.service';
 
 @Component({
   selector: 'app-manage-product',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, ButtonModule, DialogModule, FormsModule, ToastModule, ConfirmDialogModule, DropdownModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, ButtonModule, DialogModule, FormsModule, ToastModule, ConfirmDialogModule, DropdownModule, InputNumberModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-product.component.html',
   styleUrl: './manage-product.component.css'
 })
-export class ManageProductComponent implements OnInit  {
-  products = [
-    {
-      Pro_ID: 1,
-      Pro_name: 'Áo thun nam',
-      Pro_status: true,
-      variations: [
-        { ProV_ID: 101, Col_ID: 'Đỏ', Siz_ID: 'M', ProV_Price: 200000, ProV_Quantity: 10, ProV_Discount: 10, ProV_Status: true },
-        { ProV_ID: 102, Col_ID: 'Xanh', Siz_ID: 'L', ProV_Price: 210000, ProV_Quantity: 5, ProV_Discount: 5, ProV_Status: true }
-      ]
-    },
-    {
-      Pro_ID: 2,
-      Pro_name: 'Quần jean nữ',
-      Pro_status: false,
-      variations: [
-        { ProV_ID: 201, Col_ID: 'Xanh', Siz_ID: 'S', ProV_Price: 350000, ProV_Quantity: 20, ProV_Discount: 15, ProV_Status: false },
-        { ProV_ID: 202, Col_ID: 'Đen', Siz_ID: 'M', ProV_Price: 360000, ProV_Quantity: 10, ProV_Discount: 10, ProV_Status: true }
-      ]
-    }
-  ];
-
-  colors = [
-    { Col_ID: 1, Col_Name: 'Đỏ', Col_Status: 1 },
-    { Col_ID: 2, Col_Name: 'Xanh', Col_Status: 1 },
-    { Col_ID: 3, Col_Name: 'Vàng', Col_Status: 1 },
-    { Col_ID: 4, Col_Name: 'Tím', Col_Status: 1 },
-    { Col_ID: 5, Col_Name: 'Đen', Col_Status: 1 },
-    { Col_ID: 6, Col_Name: 'Trắng', Col_Status: 1 },
-    { Col_ID: 7, Col_Name: 'Cam', Col_Status: 1 },
-    { Col_ID: 8, Col_Name: 'Hồng', Col_Status: 1 },
-    { Col_ID: 9, Col_Name: 'Xám', Col_Status: 1 },
-    { Col_ID: 10, Col_Name: 'Nâu', Col_Status: 1 }
-  ];
-
-  sizes = [
-    { Siz_ID: 1, Siz_Name: 'S', Siz_Desc: 'Size nhỏ', Siz_Status: 1 },
-    { Siz_ID: 2, Siz_Name: 'M', Siz_Desc: 'Size trung bình', Siz_Status: 1 },
-    { Siz_ID: 3, Siz_Name: 'L', Siz_Desc: 'Size lớn', Siz_Status: 1 },
-    { Siz_ID: 4, Siz_Name: 'XL', Siz_Desc: 'Size rất lớn', Siz_Status: 1 },
-    { Siz_ID: 5, Siz_Name: 'XXL', Siz_Desc: 'Size cực lớn', Siz_Status: 0 }
-  ];
-
+export class ManageProductComponent implements OnInit {
+  products: ProductDto[] = [];
+  colors: any[] = [];
+  sizes: any[] = [];
   visibleDialogProduct: boolean = false;
-
   visibleDialogVariation: boolean = false;
-
-  product!: Product;
-
-  variations!: Variation;
-
-  dialogTitle: string = 'Thêm';
-
-  constructor(
-    private messageService: MessageService, 
-    private confirmationService: ConfirmationService) { }
+  dialogTitle: string = '';
+  product: ProductDto = {};
+  variation: ProductVariationDto = {};
 
   ngOnInit(): void {
-    this.product = {
-      Pro_ID: 109
-    };
-    this.variations = { 
-      ProV_ID: 109, 
-      ProV_Quantity: 0 
-    };
+    this.loadProducts();
+    this.loadSizes();
+    this.loadColors();
   }
 
-  showDialogProduct(type: string, product: Product): void {
-    if(type == 'Edit'){
-      this.dialogTitle = 'Sửa';
-      this.product = {...product };
-    }
-    else{
-      this.dialogTitle = 'Thêm';
-      this.product = {
-        Pro_ID: 110
-      };
-    }
+  constructor(
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private productService: ProductService,
+    private productVariationService: ProductVariationService,
+    private sizeService: SizeService,
+    private colorService: ColorService) { }
+
+  showDialogProduct(action: string, product: ProductDto) {
+    this.dialogTitle = action === 'Add' ? 'Thêm' : 'Chỉnh sửa';
+    this.product = { ...product };
+    if(action === 'Add') {this.product.id = undefined; this.product.status = true;}
     this.visibleDialogProduct = true;
   }
 
-  showDialogVariation(type: string, variation: Variation): void {
-    if(type == 'Edit'){
-      this.dialogTitle = 'Sửa';
-      this.variations = {...variation };
-    }
-    else{
-      this.dialogTitle = 'Thêm';
-      this.variations = {
-        ProV_ID: 110,
-        ProV_Quantity: 0
-      };
-    }
+  showDialogVariation(action: string, variation: ProductVariationDto) {
+    this.dialogTitle = action === 'Add' ? 'Thêm' : 'Chỉnh sửa';
+    this.variation = { ...variation };
+    console.log(this.variation);
     this.visibleDialogVariation = true;
   }
 
-  deleteProduct(product: Product) {
+  deleteProduct(product: ProductDto) {
     this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa sản phẩm ' + product.Pro_ID + ' không?',
+      message: 'Bạn có chắc xóa sản phẩm ' + product.name + ' không?',
       header: 'Xác nhận',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.products = this.products.filter((val) => val.Pro_ID !== product.Pro_ID);
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa sản phẩm', life: 3000 });
-      }
-    });
-  }
-
-  deleteVariation(variation: Variation) {
-    this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa biển thể ' + variation.ProV_ID + ' không?',
-      header: 'Xác nhận',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.products = this.products.map((product) => {
-          return {
-            ...product,
-            variations: product.variations.filter((val) => val.ProV_ID !== variation.ProV_ID)
-          };
+        this.productService.deleteProduct(product.id as number).subscribe({
+          next: () => {
+            this.products = this.products.filter((val) => val.id !== product.id);
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa sản phẩm', life: 3000 });
+          },
+          error: () => {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+          }
         });
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa biến thể', life: 3000 });
       }
     });
   }
 
-  getSeverity(status: number) {
-    switch (status) {
-        case 1:
-            return 'success';
-        case 0:
-            return 'danger';
-        default:
-            return undefined;
+  deleteVariation(variation: ProductVariationDto) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc xóa biến thể ' + variation.id + ' không?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.productVariationService.deleteProductVariation(variation.id as number).subscribe({
+          next: () => {
+            this.product.productVariations = this.product.productVariations?.filter((val) => val.id !== variation.id);
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa biến thể', life: 3000 });
+          },
+          error: () => {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+          }
+        });
+      }
+    });
+  }
+
+  async loadSizes(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.sizeService.getAllSizes());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.sizes = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching sizes', error);
     }
   }
-}
 
-interface Product {
-  Pro_ID?: number;
-  Pro_name?: string;
-  Pro_status?: boolean;
-  variations?: Variation[];
-}
+  async loadColors(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.colorService.getAllColors());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.colors = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching colors', error);
+    }
+  }
 
-interface Variation {
-  ProV_ID?: number;
-  Col_ID?: string;
-  Siz_ID?: string;
-  ProV_Price?: number;
-  ProV_Quantity?: number;
-  ProV_Discount?: number;
-  ProV_Status?: boolean;
-}
+  async loadProducts(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.productService.getAllProducts());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.products = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching products', error);
+    }
+  }
 
-interface Color {
-  Col_ID: number;
-  Col_Name: string;
-  Col_Status: number;
-}
+  createNewProduct(): void {
+    this.productService.createProduct(this.product).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Sản phẩm đã được tạo' });
+        this.loadProducts(); // Reload products after creation
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+    this.visibleDialogProduct = false;
+  }
 
-interface Size {
-  Siz_ID: number;
-  Siz_Name: string;
-  Siz_Desc: string;
-  Siz_Status: number;
+  editProduct(): void {
+    this.productService.updateProduct(this.product).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Sản phẩm đã được cập nhật' });
+        this.loadProducts(); // Reload products after update
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+    this.visibleDialogProduct = false;
+  }
+
+  createNewVariation(): void {
+    console.log(this.variation);
+    this.productVariationService.createProductVariation(this.variation).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Biến thể đã được tạo' });
+        this.loadProducts(); // Reload products after creation
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+    this.visibleDialogVariation = false;
+  }
+
+  editVariation(): void {
+    this.productVariationService.updateProductVariation(this.variation).subscribe({
+      next: response => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Biến thể đã được cập nhật' });
+        this.loadProducts(); // Reload products after update
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+      }
+    });
+    this.visibleDialogVariation = false;
+  }
+
+  
 }

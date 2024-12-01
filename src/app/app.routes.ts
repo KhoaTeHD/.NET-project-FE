@@ -24,6 +24,8 @@ import { CartComponent } from './features/cart/cart.component';
 import { ManageGoodsReceiptComponent } from './features/admin/manage-goods-receipt/manage-goods-receipt.component';
 import { PaymentComponent } from './features/payment/payment.component';
 import { AuthGuard } from './core/guards/auth.guard';
+import { CanDeactivateGuard } from './guards/can-deactivate.guard';
+import { PaymentAccessGuard } from './guards/payment-access.guard';
 
 export const routes: Routes = [
     {
@@ -88,6 +90,8 @@ export const routes: Routes = [
     },
     {
         path: 'payment', 
-        component: PaymentComponent
+        component: PaymentComponent,
+        canDeactivate: [CanDeactivateGuard],
+        canActivate: [PaymentAccessGuard]
     },
 ];

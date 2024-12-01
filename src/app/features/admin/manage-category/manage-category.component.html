@@ -21,11 +21,11 @@
                         </ng-template>
                         <ng-template pTemplate="header">
                             <tr>
-                                <th>ID</th>
-                                <th>Tên Danh Mục</th>
-                                <th>Mô Tả</th>
-                                <th>Trạng Thái</th>
-                                <th></th>
+                                <th style="width:10%">ID</th>
+                                <th style="width:20%">Tên Danh Mục</th>
+                                <th style="width:30%">Mô Tả</th>
+                                <th style="width:20%">Trạng Thái</th>
+                                <th style="width:20%"></th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-category let-editing="editing" let-ri="rowIndex">
@@ -104,8 +104,8 @@
         </div>
         <div class="mb-4">
             <label class="form-check-label me-2" for="active">Trạng thái:</label>
-            <input class="form-check-input" type="radio" name="active" id="visible" [value]="true" [(ngModel)]="createCategory.status"> Hoạt động
-            <input class="form-check-input ms-2" type="radio" name="active" id="disable" [value]="false" [(ngModel)]="createCategory.status"> Ngừng bán
+            <input class="form-check-input" type="radio" name="active" id="visible" [(ngModel)]="createCategory.status" [value]="true"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="active" id="disable" [(ngModel)]="createCategory.status" [value]="false"> Ngừng bán
         </div>
         <div class="d-flex justify-content-end gap-2 mt-4">
             <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />

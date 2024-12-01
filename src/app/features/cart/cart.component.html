@@ -1,33 +1,79 @@
+<p-toast />
 <app-header />
-<section class="gradient-custom">
+<section class="gradient-custom" style="min-height: 80vh">
   <div class="container py-5">
     <div class="row d-flex justify-content-center my-4">
       <div class="col-md-12 col-lg-8">
         <div class="card mb-4">
-          <div class="card-header py-3">
-            <h5 style="font-family: 'Roboto';" class="d-flex mb-0">GIỎ HÀNG (<p style="color: red;font-family: 'Roboto';">{{cart.item_quantity}}&nbsp;</p>SẢN PHẨM)</h5>
+          <div class="card-header py-3 d-flex flex-row align-items-center">
+            <input
+              type="checkbox"
+              name=""
+              id="checkAll"
+              style="transform: scale(1.5)"
+              (change)="toggleAllCheckboxes($event)"
+            />
+            <h5 style="font-family: 'Roboto'" class="d-flex mb-0 ms-3">
+              GIỎ HÀNG (
+              <p style="color: red; font-family: 'Roboto'; margin-bottom: 0">
+                {{ cartItems.length }}&nbsp;
+              </p>
+              SẢN PHẨM)
+            </h5>
           </div>
-          <div class="card-body">
+          <div class="card-body" *ngIf="cartItems.length !== 0; else emptyCart">
             <!-- Single item -->
-            <div class="row mb-2" *ngFor="let item of cart.items">
-              <div class="col-lg-3 col-md-3 mb-4 mb-lg-0">
+            <div class="row mb-2" *ngFor="let item of cartItems">
+              <div class="col-lg-4 col-md-4 mb-4 mb-lg-0">
                 <!-- Image -->
-                <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
-                  <img src="../../../assets/images/data-test/{{item.item.image[0].value}}" alt="Blue Jeans Jacket"
-                    style="height: 150px; width: 100%;object-fit: contain;" />
+                <div
+                  class="bg-image hover-overlay hover-zoom ripple rounded d-flex justify-content-center align-items-center"
+                  data-mdb-ripple-color="light"
+                >
+                  <input
+                    type="checkbox"
+                    name=""
+                    id="{{ item.item_Id }}"
+                    style="transform: scale(1.5)"
+                    [(ngModel)]="item.status"
+                    (change)="updateCheckAllStatus()"
+                  />
+                  <img
+                    [src]="item.productVariation?.pic"
+                    alt="image"
+                    style="height: 150px; width: 100%; object-fit: contain"
+                  />
                 </div>
                 <!-- Image -->
               </div>
 
-              <div class="col-lg-5 col-md-5 mb-4 mb-lg-0">
+              <div class="col-lg-4 col-md-4 mb-4 mb-lg-0">
                 <!-- Data -->
-                <p style="font-family: 'Roboto';"><strong>{{item.item.name}}</strong></p>
-                <p style="font-family: 'Roboto';">Màu sắc: {{item.item.color[0].value}}</p>
-                <p style="font-family: 'Roboto';">Size: {{item.item.size[0].value}}</p>
+                <p
+                  style="font-family: 'Roboto'"
+                  [routerLink]="[
+                    '/shop/product/details',
+                    item.productVariation?.product?.id
+                  ]"
+                >
+                  <strong>{{ item.productVariation?.product?.name }}</strong>
+                </p>
+                <p style="font-family: 'Roboto'">
+                  Màu sắc: {{ item.productVariation?.color?.name }}
+                </p>
+                <p style="font-family: 'Roboto'">
+                  Size: {{ item.productVariation?.size?.name }}
+                </p>
 
-                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-sm me-1 mb-2"
-                  data-mdb-tooltip-init title="Remove item"
-                  >
+                <button
+                  type="button"
+                  data-mdb-button-init
+                  data-mdb-ripple-init
+                  class="btn btn-dark btn-sm me-1 mb-2"
+                  data-mdb-tooltip-init
+                  title="Remove item"
+                  (click)="removeItem(item)"
+                >
                   <i class="fas fa-trash"></i>
                 </button>
                 <!-- Data -->
@@ -35,61 +81,141 @@
               <div class="col-lg-4 col-md-4 mb-4 mb-lg-0">
                 <!-- Price -->
                 <div class="d-flex text-start text-md-center">
-                  <p style="font-family: 'Roboto';" class="me-2">Đơn giá:</p>
-                  <strong style="font-family: 'Roboto';" style="color: red;">{{item.price | currency:'VND':'symbol'}}</strong>
+                  <p style="font-family: 'Roboto'" class="me-2">Đơn giá:</p>
+                  <strong style="font-family: 'Roboto'; color: red">{{
+                    item.price && item.quantity
+                      ? ((item.price -
+                          (item.price *
+                            (item.productVariation?.discount ?? 0)) /
+                            100) *
+                          item.quantity | currency : "VND" : "symbol")
+                      : "0 VND"
+                  }}</strong>
                 </div>
                 <!-- Price -->
                 <!-- Quantity -->
                 <div class="d-flex flex-column mb-4" style="max-width: 300px">
-                  <label style="font-family: 'Roboto';" class="form-label" for="form1">Số lượng</label>
+                  <label
+                    style="font-family: 'Roboto'"
+                    class="form-label"
+                    for="form1"
+                    >Số lượng</label
+                  >
                   <div class="d-flex">
-                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-dark px-3 me-2"
-                      onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                    <button
+                      data-mdb-button-init
+                      data-mdb-ripple-init
+                      class="btn btn-dark px-3 me-2"
+                      (click)="decreaseQuantity(item)"
+                    >
                       <i class="fas fa-minus"></i>
                     </button>
                     <div data-mdb-input-init class="form-outline">
-                      <input id="form1" min="0" name="quantity" value="{{item.quantity}}" type="number" class="form-control"
-                        style="text-align: center;font-family: 'Roboto';" />
+                      <input
+                        id="form1"
+                        min="0"
+                        name="quantity"
+                        [value]="item.quantity"
+                        type="number"
+                        class="form-control"
+                        style="text-align: center; font-family: 'Roboto'"
+                        min="1"
+                        [max]="item.productVariation?.quantity"
+                        (change)="updateItemPrice(item, $event)"
+                      />
                     </div>
-                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-dark px-3 ms-2"
-                      onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                    <button
+                      data-mdb-button-init
+                      data-mdb-ripple-init
+                      class="btn btn-dark px-3 ms-2"
+                      (click)="increaseQuantity(item)"
+                    >
                       <i class="fas fa-plus"></i>
                     </button>
                   </div>
                 </div>
                 <!-- Quantity -->
               </div>
-              <hr class="mt-3 mb-4">
+              <hr class="mt-3 mb-4" />
             </div>
             <!-- Single item -->
           </div>
+          <ng-template #emptyCart>
+            <div
+              class="row mb-20"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                align-items: center;
+              "
+            >
+              <p
+                style="
+                  font-family: 'Roboto';
+                  display: flex;
+                  justify-content: center;
+                  margin-bottom: 0;
+                "
+              >
+                Giỏ hàng trống.
+                <a [routerLink]="['/shop']" style="text-decoration: none">
+                  &nbsp;Hãy thêm sản phẩm yêu thích vào giỏ hàng!</a
+                >
+              </p>
+            </div>
+          </ng-template>
         </div>
       </div>
 
       <div class="col-md col-lg-4">
         <div class="card mb-4">
           <div class="card-header py-3">
-            <h5 style="font-family: 'Roboto';" class="mb-0">Chi tiểt thanh toán</h5>
+            <h5 style="font-family: 'Roboto'" class="mb-0">
+              Chi tiểt thanh toán
+            </h5>
           </div>
           <div class="card-body">
-            <ul *ngIf="cart" class="list-group list-group-flush">
-              <li style="font-family: 'Roboto';" class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+            <ul class="list-group list-group-flush">
+              <!-- <li
+                style="font-family: 'Roboto'"
+                class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0"
+              >
                 Sản phẩm
-                <span>{{cart.total_price| currency:'VND':'symbol'}}</span>
+                <span id="total_price_product">{{
+                  totalPrice | currency : "VND" : "symbol"
+                }}</span>
               </li>
-              <li style="font-family: 'Roboto';" class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <li
+                style="font-family: 'Roboto'"
+                class="list-group-item d-flex justify-content-between align-items-center px-0"
+              >
                 Vận chuyển
-                <span>{{30000 | currency:'VND':'symbol'}}</span>
-              </li>
-              <li style="font-family: 'Roboto';" class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                <span>{{ 30000 | currency : "VND" : "symbol" }}</span>
+              </li> -->
+              <li
+                style="font-family: 'Roboto'"
+                class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3"
+              >
                 <div>
                   <strong>Tổng cộng</strong>
                 </div>
-                <span><strong style="color: red;">{{cart.total_price + 30000 | currency:'VND':'symbol'}}</strong></span>
+                <span
+                  ><strong style="color: red">{{
+                    totalPrice | currency : "VND" : "symbol"
+                  }}</strong></span
+                >
               </li>
             </ul>
 
-            <button style="font-family: 'Roboto';" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-lg btn-block">
+            <button
+              style="font-family: 'Roboto'"
+              type="button"
+              data-mdb-button-init
+              data-mdb-ripple-init
+              class="btn btn-dark btn-lg btn-block"
+              (click)="checkout()"
+            >
               Thanh toán giỏ hàng
             </button>
           </div>

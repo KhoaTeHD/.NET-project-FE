@@ -4,17 +4,15 @@
   <div class="container pb-5" style="margin-top: 40px !important">
     <div class="row">
       <div class="col-lg-7 mt-5">
-        <app-image-slider
-          [images]="getProductVariationList(product)"
-        ></app-image-slider>
+        <app-image-slider [images]="variationList"></app-image-slider>
       </div>
       <!-- col end -->
       <div class="col-lg-5 mt-5">
         <div class="card">
           <div class="card-body">
-            <h1 class="h2">{{ product.name }}</h1>
-            <p>Thương hiệu: {{ getBrandName(product) }}</p>
-            <p>Xuất xứ: {{ getNationName(product) }}</p>
+            <h1 class="h2">{{ product?.name }}</h1>
+            <p>Thương hiệu: {{ product?.brand?.name }}</p>
+            <p>Xuất xứ: {{ product?.nation?.name }}</p>
             <span class="d-flex" *ngIf="getVariationBySize(selectedSizeId)">
               Giá bán:
               <p
@@ -31,12 +29,13 @@
               <p
                 class="ms-2 me-2"
                 style="text-decoration: line-through; margin: 0"
+                *ngIf="getVariationBySize(selectedSizeId)?.discount !== 0"
               >
                 {{ getVariationBySize(selectedSizeId)?.price }}
+                <span class="badge bg-danger">
+                  -{{ getVariationBySize(selectedSizeId)?.discount || 0 }}%
+                </span>
               </p>
-              <span class="badge bg-danger">
-                -{{ getVariationBySize(selectedSizeId)?.discount || 0 }}%
-              </span>
             </span>
 
             <span class="d-flex" *ngIf="!getVariationBySize(selectedSizeId)">
@@ -46,25 +45,52 @@
                 style="color: rgb(226, 45, 0); font-weight: 700; margin: 0"
               >
                 {{
-                  (product.productVariations[0]?.price || 0) -
-                    ((product.productVariations[0]?.price || 0) *
-                      (product.productVariations[0]?.discount || 0)) /
+                  (product?.productVariations?.[0]?.price || 0) -
+                    ((product?.productVariations?.[0]?.price || 0) *
+                      (product?.productVariations?.[0]?.discount || 0)) /
                       100 | currency : "VND" : "symbol"
                 }}
               </p>
               <p
                 class="ms-2 me-2"
                 style="text-decoration: line-through; margin: 0"
+                *ngIf="product?.productVariations?.[0]?.discount !== 0"
               >
-                {{ product.productVariations[0]?.price }}
+                {{ product?.productVariations?.[0]?.price }}
+                <span class="badge bg-danger">
+                  -{{ product?.productVariations?.[0]?.discount || 0 }}%
+                </span>
               </p>
-              <span class="badge bg-danger">
-                -{{ product.productVariations[0]?.discount || 0 }}%
-              </span>
             </span>
-            <div class="d-flex mt-3">
+            <div class="d-flex mt-3" *ngIf="getVariationBySizeAndColor()">
               <p class="me-2">Còn lại:</p>
-              <p style="color: green; font-weight: 700">52</p>
+              <p
+                style="color: green; font-weight: 700"
+                *ngIf="getVariationBySizeAndColor()?.quantity !== 0"
+              >
+                {{ getVariationBySizeAndColor()?.quantity }}
+              </p>
+              <p
+                style="color: brown; font-style: italic"
+                *ngIf="getVariationBySizeAndColor()?.quantity === 0"
+              >
+                Hết hàng. Hãy thử chọn size khác hoặc màu khác!
+              </p>
+            </div>
+            <div class="d-flex mt-3" *ngIf="!getVariationBySizeAndColor()">
+              <p class="me-2">Còn lại:</p>
+              <p
+                style="color: green; font-weight: 700"
+                *ngIf="product?.productVariations?.[0]?.quantity !== 0"
+              >
+                {{product?.productVariations?.[0]?.quantity}}
+              </p>
+              <p
+                style="color: brown; font-style: italic"
+                *ngIf="getVariationBySizeAndColor()?.quantity === 0"
+              >
+                Hãy chọn size khác hoặc màu sắc!
+              </p>
             </div>
             <div class="d-flex flex-column">
               <p class="me-2">Kích thước:</p>
@@ -212,6 +238,31 @@
                 Thêm vào giỏ hàng
               </button> -->
               <button
+                *ngIf="
+                  !getVariationBySizeAndColor() ||
+                  getVariationBySizeAndColor()?.quantity === 0
+                "
+                type="button"
+                style="background-color: black"
+                data-mdb-button-init
+                data-mdb-ripple-init
+                class="btn btn-dark btn-add-to-cart"
+                (click)="
+                  handleCartBtnClicked_v2(
+                    product,
+                    selectedSizeId,
+                    selectedColorId
+                  )
+                "
+                disabled
+              >
+                Thêm vào giỏ hàng
+              </button>
+              <button
+                *ngIf="
+                  getVariationBySizeAndColor() &&
+                  getVariationBySizeAndColor()?.quantity !== 0
+                "
                 type="button"
                 style="background-color: black"
                 data-mdb-button-init
@@ -228,18 +279,43 @@
                 Thêm vào giỏ hàng
               </button>
               <button
+                *ngIf="
+                  !getVariationBySizeAndColor() ||
+                  getVariationBySizeAndColor()?.quantity === 0
+                "
                 type="button"
                 style="background-color: black"
                 data-mdb-button-init
                 data-mdb-ripple-init
                 class="btn btn-dark ms-3 btn-add-buy-now"
+                disabled
+              >
+                Mua ngay
+              </button>
+              <button
+                *ngIf="
+                  getVariationBySizeAndColor() &&
+                  getVariationBySizeAndColor()?.quantity !== 0
+                "
+                type="button"
+                style="background-color: black"
+                data-mdb-button-init
+                data-mdb-ripple-init
+                class="btn btn-dark ms-3 btn-add-buy-now"
+                (click)="
+                  handleCartBtnClicked_v3(
+                    product,
+                    selectedSizeId,
+                    selectedColorId
+                  )
+                "
               >
                 Mua ngay
               </button>
             </div>
 
             <p>Mô tả:</p>
-            <p>{{ product.productVariations[0].desc }}</p>
+            <p>{{ product?.productVariations?.[0]?.desc }}</p>
           </div>
         </div>
       </div>
@@ -253,7 +329,7 @@
       <h4>Sản phẩm liên quan</h4>
     </div>
     <div class="row">
-      <app-related-products class="row col-lg" />
+      <app-related-products class="col-lg" />
     </div>
   </div>
 </section>

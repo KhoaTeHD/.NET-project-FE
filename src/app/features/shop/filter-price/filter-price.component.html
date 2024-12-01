@@ -1,11 +1,11 @@
 <div class="dropdown d-flex justify-content-between mb-3 mt-2">
-  <div
+  <!-- <div
     *ngIf="selectedColors.length > 0 || selectedCategory"
     class="filter-on-url d-flex align-items-center"
   >
-    <!-- <p class="mb-0" style="font-size: 14px">Đang lọc:</p> -->
+    <p class="mb-0" style="font-size: 14px">Đang lọc:</p>
 
-    <!-- <p class="mb-0">Màu sắc</p> -->
+    <p class="mb-0">Màu sắc</p>
     <p
       class="mb-0 me-2"
       style="
@@ -25,7 +25,7 @@
       >
     </p>
 
-    <!-- <p class="mb-0">Danh mục</p> -->
+    <p class="mb-0">Danh mục</p>
     <p
       class="mb-0 me-2"
       style="
@@ -52,15 +52,37 @@
       style="cursor: pointer; font-size: 14px"
       >Xoá tất cả</span
     >
+  </div> -->
+
+  <div
+    *ngIf="isfilterColSizeNatPrice"
+    class="filter-on-url d-flex align-items-center"
+  >
+    <span
+      class="badge text-bg-light"
+      (click)="clearFilters()"
+      style="cursor: pointer; font-size: 14px"
+      >Xoá bộ lọc</span
+    >
+  </div>
+  <div
+    *ngIf="query && query.trim() !== '' && isfilterColSizeNatPrice === false"
+    class="filter-on-url d-flex align-items-center"
+  >
+    <span class="badge text-bg-light" style="cursor: pointer; font-size: 14px"
+      >Kết quả cho: {{ query }}</span
+    >
   </div>
   <div></div>
   <select
     class="form-select"
     style="width: 200px; font-size: 15px"
     aria-label="Default select example"
+    (change)="onFilterPriceChange($event)"
+    [ngModel]="selectedSort"
   >
-    <option value="all" selected>Tất cả</option>
-    <option *ngFor="let filter of filterprice" [value]="filter.name">
+    <option value="-1" selected>Mặc định</option>
+    <option *ngFor="let filter of filterprice" [value]="filter.value">
       {{ filter.name }}
     </option>
   </select>

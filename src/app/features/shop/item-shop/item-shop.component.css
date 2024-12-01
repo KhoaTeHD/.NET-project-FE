@@ -1,50 +1,63 @@
-.custom-css-item a{
-    text-decoration: none;
+.custom-css-item a {
+  text-decoration: none;
 }
 
-.custom-css-item h5{
+.custom-css-item h5 {
   cursor: pointer;
 }
 
-.item-container img{
-  cursor: pointer; 
+.item-container img {
+  cursor: pointer;
 }
 
-.price-item-custom{
-    color: red !important;
-    font-weight: bold;
+.price-item-custom {
+  color: red !important;
+  font-weight: bold;
 }
 
-.btn-add-to-cart{
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
+.btn-add-to-cart {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
 }
 
 .pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .pagination-controls button {
-    margin: 0 10px;
-  }
-  
-  .pagination-controls span {
-    font-weight: bold;
-  }
-  
-  .placeholder-item {
-    opacity: 0;
-    pointer-events: none;  /* Đảm bảo không thể nhấp vào */
-    visibility: hidden;
-    height: 100%;          /* Đảm bảo item có chiều cao đầy đủ */
-  }
-  
-  .pagination {
-    --bs-pagination-color: #000 !important;
-    --bs-pagination-active-bg: #000 !important;
-    --bs-pagination-active-border-color: none !important;
-    cursor: pointer !important;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-controls button {
+  margin: 0 10px;
+}
+
+.pagination-controls span {
+  font-weight: bold;
+}
+
+.placeholder-item {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  height: 100%;
+}
+
+.pagination-controls .ngx-pagination .current {
+  background: black !important;
+  color: white !important;
+}
+
+.pagination-controls .ngx-pagination a {
+  background-color: white !important;
+  color: black !important;
+  text-decoration: none !important;
+}
+
+.pagination-controls .ngx-pagination a:hover {
+  background-color: #f0f0f0 !important;
+}
+
+.pagination-controls .ngx-pagination .disabled {
+  pointer-events: none !important;
+  opacity: 0.6 !important;
+}

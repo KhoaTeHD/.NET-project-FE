@@ -1,35 +1,46 @@
 <app-header />
-<div class="container-fluid container-shop-page" style="margin-top: 60px !important;">
-    <div class="row">
-        <div class="col-lg-3 d-none d-lg-block">
-            <app-sidebar-shop />
-        </div>
-        <div class="d-block d-lg-none">
-            <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
-                <div class="offcanvas-header">
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <app-sidebar-shop />
-                </div> 
-            </div>
-            <!-- Button to open the offcanvas sidebar -->
-            <button class="btn btn-dark btn-option" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
-                Bộ lọc
-            </button>
-        </div>
-        <div class="col-lg-9">
-            <div class="row">
-                <app-special-item-shop />
-            </div>
-            <div class="row">
-                <app-filter-price />
-            </div>
-            <div>
-                <app-item-shop class="row col-lg" />
-            </div>
-        </div>
+<div
+  class="container-fluid container-shop-page"
+  style="margin-top: 60px !important"
+>
+  <div class="row">
+    <div class="col-lg-3 d-none d-lg-block">
+      <app-sidebar-shop (filtersChanged)="onFiltersChanged($event)" />
     </div>
+    <div class="d-block d-lg-none">
+      <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
+        <div class="offcanvas-header">
+          <button
+            type="button"
+            class="btn-close text-reset"
+            data-bs-dismiss="offcanvas"
+          ></button>
+        </div>
+        <div class="offcanvas-body">
+          <app-sidebar-shop (filtersChanged)="onFiltersChanged($event)" />
+        </div>
+      </div>
+      <!-- Button to open the offcanvas sidebar -->
+      <button
+        class="btn btn-dark btn-option"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#demo"
+      >
+        Bộ lọc
+      </button>
+    </div>
+    <div class="col-lg-9">
+      <div class="row">
+        <app-special-item-shop />
+      </div>
+      <div class="row">
+        <app-filter-price />
+      </div>
+      <div>
+        <app-item-shop [filters]="filters" />
+      </div>
+    </div>
+  </div>
 </div>
 <app-footer />
-

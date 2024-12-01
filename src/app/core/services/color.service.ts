@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { ColorDto } from '../models/color.model';
 import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường dẫn tới ApiResponse interface
 
@@ -35,5 +35,18 @@ export class ColorService {
   // Xóa một Color theo ID (DELETE /api/Color/{id})
   deleteColor(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
+  }
+
+  /**--------------------------------------H------------------------------------------- */
+  async getColors(): Promise<ColorDto[] | undefined> {
+    try {
+      const data = await firstValueFrom(this.getAllColors());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        return data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching colors', error);
+    }
+    return undefined; // Add a return statement at the end of the function
   }
 }

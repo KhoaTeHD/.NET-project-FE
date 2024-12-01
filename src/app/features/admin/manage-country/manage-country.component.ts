@@ -52,6 +52,7 @@ export class ManageCountryComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
+    this.createNation = { status: true };
   }
 
   onRowEditInit(nation: NationDto) {

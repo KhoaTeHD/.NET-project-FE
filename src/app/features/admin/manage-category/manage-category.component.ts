@@ -52,6 +52,7 @@ export class ManageCategoryComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
+    this.createCategory = { status: true};
   }
 
   onRowEditInit(category: CategoryDto) {

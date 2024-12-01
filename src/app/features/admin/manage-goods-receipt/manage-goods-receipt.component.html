@@ -9,8 +9,8 @@
                 <p-toast></p-toast>
                 <p-confirmDialog />
                 <div class="card-body">
-                    <p-table #dt editMode="row" [value]="goodsReceipts" dataKey="GoodsReceipt_ID" [paginator]="true"
-                        [rows]="10" [globalFilterFields]="['GoodsReceipt_ID', 'Supplier_Name', 'Datetime', 'Total']"
+                    <p-table #dt editMode="row" [value]="goodsReceipts" dataKey="goo_ID" [paginator]="true"
+                        [rows]="10" [globalFilterFields]="['goo_ID', 'supplier_ID', 'datetime', 'total']"
                         [responsiveLayout]="'scroll'">
                         <ng-template pTemplate="caption">
                             <div class="d-flex">
@@ -33,35 +33,35 @@
                         </ng-template>
                         <ng-template pTemplate="body" let-goodsReceipt let-editing="editing" let-ri="rowIndex">
                             <tr [pEditableRow]="goodsReceipt">
-                                <td>{{ goodsReceipt.GoodsReceipt_ID }}</td>
-                                <td>{{ goodsReceipt.Supplier_ID }}</td>
+                                <td>{{ goodsReceipt.goo_ID }}</td>
+                                <td>{{ goodsReceipt.supplier_ID }}</td>
                                 <td>
-                                    <p-cellEditor>
+                                    <!-- <p-cellEditor>
                                         <ng-template pTemplate="input">
                                             <input pInputText type="text" [(ngModel)]="goodsReceipt.Supplier_Name" />
                                         </ng-template>
                                         <ng-template pTemplate="output">
                                             {{ goodsReceipt.Supplier_Name }}
                                         </ng-template>
+                                    </p-cellEditor> -->
+                                </td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.datetime" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ goodsReceipt.datetime | date:'yyyy-MM-dd HH:mm:ss' }}
+                                        </ng-template>
                                     </p-cellEditor>
                                 </td>
                                 <td>
                                     <p-cellEditor>
                                         <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.Datetime" />
+                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.total" />
                                         </ng-template>
                                         <ng-template pTemplate="output">
-                                            {{ goodsReceipt.Datetime | date:'yyyy-MM-dd HH:mm:ss' }}
-                                        </ng-template>
-                                    </p-cellEditor>
-                                </td>
-                                <td>
-                                    <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.Total" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{ goodsReceipt.Total | currency:'VND' }}
+                                            {{ goodsReceipt.total | currency:'VND' }}
                                         </ng-template>
                                     </p-cellEditor>
                                 </td>
@@ -100,30 +100,30 @@
     <div class="d-flex justify-content-between">
         <div>
             <p>Mã phiếu nhập:
-                <input type="text" pInputText id="id" [(ngModel)]="selectedGoodsReceipt.GoodsReceipt_ID" disabled>
+                <input type="text" pInputText id="id" [(ngModel)]="selectedGoodsReceipt.goo_ID" disabled>
             </p>
             <p>Ngày đặt hàng: 
                 <input 
                 type="date" 
                 pInputText 
-                [ngModel]="selectedGoodsReceipt.Datetime | date: 'yyyy-MM-dd'"
+                [ngModel]="selectedGoodsReceipt.datetime| date: 'yyyy-MM-dd'"
                 name="">
             </p>
             <p>Nhà cung cấp:
-                <p-dropdown [(ngModel)]="selectedGoodsReceipt.Supplier_Name" [options]="suppliers"
+                <p-dropdown [(ngModel)]="selectedGoodsReceipt.supplier_ID" [options]="suppliers"
                     optionValue="SupplierName">
-                    <ng-template pTemplate="selectedItem">
+                    <!-- <ng-template pTemplate="selectedItem">
                         <div *ngIf="selectedGoodsReceipt.Supplier_Name">
                             {{ selectedGoodsReceipt.Supplier_Name }}
                         </div>
                     </ng-template>
                     <ng-template let-supplier pTemplate="item">
                         {{ supplier.SupplierName }}
-                    </ng-template>
+                    </ng-template> -->
                 </p-dropdown>
             </p>
             <p>Tổng tiền:
-                <input type="text" pInputText id="total" [value]="selectedGoodsReceipt.Total| currency:'VND'" disabled>
+                <input type="text" pInputText id="total" [value]="selectedGoodsReceipt.total| currency:'VND'" disabled>
             </p>
         </div>
         <div>
@@ -156,12 +156,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let detail of selectedGoodsReceipt.DetailedGoodsReceipts">
-                <td>{{ detail.Product_ID }}</td>
-                <td class=" text-truncate" style="max-width: 270px;">{{ detail.Product_Name }}</td>
-                <td>{{ detail.Unit_Price | currency }}</td>
-                <td>{{ detail.Quantity }}</td>
-                <td>{{ (detail.Quantity ?? 0) * (detail.Unit_Price ?? 0) | currency }}</td>
+            <tr *ngFor="let detail of selectedGoodsReceipt?.detailGoodsReceipts">
+                <td>{{ detail.product_ID }}</td>
+                <td class=" text-truncate" style="max-width: 270px;">{{ detail.productVariation?.product?.name }}</td>
+                <td>{{ detail.unit_Price | currency }}</td>
+                <td>{{ detail.quantity }}</td>
+                <td>{{ (detail.quantity ?? 0) * (detail.unit_Price ?? 0) | currency }}</td>
             </tr>
         </tbody>
     </table>

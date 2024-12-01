@@ -44,7 +44,6 @@ export class ManageOrderComponent implements OnInit {
   showDialog(order: OrderDto | null) {
     this.visible = true;
     if (order) this.createOrder = { ...order };
-    console.log(this.createOrder);
   }
 
   deleteOrder(order: OrderDto) {

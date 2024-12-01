@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ImageSliderComponent } from '../image-slider/image-slider.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
@@ -10,7 +10,7 @@ import { MessageService } from 'primeng/api';
 import { AfterViewInit } from '@angular/core';
 import { Item, Item_v2 } from '../../../data_test/item/item-interface';
 import { ITEMS, ITEMS_V2 } from '../../../data_test/item/item-data';
-import { CartService } from '../../../data_test/cart/cart-service';
+//import { CartService } from '../../../data_test/cart/cart-service';
 import { SIZES } from '../../../data_test/size/size-data';
 import { Size } from '../../../data_test/size/size-interface';
 import { COLORS } from '../../../data_test/color/color-data';
@@ -20,6 +20,16 @@ import { Nation } from '../../../data_test/nation/nation-interface';
 import { NATIONS } from '../../../data_test/nation/nation-data';
 import { Brand } from '../../../data_test/brand/brand-interface';
 import { BRANDS } from '../../../data_test/brand/brand-data';
+
+import { ApiResponse } from '../../../core/models/auth/api-resonse.model';
+import { ProductService } from '../../../core/services/product.service';
+import { ProductDto } from '../../../core/models/product.model';
+import {
+  ProductVariationDto
+} from '../../../core/models/productVariation.model';
+
+import { CartService } from '../../../core/services/cart.service';
+import { CartDto } from '../../../core/models/cart.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -37,8 +47,12 @@ import { BRANDS } from '../../../data_test/brand/brand-data';
   standalone: true,
 })
 export class ProductDetailsComponent implements OnInit, AfterViewInit {
+  product: ProductDto | null = null; // Dữ liệu sản phẩm
+  loading: boolean = true; // Trạng thái tải
+  error: string | null = null; // Thông báo lỗi
+
   productId: string | null = null;
-  product: any;
+  products: any;
   selectedColorId: number | null = null;
   selectedSizeId: number | null = null;
   colorOptions: { id: number; value: string; disabled: boolean }[] = [];
@@ -49,77 +63,82 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   colors: Color[] = COLORS;
   nations: Nation[] = NATIONS;
   brands: Brand[] = BRANDS;
+  cartItem: CartDto | null = null;
+  //product: ProductDto | undefined;
+  variationList: { id: number; value: string }[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService,
-    private cartService: CartService
+    private productService: ProductService,
+    private cartService: CartService,
+    protected router: Router,
   ) {}
-
-  // ngOnInit(): void {
-  //   // Lấy ID từ URL
-  //   this.productId = Number(this.route.snapshot.paramMap.get('id'));
-
-  //   // Tìm sản phẩm theo ID
-  //   this.product = this.items.find(item => item.id === this.productId);
-  // }
-
-  // ngOnInit() {
-  //   this.route.paramMap.subscribe((params) => {
-  //     this.productId = params.get('id');
-  //     this.product = this.items.find(
-  //       (item) => item.id.toString() === this.productId
-  //     );
-  //   });
-  // }
 
   /**Xu ly item v2 */
   ngOnInit() {
+    // Lấy `id` từ URL
     this.route.paramMap.subscribe((params) => {
-      this.productId = params.get('id');
-      this.product = this.items_v2.find(
-        (item) => item.id.toString() === this.productId
-      );
-      console.log(this.product);
-      this.colorOptions = this.getDistinctColNames(this.product);
+      const id = Number(params.get('id')); // Chuyển đổi tham số sang số
+      if (id) {
+        // this.productService.getProductById(id).subscribe((response) => {
+        //   this.product = response.result || null;
+        //   console.log(this.product);
+        // });
+        this.fetchProduct(id); // Gọi API để lấy dữ liệu
+      } else {
+        this.error = 'Không tìm thấy sản phẩm!';
+        this.loading = false;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  private fetchProduct(id: number): void {
+    this.productService.getProductById(id).subscribe({
+      next: (response) => {
+        this.product = response.result || null; // Cập nhật dữ liệu sản phẩm
+        console.log(this.product);
+        this.variationList = this.getProductVariationList(this.product);
+        console.log(this.variationList);
+        this.colorOptions = this.getDistinctColNames(this.product);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = 'Không thể tải thông tin sản phẩm!';
+        this.loading = false;
+      },
     });
   }
 
   getVariationBySize(siz_Id: number | null): ItemVariation | undefined {
     if (this.product && this.product.productVariations) {
+      //console.log(this.product.productVariations);
       const variation = this.product.productVariations.find(
-        (variation: ItemVariation) => variation.siz_Id === siz_Id
-      );
-      console.log(variation);
+        (variation: ProductVariationDto) => variation.siz_Id === siz_Id
+      ) as ItemVariation;
+      //console.log(variation);
       return variation;
     }
     return undefined;
   }
 
   getVariationBySizeAndColor(
-    col_Id: number | null,
-    siz_Id: number | null
-  ): ItemVariation | undefined {
+  ): ProductVariationDto | undefined {
     if (this.product && this.product.productVariations) {
-      const variation = this.product.productVariations.find(
-        (variation: ItemVariation) => {
-          return variation.col_Id === col_Id && variation.siz_Id === siz_Id;
-        }
-      );
-      console.log(variation);
-      return variation;
+      if (this.selectedSizeId && this.selectedColorId) {
+        const variation = this.product.productVariations.find(
+          (variation: ProductVariationDto) => {
+            return variation.col_Id === this.selectedColorId && variation.siz_Id === this.selectedSizeId;
+          }
+        );
+        //console.log("Get variation by size " + this.selectedSizeId + " and color " + this.selectedColorId, variation);
+        return variation;
+      }
     }
     return undefined;
-  }
-
-  getNationName(product: any): string {
-    const nation = this.nations.find((nation) => nation.id === product.nat_Id);
-    return nation ? nation.name : '';
-  }
-
-  getBrandName(product: any): string {
-    const brand = this.brands.find((brand) => brand.id === product.bra_Id);
-    return brand ? brand.name : '';
   }
 
   getProductVariationList(product: any): { id: number; value: string }[] {
@@ -147,7 +166,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
         });
       });
     }
-    console.log(variationList);
+    //console.log(variationList);
     return variationList;
   }
 
@@ -159,20 +178,10 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       return { id: sizeId, value: sizeName };
     });
     sizeNames.sort((a, b) => a.id - b.id);
-    console.log(sizeNames);
+    //console.log(sizeNames);
     return sizeNames;
   }
 
-  //hàm lấy ra list object id - value của color có trong biến thể sản phẩm
-  // getDistinctColNames(product: any): { id: number; value: string }[] {
-  //   const colIds = this.getDistinctColIds(product);
-  //   const colNames = colIds.map((colId, index) => {
-  //     const colName = this.getColName(colId);
-  //     return { id: colId, value: colName };
-  //   });
-  //   console.log(colNames);
-  //   return colNames;
-  // }
   getDistinctColNames(
     product: any
   ): { id: number; value: string; disabled: boolean }[] {
@@ -181,12 +190,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       const colName = this.getColName(colId);
       return { id: colId, value: colName, disabled: true };
     });
-    console.log(colNames);
+    //console.log(colNames);
     return colNames;
   }
 
   onSizeChange(event: Event) {
     this.selectedSizeId = +(event.target as HTMLInputElement).value;
+    this.selectedColorId = null;
     const sizeColList = this.getSizeColList(this.product);
     const correspondingColors = sizeColList
       .filter((sizeCol) => sizeCol.siz_Id === this.selectedSizeId)
@@ -199,7 +209,16 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       }
     );
 
-    console.log('Corresponding Colors for selected size:', correspondingColors);
+    //console.log('Corresponding Colors for selected size:', correspondingColors);
+  }
+
+  onColorChange(event: Event) {
+    this.selectedColorId = +(event.target as HTMLInputElement).value;
+    const sizeColList = this.getSizeColList(this.product);
+    const correspondingSizes = sizeColList.filter(
+      (sizeCol) => sizeCol.col_Id === this.selectedColorId
+    );
+    //console.log('Corresponding Sizes for selected color:', correspondingSizes);
   }
 
   getProductVariation(
@@ -212,10 +231,10 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
         (variation: ItemVariation) =>
           variation.siz_Id === sizeId && variation.col_Id === colorId
       );
-      console.log({ ...product, productVariations: [variation] });
+      //console.log({ ...product, productVariations: [variation] });
       return { ...product, productVariations: [variation] };
     } else {
-      console.log('SizeId or colorId is null');
+      //console.log('SizeId or colorId is null');
       return null;
     }
   }
@@ -234,7 +253,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
         sizeIds.push(sizeCol.siz_Id);
       }
     });
-    console.log(sizeIds);
+    //console.log(sizeIds);
     return sizeIds;
   }
 
@@ -247,7 +266,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
         colIds.push(sizeCol.col_Id);
       }
     });
-    console.log(colIds);
+    //console.log(colIds);
     return colIds;
   }
 
@@ -260,48 +279,195 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     return this.sizes.map((size) => size.name);
   }
 
-  onColorChange(event: Event) {
-    this.selectedColorId = +(event.target as HTMLInputElement).value;
-    const sizeColList = this.getSizeColList(this.product);
-    const correspondingSizes = sizeColList.filter(
-      (sizeCol) => sizeCol.col_Id === this.selectedColorId
-    );
-    console.log('Corresponding Sizes for selected color:', correspondingSizes);
-  }
-
-  // onSizeChange(event: Event) {
-  //   this.selectedSizeId = +(event.target as HTMLInputElement).value;
-  //   const sizeColList = this.getSizeColList(this.product);
-  //   const correspondingColors = sizeColList.filter(
-  //     (sizeCol) => sizeCol.siz_Id === this.selectedSizeId
-  //   );
-  //   console.log('Corresponding Colors for selected size:', correspondingColors);
-  // }
-
-  /**Xu ly item v2 */
-
   ngAfterViewInit() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
-  // handleCartBtnClicked(item: Item) {
-  //   this.cartService.addItem2(item, item.pricesale);
-  //   this.messageService.add({
-  //     severity: 'success',
-  //     summary: 'Thành công',
-  //     detail: 'Đã thêm sản phẩm ' + item.name + ' vào giỏ hàng!',
-  //   });
-  //   console.log(this.cartService.getCart());
-  // }
 
   handleCartBtnClicked_v2(
     product: any,
     sizeId: number | null,
     colorId: number | null
   ): any {
-    const variation = this.getProductVariation(product, sizeId, colorId);
+    const userId = this.getCookieValue('user');
 
+    if (!userId) {
+      const confirmation = window.confirm(
+        'Vui lòng đăng nhập để tiếp tục mua hàng!'
+      );
+      if (confirmation) {
+        window.location.href = 'http://localhost:4200/sign-in';
+      } else {
+        return;
+      }
+    }
+
+    // Get the product variation based on size and color
+    const variation = this.getProductVariation(product, sizeId, colorId);
     console.log(variation);
+
+    // Ensure variation and productVariations are valid
+    if (
+      !variation ||
+      !variation.productVariations ||
+      variation.productVariations.length === 0
+    ) {
+      console.error('Invalid product variation');
+      return;
+    }
+
+    const productVariation = variation.productVariations[0];
+
+    const ProductDto: ProductDto = {
+      id: variation.id,
+      cat_Id: variation.cat_Id,
+    };
+
+    productVariation.product = product;
+    console.log(variation);
+
+    const cartDto: CartDto = {
+      item_Id: productVariation.id,
+      cus_Id: userId,
+      price: productVariation.price,
+      quantity: 1,
+    };
+    console.log(cartDto);
+
+    // Call cartService to create cart
+    this.cartService.createCart(cartDto).subscribe({
+      next: (response) => {
+        console.log('Cart created successfully:', response);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Thành công',
+          detail: 'Bạn vừa thêm ' + variation.name + ' vào giỏ hàng!',
+        });
+      },
+      error: (error) => {
+        console.error('Error creating cart:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thất bại',
+          detail:
+            'Đã có lỗi xảy ra khi thêm ' + variation.name + ' vào giỏ hàng!',
+        });
+      },
+    });
+
+    // Return the product variation
+    return this.getProductVariation(product, sizeId, colorId);
+  }
+
+  // Function to get cookie value by name
+  private getCookieValue(name: string): string {
+    const cookieName = `${name}=`;
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(';');
+    for (let i = 0; i < cookieArray.length; i++) {
+      let cookie = cookieArray[i];
+      while (cookie.charAt(0) === ' ') {
+        cookie = cookie.substring(1);
+      }
+      if (cookie.indexOf(cookieName) === 0) {
+        const cookieValue = cookie.substring(cookieName.length, cookie.length);
+        try {
+          const parsedValue = JSON.parse(cookieValue);
+          return parsedValue.id || '';
+        } catch (e) {
+          console.error('Error parsing cookie value:', e);
+          return '';
+        }
+      }
+    }
+    return '';
+  }
+
+  //hàm này cho nút mua ngay
+  handleCartBtnClicked_v3(
+    product: any,
+    sizeId: number | null,
+    colorId: number | null
+  ): any {
+    const userId = this.getCookieValue('user');
+
+    if (!userId) {
+      const confirmation = window.confirm(
+        'Vui lòng đăng nhập để tiếp tục mua hàng!'
+      );
+      if (confirmation) {
+        window.location.href = 'http://localhost:4200/sign-in';
+      } else {
+        return;
+      }
+    }
+
+    // Get the product variation based on size and color
+    const variation = this.getProductVariation(product, sizeId, colorId);
+    console.log(variation);
+
+    // Ensure variation and productVariations are valid
+    if (
+      !variation ||
+      !variation.productVariations ||
+      variation.productVariations.length === 0
+    ) {
+      console.error('Invalid product variation');
+      return;
+    }
+
+    const productVariation = variation.productVariations[0];
+
+    const ProductDto: ProductDto = {
+      id: variation.id,
+      cat_Id: variation.cat_Id,
+    };
+
+    productVariation.product = product;
+    console.log(variation);
+
+    //Tạo một form để nhập số lượng
+    let quantity = window.prompt('Nhập số lượng cần mua:', '1');
+    let validQuantity = false;
+
+    while (!validQuantity) {
+      const input = window.prompt('Nhập số lượng cần mua:', '1');
+      if (input !== null) {
+      const parsedQuantity = parseInt(input, 10);
+      if (!isNaN(parsedQuantity) && parsedQuantity >= 1 && parsedQuantity <= productVariation.quantity) {
+        quantity = parsedQuantity.toString();
+        
+        const cartDto: CartDto = {
+          item_Id: productVariation.id,
+          cus_Id: userId,
+          price: productVariation.price,
+          quantity: quantity ? parseInt(quantity) : 1,
+          productVariation: productVariation,
+        };
+        console.log(cartDto);
+    
+        this.cartService.setCheckedItems([cartDto]);
+        this.router.navigate(['/payment']);
+
+        validQuantity = true;
+      } else {
+        window.alert(`Vui lòng nhập số lượng hợp lệ từ 1 đến ${productVariation.quantity}`);
+      }
+      } else {
+        return;
+      }
+    }
+
+    // Call cartService to create cart
+    // this.cartService.createCart(cartDto).subscribe({
+    //   next: (response) => {
+    //     console.log('Cart created successfully:', response);
+    //   },
+    //   error: (error) => {
+    //     console.error('Error creating cart:', error);
+    //   },
+    // });
+
+    // Return the product variation
     return this.getProductVariation(product, sizeId, colorId);
   }
 }
