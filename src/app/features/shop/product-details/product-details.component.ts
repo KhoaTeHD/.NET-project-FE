@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ImageSliderComponent } from '../image-slider/image-slider.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
@@ -71,7 +71,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private productService: ProductService,
-    private cartService: CartService
+    private cartService: CartService,
+    protected router: Router,
   ) {}
 
   /**Xu ly item v2 */
@@ -424,13 +425,37 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     productVariation.product = product;
     console.log(variation);
 
-    const cartDto: CartDto = {
-      item_Id: productVariation.id,
-      cus_Id: userId,
-      price: productVariation.price,
-      quantity: 1,
-    };
-    console.log(cartDto);
+    //Tạo một form để nhập số lượng
+    let quantity = window.prompt('Nhập số lượng cần mua:', '1');
+    let validQuantity = false;
+
+    while (!validQuantity) {
+      const input = window.prompt('Nhập số lượng cần mua:', '1');
+      if (input !== null) {
+      const parsedQuantity = parseInt(input, 10);
+      if (!isNaN(parsedQuantity) && parsedQuantity >= 1 && parsedQuantity <= productVariation.quantity) {
+        quantity = parsedQuantity.toString();
+        
+        const cartDto: CartDto = {
+          item_Id: productVariation.id,
+          cus_Id: userId,
+          price: productVariation.price,
+          quantity: quantity ? parseInt(quantity) : 1,
+          productVariation: productVariation,
+        };
+        console.log(cartDto);
+    
+        this.cartService.setCheckedItems([cartDto]);
+        this.router.navigate(['/payment']);
+
+        validQuantity = true;
+      } else {
+        window.alert(`Vui lòng nhập số lượng hợp lệ từ 1 đến ${productVariation.quantity}`);
+      }
+      } else {
+        return;
+      }
+    }
 
     // Call cartService to create cart
     // this.cartService.createCart(cartDto).subscribe({
