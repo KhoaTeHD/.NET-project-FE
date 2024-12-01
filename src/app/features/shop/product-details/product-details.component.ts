@@ -25,8 +25,7 @@ import { ApiResponse } from '../../../core/models/auth/api-resonse.model';
 import { ProductService } from '../../../core/services/product.service';
 import { ProductDto } from '../../../core/models/product.model';
 import {
-  ProductVariationDto,
-  ProductVariationDto_v2,
+  ProductVariationDto
 } from '../../../core/models/productVariation.model';
 
 import { CartService } from '../../../core/services/cart.service';
@@ -128,11 +127,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   }
 
   getVariationBySizeAndColor(
-  ): ProductVariationDto_v2 | undefined {
+  ): ProductVariationDto | undefined {
     if (this.product && this.product.productVariations) {
       if(this.selectedSizeId && this.selectedColorId){
         const variation = this.product.productVariations.find(
-          (variation: ProductVariationDto_v2) => {
+          (variation: ProductVariationDto) => {
             return variation.col_Id === this.selectedColorId && variation.siz_Id === this.selectedSizeId;
           }
         );
