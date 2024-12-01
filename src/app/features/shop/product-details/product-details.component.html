@@ -4,17 +4,15 @@
   <div class="container pb-5" style="margin-top: 40px !important">
     <div class="row">
       <div class="col-lg-7 mt-5">
-        <app-image-slider
-          [images]="variationList"
-        ></app-image-slider>
+        <app-image-slider [images]="variationList"></app-image-slider>
       </div>
       <!-- col end -->
       <div class="col-lg-5 mt-5">
         <div class="card">
           <div class="card-body">
             <h1 class="h2">{{ product?.name }}</h1>
-            <p>Thương hiệu: {{product?.brand?.name}}</p>
-            <p>Xuất xứ: {{product?.nation?.name}}</p>
+            <p>Thương hiệu: {{ product?.brand?.name }}</p>
+            <p>Xuất xứ: {{ product?.nation?.name }}</p>
             <span class="d-flex" *ngIf="getVariationBySize(selectedSizeId)">
               Giá bán:
               <p
@@ -64,34 +62,33 @@
                 </span>
               </p>
             </span>
-            <div
-              class="d-flex mt-3"
-              *ngIf="
-                getVariationBySizeAndColor()
-              "
-            >
+            <div class="d-flex mt-3" *ngIf="getVariationBySizeAndColor()">
               <p class="me-2">Còn lại:</p>
-              <p style="color: green; font-weight: 700" *ngIf="getVariationBySizeAndColor()?.quantity !== 0">
-                {{
-                  getVariationBySizeAndColor()
-                    ?.quantity
-                }}
+              <p
+                style="color: green; font-weight: 700"
+                *ngIf="getVariationBySizeAndColor()?.quantity !== 0"
+              >
+                {{ getVariationBySizeAndColor()?.quantity }}
               </p>
-              <p style="color: brown;font-style: italic;" *ngIf="getVariationBySizeAndColor()?.quantity === 0">
+              <p
+                style="color: brown; font-style: italic"
+                *ngIf="getVariationBySizeAndColor()?.quantity === 0"
+              >
                 Hết hàng. Hãy thử chọn size khác hoặc màu khác!
               </p>
             </div>
-            <div
-              class="d-flex mt-3"
-              *ngIf="
-                !getVariationBySizeAndColor()
-              "
-            >
+            <div class="d-flex mt-3" *ngIf="!getVariationBySizeAndColor()">
               <p class="me-2">Còn lại:</p>
-              <p style="color: green; font-weight: 700" *ngIf="product?.productVariations?.[0]?.quantity !== 0">
+              <p
+                style="color: green; font-weight: 700"
+                *ngIf="product?.productVariations?.[0]?.quantity !== 0"
+              >
                 {{product?.productVariations?.[0]?.quantity}}
               </p>
-              <p style="color: brown;font-style: italic;" *ngIf="getVariationBySizeAndColor()?.quantity === 0">
+              <p
+                style="color: brown; font-style: italic"
+                *ngIf="getVariationBySizeAndColor()?.quantity === 0"
+              >
                 Hãy chọn size khác hoặc màu sắc!
               </p>
             </div>
@@ -241,9 +238,10 @@
                 Thêm vào giỏ hàng
               </button> -->
               <button
-              *ngIf="
-                !getVariationBySizeAndColor() || getVariationBySizeAndColor()?.quantity === 0
-              "
+                *ngIf="
+                  !getVariationBySizeAndColor() ||
+                  getVariationBySizeAndColor()?.quantity === 0
+                "
                 type="button"
                 style="background-color: black"
                 data-mdb-button-init
@@ -261,9 +259,10 @@
                 Thêm vào giỏ hàng
               </button>
               <button
-              *ngIf="
-                getVariationBySizeAndColor() && getVariationBySizeAndColor()?.quantity !== 0
-              "
+                *ngIf="
+                  getVariationBySizeAndColor() &&
+                  getVariationBySizeAndColor()?.quantity !== 0
+                "
                 type="button"
                 style="background-color: black"
                 data-mdb-button-init
@@ -280,9 +279,10 @@
                 Thêm vào giỏ hàng
               </button>
               <button
-              *ngIf="
-                !getVariationBySizeAndColor() || getVariationBySizeAndColor()?.quantity === 0
-              "
+                *ngIf="
+                  !getVariationBySizeAndColor() ||
+                  getVariationBySizeAndColor()?.quantity === 0
+                "
                 type="button"
                 style="background-color: black"
                 data-mdb-button-init
@@ -293,14 +293,22 @@
                 Mua ngay
               </button>
               <button
-              *ngIf="
-                getVariationBySizeAndColor() && getVariationBySizeAndColor()?.quantity !== 0
-              "
+                *ngIf="
+                  getVariationBySizeAndColor() &&
+                  getVariationBySizeAndColor()?.quantity !== 0
+                "
                 type="button"
                 style="background-color: black"
                 data-mdb-button-init
                 data-mdb-ripple-init
                 class="btn btn-dark ms-3 btn-add-buy-now"
+                (click)="
+                  handleCartBtnClicked_v3(
+                    product,
+                    selectedSizeId,
+                    selectedColorId
+                  )
+                "
               >
                 Mua ngay
               </button>

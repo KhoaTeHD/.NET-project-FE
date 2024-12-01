@@ -8,9 +8,9 @@
   <div
     class="col-md-4 col-lg-3 mb-4 item-container"
     *ngFor="
-      let product of (displayedProducts.length
-        ? displayedProducts
-        : products) || [] | paginate : { itemsPerPage: 8, currentPage: page }
+      let product of displayedProducts
+        | paginate : { itemsPerPage: 8, currentPage: page };
+      trackBy: trackByProductId
     "
   >
     <div class="card custom-css-item" style="border-radius: 15px">
@@ -78,13 +78,6 @@
 
 
 
-
-
-
-
-
-
-
               }}%</span
             >
           </p>
@@ -104,6 +97,7 @@
             data-mdb-button-init
             data-mdb-ripple-init
             class="btn btn-dark btn-add-to-cart d-flex"
+            [routerLink]="['/shop/product/details', product.id]"
           >
             <i class="fa-solid fa-cart-shopping"></i>
             <p style="margin: 0; font-size: 14px; font-family: 'Roboto'">

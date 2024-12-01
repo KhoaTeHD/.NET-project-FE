@@ -10,4 +10,5 @@ export interface CartDto {
 
 export interface CartDtoExtendStatus extends CartDto {
   status?: boolean;
+  totalPrice?: number;
 }

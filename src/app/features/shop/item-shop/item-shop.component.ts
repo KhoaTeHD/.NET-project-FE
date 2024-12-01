@@ -17,8 +17,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-
+import { BehaviorSubject, Observable, Subscription, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
@@ -53,23 +53,20 @@ interface Filters {
 })
 export class ItemShopComponent implements OnInit, OnDestroy {
   @Input() filters!: any;
+
+  // Observable quản lý sản phẩm
+  private productsSubject = new BehaviorSubject<ProductDto[]>([]);
+  products$ = this.productsSubject.asObservable();
+
+  private filterSubject = new Subject<any>(); // Quản lý bộ lọc
   private routeSub!: Subscription;
-  // `products$` là một Observable, được khởi tạo từ BehaviorSubject.
-  // Observable này cho phép các thành phần khác đăng ký lắng nghe và nhận thông báo mỗi khi danh sách sản phẩm thay đổi.
-  products$: Observable<ProductDto[]> = new BehaviorSubject<ProductDto[]>([]);
+
   loading = true; // Trạng thái tải dữ liệu
-  error: string | null = null; // Trạng thái lỗi
-  page: number = 1; // Số trang hiện tại
-  // `products` là một mảng thông thường, được khởi tạo với giá trị rỗng.
-  // Mảng này chỉ lưu trữ dữ liệu sản phẩm và không có khả năng thông báo cho các thành phần khác khi dữ liệu thay đổi.
-  products: ProductDto[] = [];
-  filteredProducts: ProductDto[] = []; // Dữ liệu sản phẩm đã lọc
-  categories: any[] = []; // Danh mục
-  brands: any[] = []; // Thương hiệu
-  colors: any[] = []; // Màu sắc
-  sizes: any[] = []; // Kích thước
-  displayedProducts!: ProductDto[];
-  sort: any;
+  error: string | null = null; // Lỗi nếu xảy ra
+  page = 1; // Trang hiện tại
+  products: ProductDto[] = []; // Danh sách sản phẩm gốc
+  displayedProducts: ProductDto[] = []; // Sản phẩm hiển thị
+  sort: string | undefined;
 
   constructor(
     private productService: ProductService,
@@ -78,71 +75,75 @@ export class ItemShopComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // this.fetchProducts(); // Lấy danh sách sản phẩm khi khởi tạo component
+    // Lắng nghe queryParams để cập nhật filters
     this.routeSub = this.route.queryParams.subscribe((params) => {
-      // Lấy số trang từ URL (nếu không có thì mặc định là 1)
       this.page = +params['page'] || 1;
-
-      if (
-        params['price'] !== undefined ||
-        params['bra_Id'] !== undefined ||
-        params['cat_Id'] !== undefined ||
-        params['col_Id'] !== undefined ||
-        params['siz_Id'] !== undefined
-      ) {
-        console.log('đang có bộ lọc');
-      }
-      this.fetchProducts();
       this.filters = params;
-      this.applyFilters(this.filters);
+      this.filterSubject.next(this.filters);
+      console.log(this.displayedProducts);
+      this.applySort(this.filters.sort);
     });
+
+    // Lắng nghe thay đổi bộ lọc và áp dụng
+    this.filterSubject.pipe(debounceTime(300)).subscribe((filters) => {
+      this.applyFilters(filters);
+      this.applySort(this.filters.sort);
+    });
+
+    // Lấy sản phẩm khi khởi tạo
     this.fetchProducts();
   }
 
   ngOnDestroy(): void {
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
+    if (this.routeSub) this.routeSub.unsubscribe();
   }
-  /**
-   * 
-   * ngOnChanges: Là một lifecycle hook được gọi khi bất kỳ thuộc tính đầu vào nào thay đổi.
-  changes: Là một đối tượng kiểu SimpleChanges chứa giá trị hiện tại và trước đó của các thuộc tính đã thay đổi.
-  if (changes['filters']): Kiểm tra xem thuộc tính filters có thay đổi hay không.
-  this.applyFilters(changes['filters'].currentValue): Gọi phương thức applyFilters với giá trị mới của filters.
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['filters']) {
-      this.applyFilters(changes['filters'].currentValue);
+
+  fetchProducts(): void {
+    this.productService
+      .getAllProducts_cache(this.page)
+      .pipe(map((response) => response.result ?? []))
+      .subscribe({
+        next: (products) => {
+          this.products = products;
+          this.productsSubject.next(products); // Cập nhật BehaviorSubject
+          this.loading = false;
+          this.applyFilters(this.filters); // Lọc ngay sau khi tải xong
+        },
+        error: (err) => {
+          this.error = 'Không thể tải danh sách sản phẩm.';
+          this.loading = false;
+          console.error(err);
+        },
+      });
+  }
+
+  applySort(sort: string): void {
+    if (!sort || sort === '-1') {
+      return; // Nếu không có sắp xếp hoặc sắp xếp là -1, không làm gì
+    }
+
+    // Sắp xếp theo giá giảm dần
+    if (sort === '1') {
+      this.displayedProducts.sort((a, b) => {
+        const aPrice = a.productVariations?.[0]?.price ?? 0;
+        const bPrice = b.productVariations?.[0]?.price ?? 0;
+        return bPrice - aPrice; // Giảm dần theo giá
+      });
+    }
+    // Sắp xếp theo giá tăng dần
+    else if (sort === '2') {
+      this.displayedProducts.sort((a, b) => {
+        const aPrice = a.productVariations?.[0]?.price ?? 0;
+        const bPrice = b.productVariations?.[0]?.price ?? 0;
+        return aPrice - bPrice; // Tăng dần theo giá
+      });
     }
   }
 
   applyFilters(filters: any): void {
-    console.log('Current filters:', filters);
+    if (!filters) return;
 
-    if (filters.sort) {
-      this.sort = filters.sort;
-      console.log('Sort:', this.sort);
-    }
-
-    if (
-      filters.search &&
-      !filters.col_Id &&
-      !filters.bra_Id &&
-      !filters.siz_Id &&
-      !filters.cat_Id &&
-      !filters.price
-    ) {
-      const searchQuery = filters.search.toLowerCase();
-      const filteredProducts = this.products.filter(
-        (product) =>
-          product.name && product.name.toLowerCase().includes(searchQuery)
-      );
-      this.displayedProducts = filteredProducts;
-      console.log('Filtered products by search:', filteredProducts);
-      return;
-    }
-
+    const searchQuery = filters.search ? filters.search.toLowerCase() : '';
     const priceRange = filters.price
       ? filters.price.split(',').map(Number)
       : [0, Infinity];
@@ -151,7 +152,9 @@ export class ItemShopComponent implements OnInit, OnDestroy {
     const sizIds = filters.siz_Id ? filters.siz_Id.split(',').map(Number) : [];
     const catIds = filters.cat_Id ? filters.cat_Id.split(',').map(Number) : [];
 
-    const filteredProducts = this.products.filter((product) => {
+    this.displayedProducts = this.products.filter((product) => {
+      const isNameMatch =
+        !searchQuery || product.name?.toLowerCase().includes(searchQuery);
       const isCatMatch = catIds.length === 0 || catIds.includes(product.cat_Id);
       const isBraMatch = braIds.length === 0 || braIds.includes(product.bra_Id);
       const isVariationMatch = product.productVariations?.some((variation) => {
@@ -165,128 +168,22 @@ export class ItemShopComponent implements OnInit, OnDestroy {
           variation.price <= priceRange[1];
         return isColMatch && isSizMatch && isPriceMatch;
       });
-      return isCatMatch && isBraMatch && isVariationMatch;
-    });
 
-    console.log('Filtered products:', filteredProducts);
-    // Update the displayed products with the filteredProducts
-    this.displayedProducts = filteredProducts;
-    console.log('Displayed products:', this.displayedProducts);
-  }
-
-  private fetchProducts(): void {
-    // Hàm lấy dữ liệu sản phẩm từ service
-    this.products$ = this.productService.getAllProducts_cache(this.page).pipe(
-      map((response) => response.result ?? []) // Assuming 'data' is the property containing the array of products
-    ); // Gọi API lấy sản phẩm từ service
-    this.products$.subscribe({
-      next: (products) => {
-        this.products = products;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Không thể tải danh sách sản phẩm.';
-        this.loading = false;
-        console.error(err);
-      },
+      return isNameMatch && isCatMatch && isBraMatch && isVariationMatch;
     });
   }
 
   onPageChange(page: number): void {
-    // Hàm xử lý khi thay đổi trang
     this.page = page;
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { page: this.page },
-      queryParamsHandling: 'merge', // Giữ các query params khác nếu có
+      queryParamsHandling: 'merge',
     });
     window.scrollTo(0, 0);
   }
 
-  loadFilters(): void {
-    // Hàm tải các bộ lọc từ dữ liệu sản phẩm
-    this.categories = this.getUniqueCategories(this.products);
-    this.brands = this.getUniqueBrands(this.products);
-    this.colors = this.getUniqueColors(this.products);
-    this.sizes = this.getUniqueSizes(this.products);
-  }
-
-  getUniqueCategories(products: ProductDto[]): any[] {
-    return Array.from(new Set(products.map((product) => product.cat_Id))).map(
-      (id) => ({
-        id,
-        name: `Category ${id}`,
-      })
-    );
-  }
-
-  getUniqueBrands(products: ProductDto[]): any[] {
-    return Array.from(new Set(products.map((product) => product.bra_Id))).map(
-      (id) => ({
-        id,
-        name: `Brand ${id}`,
-      })
-    );
-  }
-
-  getUniqueColors(products: ProductDto[]): any[] {
-    const colors = new Set<number>();
-    products.forEach((product) => {
-      product.productVariations?.forEach((variation) => {
-        if (variation.col_Id !== undefined) {
-          colors.add(variation.col_Id);
-        }
-      });
-    });
-    return Array.from(colors).map((id) => ({
-      id,
-      name: `Color ${id}`,
-    }));
-  }
-
-  getUniqueSizes(products: ProductDto[]): any[] {
-    const sizes = new Set<number>();
-    products.forEach((product) => {
-      product.productVariations?.forEach((variation) => {
-        if (variation.siz_Id !== undefined) {
-          sizes.add(variation.siz_Id);
-        }
-      });
-    });
-    return Array.from(sizes).map((id) => ({
-      id,
-      name: `Size ${id}`,
-    }));
-  }
-
-  // Hàm xử lý tìm kiếm với các filter
-  onSearch(filters: any): void {
-    this.filteredProducts = this.products.filter((product) => {
-      const matchesCategory = filters.cat_Id
-        ? product.cat_Id === +filters.cat_Id
-        : true;
-      const matchesBrand = filters.bra_Id
-        ? product.bra_Id === +filters.bra_Id
-        : true;
-      const matchesColor = filters.col_Id
-        ? product.productVariations?.some((v) => v.col_Id === +filters.col_Id)
-        : true;
-      const matchesSize = filters.siz_Id
-        ? product.productVariations?.some((v) => v.siz_Id === +filters.siz_Id)
-        : true;
-      const matchesPrice = filters.price
-        ? product.productVariations?.some(
-            (v) => v.price && v.price <= +filters.price
-          )
-        : true;
-
-      return (
-        matchesCategory &&
-        matchesBrand &&
-        matchesColor &&
-        matchesSize &&
-        matchesPrice
-      );
-    });
+  trackByProductId(index: number, product: ProductDto): number {
+    return product.id ?? 0; // Sử dụng ID duy nhất của sản phẩm
   }
 }

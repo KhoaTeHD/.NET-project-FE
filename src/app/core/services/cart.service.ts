@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { CartDto } from '../models/cart.model';// Đường dẫn tới CartDto interface
+import { BehaviorSubject, Observable } from 'rxjs';
+import { CartDto, CartDtoExtendStatus } from '../models/cart.model'; // Đường dẫn tới CartDto interface
 import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường dẫn tới ApiResponse interface
 
 @Injectable({
@@ -35,5 +35,16 @@ export class CartService {
   // Xóa một Cart theo ID (DELETE /api/Cart/{id})
   deleteCart(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
+  }
+
+  // Xóa một Cart theo CartDto (DELETE /api/Cart)
+  deleteCartByCartDto(itemToDelete: any): Observable<any> {
+    const url = `https://localhost:7777/api/CartItem`;
+    return this.http.delete(url, { body: itemToDelete });
+  }
+
+  // Lấy thông tin một Cart theo ID (GET /api/Cart/{id})
+  getCartItemsByCusId(id: string): Observable<ApiResponse<CartDto[]>> {
+    return this.http.get<ApiResponse<CartDto[]>>(`${this.baseUrl}/${id}`);
   }
 }

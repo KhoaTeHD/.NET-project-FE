@@ -199,16 +199,16 @@ export class ProductService {
   //   return await this.getProducts();
   // }
 
-  // private productsSubject = new BehaviorSubject<ProductDto[]>([]);
-  // products$ = this.productsSubject.asObservable();
+  private productsSubject = new BehaviorSubject<ProductDto[]>([]);
+  products$ = this.productsSubject.asObservable();
 
-  // fetchAllProducts(): void {
-  //   this.http
-  //     .get<ApiResponse<ProductDto[]>>(this.baseUrl)
-  //     .subscribe((response) => {
-  //       if (response.result) {
-  //         this.productsSubject.next(response.result);
-  //       }
-  //     });
-  // }
+  fetchAllProducts(): void {
+    this.http
+      .get<ApiResponse<ProductDto[]>>(this.baseUrl)
+      .subscribe((response) => {
+        if (response.result) {
+          this.productsSubject.next(response.result);
+        }
+      });
+  }
 }
