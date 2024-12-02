@@ -75,6 +75,7 @@ export class ItemShopComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    window.scrollTo(0, 0);
     // Lắng nghe queryParams để cập nhật filters
     this.routeSub = this.route.queryParams.subscribe((params) => {
       this.page = +params['page'] || 1;
@@ -88,6 +89,13 @@ export class ItemShopComponent implements OnInit, OnDestroy {
     this.filterSubject.pipe(debounceTime(300)).subscribe((filters) => {
       this.applyFilters(filters);
       this.applySort(this.filters.sort);
+      if (this.displayedProducts.length < 9) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { page: 1 },
+          queryParamsHandling: 'merge',
+        });
+      }
     });
 
     // Lấy sản phẩm khi khởi tạo
@@ -151,6 +159,7 @@ export class ItemShopComponent implements OnInit, OnDestroy {
     const braIds = filters.bra_Id ? filters.bra_Id.split(',').map(Number) : [];
     const sizIds = filters.siz_Id ? filters.siz_Id.split(',').map(Number) : [];
     const catIds = filters.cat_Id ? filters.cat_Id.split(',').map(Number) : [];
+
 
     this.displayedProducts = this.products.filter((product) => {
       const isNameMatch =

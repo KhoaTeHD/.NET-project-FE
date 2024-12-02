@@ -9,6 +9,9 @@ import { ITEMS_V2 } from '../../../data_test/item/item-data';
 import { BRANDS } from '../../../data_test/brand/brand-data';
 import { ProductDto } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
+import { ProductVariationDto } from '../../../core/models/productVariation.model';
+import { Router, RouterModule } from '@angular/router';
+import { BrandDto } from '../../../core/models/brand.model';
 
 interface Slide {
   imageUrl: string;
@@ -19,7 +22,7 @@ interface Slide {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent, CommonModule],
+  imports: [HeaderComponent, FooterComponent, CommonModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
@@ -50,30 +53,34 @@ export class HomeComponent implements OnInit {
     },
   ];
   uniqueBrandItems: Item[] = [];
-  uniqueBrandItems_v2: Map<string, Item_v2> | undefined;
+  uniqueBrandItems_v2: { brand: BrandDto; product: ProductDto }[] = [];
   vipItems: Item[] = [];
   vipItems_v2: Item_v2[] = [];
   currentSlide = 0;
   brands = BRANDS;
   products: ProductDto[] = [];
-  vipProducts: ProductDto[] = [];
+  vipProducts: { product: ProductDto; variation: ProductVariationDto }[] = [];
 
   constructor(private productService: ProductService) {}
 
   ngOnInit() {
     this.startSlideshow();
     this.uniqueBrandItems = this.getUniqueBrandsItems();
-    this.uniqueBrandItems_v2 = this.getUniqueBrandsItems_v2();
+
     this.vipItems = this.getVipItems();
     this.vipItems_v2 = this.getVipItems_v2();
 
-    // this.productService.getAllProducts().subscribe((response) => {
-    //   this.products = response.result || [];
-    // });
+    this.productService.getAllProducts().subscribe((response) => {
+      this.products = response.result || [];
+      this.vipProducts = this.getVipProducts();
+      this.uniqueBrandItems_v2 = this.getUniqueBrandsItems_v2();
+      console.log(this.uniqueBrandItems_v2);
+      console.log(this.products);
+    });
 
-    // this.vipProducts = this.getVipProducts();
-    // console.log(this.products);
+
   }
+
 
   startSlideshow(): void {
     setInterval(() => {
@@ -111,17 +118,32 @@ export class HomeComponent implements OnInit {
     return Array.from(uniqueBrandsMap.values());
   }
 
-  getUniqueBrandsItems_v2(): Map<string, Item_v2> {
-    const uniqueBrandsMap = new Map<string, Item_v2>();
-
-    for (const item of this.items_v2) {
-      const brand = this.brands.find((brand) => brand.id === item.bra_Id);
-      if (brand && !uniqueBrandsMap.has(brand.name)) {
-        uniqueBrandsMap.set(brand.name, item);
-      }
+  getUniqueBrandsItems_v2(): { brand: BrandDto; product: ProductDto }[] {
+    if (this.products.length === 0) {
+      return [];
     }
-
-    return uniqueBrandsMap;
+  
+    const brandMap = new Map<number, ProductDto>();
+  
+    this.products.forEach(product => {
+      const brandId = product.brand?.id;
+      if (brandId !== undefined && !brandMap.has(brandId)) {
+        brandMap.set(brandId, product);
+      }
+    });
+  
+    const uniqueBrandsWithProduct = Array.from(brandMap.entries()).map(([brandId, product]) => {
+      if (product.brand) {
+        return {
+          brand: product.brand,
+          product: product
+        };
+      }
+      return null;
+    }).filter(item => item !== null) as { brand: BrandDto; product: ProductDto }[];
+  
+    console.log(uniqueBrandsWithProduct);
+    return uniqueBrandsWithProduct;
   }
 
   getVipItems(): Item[] {
@@ -147,13 +169,35 @@ export class HomeComponent implements OnInit {
     return sortedItems.slice(0, Math.min(4, sortedItems.length));
   }
 
-  getVipProducts(): ProductDto[] {
+  getVipProducts(): { product: ProductDto; variation: ProductVariationDto }[] {
     if (this.products.length === 0) {
       return [];
     }
-
-    const sortedItems = this.products.sort((a, b) => (b.id || 0) - (a.id || 0));
-    console.log(sortedItems);
-    return sortedItems.slice(0, Math.min(4, sortedItems.length));
+  
+    const variationsWithProduct = this.products.flatMap(product =>
+      product.productVariations ? product.productVariations.map(variation => ({
+        product,
+        variation,
+      })) : []
+    );
+  
+    const sortedVariations = variationsWithProduct
+      .sort((a, b) => (b.variation.discount || 0) - (a.variation.discount || 0));
+  
+    const uniqueTopVariations: { product: ProductDto; variation: ProductVariationDto }[] = [];
+    const seenProductIds = new Set<number>();
+  
+    for (const item of sortedVariations) {
+      if (item.product.id !== undefined && !seenProductIds.has(item.product.id)) {
+        uniqueTopVariations.push(item);
+        seenProductIds.add(item.product.id);
+        if (uniqueTopVariations.length === 4) {
+          break;
+        }
+      }
+    }
+  
+    console.log(uniqueTopVariations);
+    return uniqueTopVariations;
   }
 }

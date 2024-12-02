@@ -31,6 +31,8 @@ import {
 import { CartService } from '../../../core/services/cart.service';
 import { CartDto } from '../../../core/models/cart.model';
 
+
+
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-details.component.html',
@@ -457,15 +459,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       }
     }
 
-    // Call cartService to create cart
-    // this.cartService.createCart(cartDto).subscribe({
-    //   next: (response) => {
-    //     console.log('Cart created successfully:', response);
-    //   },
-    //   error: (error) => {
-    //     console.error('Error creating cart:', error);
-    //   },
-    // });
 
     // Return the product variation
     return this.getProductVariation(product, sizeId, colorId);
