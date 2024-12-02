@@ -10,7 +10,142 @@
       <div class="col-lg-5 mt-5">
         <div class="card">
           <div class="card-body">
-            <h1 class="h2">{{ product?.name }}</h1>
+            <div>
+              <h1 class="h2">{{ product?.name }}</h1>
+              <button
+                type="button"
+                class="btn btn-primary btn-sm mb-2"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalFullscreen"
+                fdprocessedid="8he3e"
+              >
+                Thử áo online (thử nghiệm)
+              </button>
+              <div
+                class="modal fade"
+                id="exampleModalFullscreen"
+                tabindex="-1"
+                aria-labelledby="exampleModalFullscreenLabel"
+                style="display: none"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-fullscreen">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1
+                        class="modal-title fs-4"
+                        id="exampleModalFullscreenLabel"
+                      >
+                        Thử áo online (thử nghiệm)
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div
+                      class="modal-body d-flex flex-wrap justify-content-evenly"
+                    >
+                      <!-- Phần 1: Chọn và hiển thị ảnh người dùng tải lên -->
+                      <div
+                        class="col-12 col-md-4 d-flex align-items-center justify-content-center col-avatar border-section"
+                      >
+                        <div class="d-flex align-items-center flex-column">
+                          <!-- Nút chọn ảnh -->
+                          <label
+                            for="choose-pic"
+                            class="border p-1 mt-3 mb-2 rounded-2"
+                            style="cursor: pointer"
+                            >Tải lên ảnh selfie của bạn</label
+                          >
+                          <input
+                            type="file"
+                            name="choose-pic"
+                            id="choose-pic"
+                            hidden
+                            (change)="onFileSelected($event)"
+                          />
+                          <p class="format-pic-title">Định dạng: .JPEG, .PNG</p>
+                          <img
+                            *ngIf="uploadedImage"
+                            [src]="uploadedImage"
+                            alt="Uploaded Image"
+                            style="max-width: 200px; margin-top: 10px"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Phần giữa: Chọn ảnh trong this.variationList và hiển thị ảnh người dùng chọn -->
+                      <div
+                        class="col-12 col-md-3 d-flex flex-column align-items-center justify-content-center border-section"
+                      >
+                        <h2>Chọn áo cần thử</h2>
+                        <div class="image-selection d-flex flex-wrap">
+                          <div
+                            *ngFor="let variation of variationList"
+                            class="image-option m-2"
+                            (click)="onImageSelect(variation.value)"
+                          >
+                            <img
+                              [src]="variation.value"
+                              alt="Product Variation"
+                              style="max-width: 60px; cursor: pointer"
+                            />
+                          </div>
+                        </div>
+                        <div *ngIf="selectedImage" class="selected-image mt-3">
+                          <img
+                            [src]="selectedImage"
+                            alt="Selected Image"
+                            style="max-width: 200px"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Phần cuối: Để trống cho code sau -->
+                      <div
+                        class="col-12 col-md-4 d-flex flex-column border-section align-items-center justify-content-center"
+                      >
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-sm mb-2"
+                          (click)="handleTryOnClothes()"
+                        >
+                          Mặc áo (30 - 40 giây)
+                        </button>
+                        <div>
+                          <img
+                            src="{{ outputImage }}"
+                            alt=""
+                            style="max-width: 200px"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-sm mt-2"
+                          (click)="downloadImage()"
+                          [disabled]="outputImage === null"
+                        >
+                          Tải ảnh xuống
+                        </button>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                        (click)="resetData()"
+                      >
+                        Đóng
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <p>Thương hiệu: {{ product?.brand?.name }}</p>
             <p>Xuất xứ: {{ product?.nation?.name }}</p>
             <span class="d-flex" *ngIf="getVariationBySize(selectedSizeId)">

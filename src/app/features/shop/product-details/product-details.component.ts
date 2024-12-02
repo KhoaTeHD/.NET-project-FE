@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ImageSliderComponent } from '../image-slider/image-slider.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
@@ -24,14 +24,12 @@ import { BRANDS } from '../../../data_test/brand/brand-data';
 import { ApiResponse } from '../../../core/models/auth/api-resonse.model';
 import { ProductService } from '../../../core/services/product.service';
 import { ProductDto } from '../../../core/models/product.model';
-import {
-  ProductVariationDto
-} from '../../../core/models/productVariation.model';
+import { ProductVariationDto } from '../../../core/models/productVariation.model';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CartDto } from '../../../core/models/cart.model';
-
-
+import { CloudinaryService } from '../../../core/upload_images/upload_image';
+import { VirtualTryOnService } from '../../../core/services/virtual-try-on.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -68,13 +66,18 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   cartItem: CartDto | null = null;
   //product: ProductDto | undefined;
   variationList: { id: number; value: string }[] = [];
-
+  uploadedImage: string | ArrayBuffer | null = null;
+  selectedImage: string | null = null;
+  responseImageFromCloudinary: string | null = null;
+  outputImage: string | null = null;
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService,
     private productService: ProductService,
     private cartService: CartService,
     protected router: Router,
+    private cloudinaryService: CloudinaryService,
+    private virtualTryOnService: VirtualTryOnService
   ) {}
 
   /**Xu ly item v2 */
@@ -127,13 +130,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     return undefined;
   }
 
-  getVariationBySizeAndColor(
-  ): ProductVariationDto | undefined {
+  getVariationBySizeAndColor(): ProductVariationDto | undefined {
     if (this.product && this.product.productVariations) {
       if (this.selectedSizeId && this.selectedColorId) {
         const variation = this.product.productVariations.find(
           (variation: ProductVariationDto) => {
-            return variation.col_Id === this.selectedColorId && variation.siz_Id === this.selectedSizeId;
+            return (
+              variation.col_Id === this.selectedColorId &&
+              variation.siz_Id === this.selectedSizeId
+            );
           }
         );
         //console.log("Get variation by size " + this.selectedSizeId + " and color " + this.selectedColorId, variation);
@@ -434,33 +439,168 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     while (!validQuantity) {
       const input = window.prompt('Nhập số lượng cần mua:', '1');
       if (input !== null) {
-      const parsedQuantity = parseInt(input, 10);
-      if (!isNaN(parsedQuantity) && parsedQuantity >= 1 && parsedQuantity <= productVariation.quantity) {
-        quantity = parsedQuantity.toString();
-        
-        const cartDto: CartDto = {
-          item_Id: productVariation.id,
-          cus_Id: userId,
-          price: productVariation.price,
-          quantity: quantity ? parseInt(quantity) : 1,
-          productVariation: productVariation,
-        };
-        console.log(cartDto);
-    
-        this.cartService.setCheckedItems([cartDto]);
-        this.router.navigate(['/payment']);
+        const parsedQuantity = parseInt(input, 10);
+        if (
+          !isNaN(parsedQuantity) &&
+          parsedQuantity >= 1 &&
+          parsedQuantity <= productVariation.quantity
+        ) {
+          quantity = parsedQuantity.toString();
 
-        validQuantity = true;
-      } else {
-        window.alert(`Vui lòng nhập số lượng hợp lệ từ 1 đến ${productVariation.quantity}`);
-      }
+          const cartDto: CartDto = {
+            item_Id: productVariation.id,
+            cus_Id: userId,
+            price: productVariation.price,
+            quantity: quantity ? parseInt(quantity) : 1,
+            productVariation: productVariation,
+          };
+          console.log(cartDto);
+
+          this.cartService.setCheckedItems([cartDto]);
+          this.router.navigate(['/payment']);
+
+          validQuantity = true;
+        } else {
+          window.alert(
+            `Vui lòng nhập số lượng hợp lệ từ 1 đến ${productVariation.quantity}`
+          );
+        }
       } else {
         return;
       }
     }
-
-
     // Return the product variation
     return this.getProductVariation(product, sizeId, colorId);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      console.log(file);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.uploadedImage = e.target?.result ?? null;
+      };
+      reader.readAsDataURL(file);
+
+      const userId = this.getCookieValue('user');
+      const folder = 'user_selfie'; // Thư mục Cloudinary
+      const publicId = `user_selfie_${userId}_${Date.now()}`; // Tên định danh duy nhất
+
+      new Promise<void>((resolve, reject) => {
+        this.cloudinaryService
+          .uploadImage(file, folder, publicId)
+          .then((result) => {
+            // Cập nhật URL ảnh sau khi upload
+            this.responseImageFromCloudinary = result.secure_url;
+            resolve(); // Báo hiệu hoàn tất
+            console.log(
+              'URL ảnh sau khi upload:',
+              this.responseImageFromCloudinary
+            );
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Thành công!',
+              detail: 'Ảnh của bạn đã được tải lên!',
+            });
+          })
+          .catch((error) => {
+            console.error('Lỗi khi lưu ảnh:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Thất bại!',
+              detail: 'Lỗi xảy ra khi lưu ảnh!',
+            });
+            reject(error); // Báo hiệu lỗi
+          });
+      });
+    }
+  }
+
+  onImageSelect(imageUrl: string): void {
+    this.selectedImage = imageUrl;
+    console.log('Selected image:', imageUrl);
+  }
+
+  downloadImage() {
+    const a = document.createElement('a'); // Tạo thẻ <a>
+    a.href = this.outputImage!; // Đường dẫn file tải xuống
+    a.download = 'photo.jpg'; // Tên file tải xuống
+    a.target = '_blank'; // Mở file trong tab mới
+    document.body.appendChild(a); // Thêm thẻ <a> vào DOM
+    a.click(); // Tự động click để tải file
+    document.body.removeChild(a); // Xóa thẻ <a> sau khi tải xong
+  }
+
+  handleTryOnClothes(): void {
+    console.log('Ảnh tải lên:', this.responseImageFromCloudinary);
+    console.log('Ảnh chọn:', this.selectedImage);
+
+    const modelImage = this.responseImageFromCloudinary;
+    const garmentImage = this.selectedImage;
+    const category = 'tops';
+
+    this.virtualTryOnService
+      .runVirtualTryOn(modelImage!, garmentImage!, category)
+      .then((response) => {
+        if (response.error === null) {
+          return this.pollStatus(response.id); // Gọi hàm kiểm tra trạng thái
+        } else {
+          console.error('Request failed, canceling:', response.id);
+          return this.virtualTryOnService.cancelRequest(response.id);
+        }
+      })
+      .then((statusResponse) => {
+        if (statusResponse && statusResponse.status === 'completed') {
+          console.log('Output Image:', statusResponse.output);
+          this.outputImage = statusResponse.output;
+        } else {
+          console.log('Final status response:', statusResponse);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
+  /**
+   * Hàm kiểm tra trạng thái với polling
+   */
+  private pollStatus(requestId: string): Promise<any> {
+    const delay = 2000; // Kiểm tra sau mỗi 2 giây
+
+    return new Promise((resolve, reject) => {
+      const checkStatus = () => {
+        this.virtualTryOnService
+          .getStatus(requestId)
+          .then((statusResponse) => {
+            console.log('Status Response:', statusResponse);
+
+            if (statusResponse.status === 'completed') {
+              resolve(statusResponse); // Kết thúc khi trạng thái là "completed"
+            } else if (statusResponse.status === 'error') {
+              reject(new Error('Error occurred while processing.'));
+            } else {
+              // Tiếp tục kiểm tra
+              setTimeout(checkStatus, delay);
+            }
+          })
+          .catch((error) => {
+            console.error('Error in polling status:', error);
+            reject(error);
+          });
+      };
+
+      checkStatus(); // Bắt đầu kiểm tra
+    });
+  }
+
+  resetData(): void {
+    this.uploadedImage = null;
+    this.selectedImage = null;
+    this.responseImageFromCloudinary = null;
+    this.outputImage = null;
   }
 }
