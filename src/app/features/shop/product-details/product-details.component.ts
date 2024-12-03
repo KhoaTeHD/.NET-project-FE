@@ -1,4 +1,4 @@
-import { Component, OnInit, output } from '@angular/core';
+import { Component, OnInit, output, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ImageSliderComponent } from '../image-slider/image-slider.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
@@ -30,6 +30,9 @@ import { CartService } from '../../../core/services/cart.service';
 import { CartDto } from '../../../core/models/cart.model';
 import { CloudinaryService } from '../../../core/upload_images/upload_image';
 import { VirtualTryOnService } from '../../../core/services/virtual-try-on.service';
+
+import Swal from 'sweetalert2';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-product-detail',
@@ -70,6 +73,16 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   selectedImage: string | null = null;
   responseImageFromCloudinary: string | null = null;
   outputImage: string | null = null;
+
+  isLoading: boolean = false;
+
+  isLoadingStart: boolean = false;
+  isLoadingRender: boolean = false;
+  isLoadingCancle: boolean = false;
+  isLoadingError: boolean = false;
+
+  isExit: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService,
@@ -77,7 +90,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     private cartService: CartService,
     protected router: Router,
     private cloudinaryService: CloudinaryService,
-    private virtualTryOnService: VirtualTryOnService
+    private virtualTryOnService: VirtualTryOnService,
+    private renderer: Renderer2
   ) {}
 
   /**Xu ly item v2 */
@@ -484,22 +498,29 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
         this.uploadedImage = e.target?.result ?? null;
       };
       reader.readAsDataURL(file);
+    }
+  }
 
+  uploadImageToCloud(): void {
+    if (this.uploadedImage) {
+      this.isLoading = true;
+      const file = this.uploadedImage as unknown as File;
+      console.log('Uploading image to cloud:', file);
       const userId = this.getCookieValue('user');
-      const folder = 'user_selfie'; // Thư mục Cloudinary
-      const publicId = `user_selfie_${userId}_${Date.now()}`; // Tên định danh duy nhất
+      const folder = 'user_selfie';
+      const publicId = `user_selfie_${userId}_${Date.now()}`;
 
       new Promise<void>((resolve, reject) => {
         this.cloudinaryService
           .uploadImage(file, folder, publicId)
           .then((result) => {
-            // Cập nhật URL ảnh sau khi upload
             this.responseImageFromCloudinary = result.secure_url;
-            resolve(); // Báo hiệu hoàn tất
+            resolve();
             console.log(
               'URL ảnh sau khi upload:',
               this.responseImageFromCloudinary
             );
+            this.isLoading = false;
             this.messageService.add({
               severity: 'success',
               summary: 'Thành công!',
@@ -513,9 +534,12 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
               summary: 'Thất bại!',
               detail: 'Lỗi xảy ra khi lưu ảnh!',
             });
-            reject(error); // Báo hiệu lỗi
+            reject(error);
+            this.isLoading = false;
           });
       });
+    } else {
+      console.error('No image selected for upload.');
     }
   }
 
@@ -542,26 +566,37 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     const garmentImage = this.selectedImage;
     const category = 'tops';
 
+    this.isLoadingStart = true;
+
     this.virtualTryOnService
       .runVirtualTryOn(modelImage!, garmentImage!, category)
       .then((response) => {
         if (response.error === null) {
+          this.isLoadingStart = false;
+          this.isLoadingRender = true;
           return this.pollStatus(response.id); // Gọi hàm kiểm tra trạng thái
         } else {
+          this.isLoadingStart = false;
+          this.isLoadingError = true;
           console.error('Request failed, canceling:', response.id);
           return this.virtualTryOnService.cancelRequest(response.id);
         }
       })
       .then((statusResponse) => {
         if (statusResponse && statusResponse.status === 'completed') {
+          this.isLoadingRender = false;
+          this.isLoadingError = false;
           console.log('Output Image:', statusResponse.output);
           this.outputImage = statusResponse.output;
         } else {
+          this.isLoadingRender = false;
+          this.isLoadingError = true;
           console.log('Final status response:', statusResponse);
         }
       })
       .catch((error) => {
         console.error('Error:', error);
+        this.isLoadingError = true;
       });
   }
 
@@ -597,10 +632,54 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // checkAndCloseModal() {
+  //   if (this.uploadedImage) {
+  //     // Hiển thị popup
+  //     alert('Bạn có chắc chắn muốn đóng mà không lưu ảnh đã tải lên?');
+  //   } else {
+  //     // Đóng modal
+  //     this.resetData();
+  //     const modal = document.getElementById('exampleModalFullscreen');
+  //     if (modal) {
+  //       const bootstrapModal = bootstrap.Modal.getInstance(modal);
+  //       if (bootstrapModal) {
+  //         bootstrapModal.hide();
+  //       }
+  //     }
+  //   }
+  // }
+
   resetData(): void {
     this.uploadedImage = null;
     this.selectedImage = null;
     this.responseImageFromCloudinary = null;
     this.outputImage = null;
+    this.isExit = false;
+  }
+
+  checkStatusExit(): void {
+    if (this.uploadedImage !== null) {
+      Swal.fire({
+        title: 'Bạn có chắc chắn thoát?',
+        text: 'Kết quả sẽ biến mất nếu bạn thoát, hãy lưu lại kết quả nếu muốn!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Có, tôi chắc chắn!',
+        cancelButtonText: 'Không, hủy bỏ!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.isExit = true;
+          this.resetData();
+          const exitButton = document.getElementById(
+            'exitButton'
+          ) as HTMLButtonElement;
+          if (exitButton) {
+            exitButton.click();
+          }
+        }
+      });
+    } else {
+      this.isExit = true;
+    }
   }
 }

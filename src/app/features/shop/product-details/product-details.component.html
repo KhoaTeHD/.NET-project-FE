@@ -21,6 +21,7 @@
               >
                 Thử áo online (thử nghiệm)
               </button>
+
               <div
                 class="modal fade"
                 id="exampleModalFullscreen"
@@ -38,12 +39,6 @@
                       >
                         Thử áo online (thử nghiệm)
                       </h1>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
                     </div>
                     <div
                       class="modal-body d-flex flex-wrap justify-content-evenly"
@@ -58,7 +53,7 @@
                             for="choose-pic"
                             class="border p-1 mt-3 mb-2 rounded-2"
                             style="cursor: pointer"
-                            >Tải lên ảnh selfie của bạn</label
+                            >Chọn ảnh selfie của bạn</label
                           >
                           <input
                             type="file"
@@ -67,13 +62,33 @@
                             hidden
                             (change)="onFileSelected($event)"
                           />
-                          <p class="format-pic-title">Định dạng: .JPEG, .PNG</p>
+
+                          <p class="format-pic-title">
+                            Yêu cầu: đủ sáng, chính diện và thấy rõ phần thân.
+                          </p>
                           <img
                             *ngIf="uploadedImage"
                             [src]="uploadedImage"
                             alt="Uploaded Image"
                             style="max-width: 200px; margin-top: 10px"
                           />
+
+                          <button
+                            type="button"
+                            class="btn btn-primary btn-sm mt-3"
+                            (click)="uploadImageToCloud()"
+                            [hidden]="
+                              !uploadedImage ||
+                              (!isLoading && responseImageFromCloudinary) ||
+                              isLoading
+                            "
+                          >
+                            Tải lên
+                          </button>
+                          <p *ngIf="isLoading">Đang tải lên...</p>
+                          <p *ngIf="!isLoading && responseImageFromCloudinary">
+                            Đã tải lên ✔
+                          </p>
                         </div>
                       </div>
 
@@ -108,10 +123,26 @@
                       <div
                         class="col-12 col-md-4 d-flex flex-column border-section align-items-center justify-content-center"
                       >
+                        <p *ngIf="isLoadingStart">Đang khởi tạo...</p>
+                        <p *ngIf="!isLoadingStart && isLoadingRender">
+                          Khởi tạo thành công ✔
+                        </p>
+                        <p *ngIf="!isLoadingStart && isLoadingRender">
+                          Đang tiến hành thay áo...
+                        </p>
                         <button
                           type="button"
                           class="btn btn-primary btn-sm mb-2"
                           (click)="handleTryOnClothes()"
+                          [hidden]="
+                            (!isLoadingStart && isLoadingRender) || outputImage
+                          "
+                          [disabled]="
+                            isLoadingStart ||
+                            !uploadedImage ||
+                            !selectedImage ||
+                            !responseImageFromCloudinary
+                          "
                         >
                           Mặc áo (30 - 40 giây)
                         </button>
@@ -134,10 +165,20 @@
                     </div>
                     <div class="modal-footer">
                       <button
+                        id="exitButton"
                         type="button"
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
                         (click)="resetData()"
+                        [hidden]="isExit === false"
+                      >
+                        Thoát
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        (click)="checkStatusExit()"
+                        [hidden]="isExit === true"
                       >
                         Đóng
                       </button>

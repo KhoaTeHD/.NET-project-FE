@@ -62,3 +62,11 @@ input {
   padding: 10px;
   margin: 5px;
 }
+
+.custom-swal-container {
+  z-index: 9999 !important;
+}
+
+.custom-swal-popup {
+  z-index: 10000 !important;
+}

@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class VirtualTryOnService {
   private apiUrl = '/fashn-api';
-  private apiKey = 'hahaah';
+  private apiKey = 'fa-NjstuaqHbdNP-igJZjgV3LNAzTYIaaRfB3I8J';
 
   constructor() {}
 
