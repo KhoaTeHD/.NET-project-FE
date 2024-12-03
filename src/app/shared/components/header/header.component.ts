@@ -11,6 +11,7 @@ import { CartService } from '../../../core/services/cart.service';
 import { CartDtoExtendStatus } from '../../../core/models/cart.model';
 import { CategoryDto } from '../../../core/models/category.model';
 import { CategoryService } from '../../../core/services/category.service';
+import { ShareUserDtoService } from '../../../core/services/shared/data/share_userDto.service';
 
 @Component({
   selector: 'app-header',
@@ -29,7 +30,8 @@ export class HeaderComponent implements OnInit {
     private cartService: CartService,
     private tokenStorageService: TokenStorageService,
     private router: Router,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private shareUserDtoService: ShareUserDtoService
   ) {}
 
   ngOnInit() {
@@ -49,6 +51,12 @@ export class HeaderComponent implements OnInit {
         this.cartItems = response.result || [];
       });
     }
+
+    this.shareUserDtoService.user$.subscribe((user) => {
+      if (user) {
+        this.user = user;
+      }
+    });
   }
 
   logout(): void {

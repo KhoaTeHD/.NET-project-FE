@@ -9,6 +9,8 @@ export interface OrderDto {
   discount_amount?: number;
   total?: number;
   orderStatus?: string;
+  formOfPayment?: string;
+  shipping_Charge?: number;
   detailOrders?: DetailOrderDto[];
 }
 

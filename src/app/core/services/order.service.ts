@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { OrderDto } from '../models/order.model';
 import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường dẫn tới ApiResponse interface
@@ -40,4 +40,23 @@ export class OrderService {
   getOrdersByCustomerId(customerId: string): Observable<ApiResponse<OrderDto[]>> {
     return this.http.get<ApiResponse<OrderDto[]>>(`${this.baseUrl}/customer/${customerId}`);
   }
+
+  // Cập nhật trạng thái đơn hàng
+  updateOrderStatus(orderId: number, newStatus: string): Observable<ApiResponse<OrderDto>> {
+    const body = JSON.stringify(newStatus);
+
+    // Cấu hình request headers
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json;', // Đảm bảo nội dung gửi lên là JSON
+    });
+
+    // Gửi request PUT với body là đối tượng chứa newStatus
+    return this.http.put<ApiResponse<OrderDto>>(
+      `${this.baseUrl}/${orderId}/status`,
+      body,
+      { headers }
+    );
+  }
+  
+  
 }

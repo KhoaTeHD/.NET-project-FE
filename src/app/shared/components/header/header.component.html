@@ -109,10 +109,10 @@
                       >Hồ sơ</a
                     >
                   </li>
-                  <li><a class="dropdown-item" href="#">Đơn hàng</a></li>
-                  <li><a class="dropdown-item" href="#">Sổ địa chỉ</a></li>
-                  <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
-                  <li>
+                  <li><a class="dropdown-item" [routerLink]="['/my-orders']">Đơn hàng</a></li>
+                  <li><a class="dropdown-item" [routerLink]="['/address-book']">Sổ địa chỉ</a></li>
+                  <li><a class="dropdown-item" [routerLink]="['/change-password']">Đổi mật khẩu</a></li>
+                  <li style="cursor: pointer;">
                     <a class="dropdown-item" (click)="logout()">Đăng xuất</a>
                   </li>
                 </ul>

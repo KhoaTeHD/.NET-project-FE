@@ -26,6 +26,8 @@ import { PaymentComponent } from './features/payment/payment.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { CanDeactivateGuard } from './guards/can-deactivate.guard';
 import { PaymentAccessGuard } from './guards/payment-access.guard';
+import { CustomerGuard } from './core/guards/customer.guard';
+import { NonCustomerGuard } from './core/guards/non_customerguard';
 
 export const routes: Routes = [
     {
@@ -66,27 +68,33 @@ export const routes: Routes = [
     },
     {
         path: 'sign-in', 
-        component: SignInComponent
+        component: SignInComponent,
+        canActivate: [NonCustomerGuard]
     },
     {
         path: 'sign-up', 
-        component: SignUpComponent
+        component: SignUpComponent,
+        canActivate: [NonCustomerGuard]
     },
     {
         path: 'record', 
-        component: RecordComponent
+        component: RecordComponent,
+        canActivate: [CustomerGuard]
     },
     {
         path: 'change-password', 
-        component: ChangePasswordComponent
+        component: ChangePasswordComponent,
+        canActivate: [CustomerGuard]
     },
     {
         path: 'address-book', 
-        component: AddressBookComponent
+        component: AddressBookComponent,
+        canActivate: [CustomerGuard]
     },
     {
         path: 'my-orders', 
-        component: MyOrdersComponent
+        component: MyOrdersComponent,
+        canActivate: [CustomerGuard]
     },
     {
         path: 'payment', 

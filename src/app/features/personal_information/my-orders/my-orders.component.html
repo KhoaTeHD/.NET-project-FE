@@ -1,3 +1,5 @@
+<!-- Toast sẽ hiển thị ở đây trong 1s, mặc định là top-right -->
+<p-toast [life]="1000"></p-toast>
 <app-header />
 <div class="row personal-info-container mb-5 mx-auto">
     <div class="col-lg-2 d-none d-lg-block">
@@ -21,13 +23,14 @@
         <div class="record-container p-4">
             <div class="row align-items-center mb-3">
                 <div class="col-lg-10">
-                    <p class="record-title fw-bold record-title mb-0">Đơn hàng của tôi ({{total_order}})</p>
+                    <p class="record-title fw-bold record-title mb-0">Đơn hàng của tôi ({{orderList.length}})</p>
                 </div>
                 <div class="col-lg-2">
                     <select class="form-select filter-order-status" (change)="filterOrders($event)">
                         <option>Tất cả</option>
-                        <option>Đang xử lý</option>
-                        <option>Đang giao hàng</option>
+                        <option>Chờ xác nhận</option>
+                        <option>Đã xác nhận</option>
+                        <option>Đang giao</option>
                         <option>Đã giao</option>
                         <option>Đã hủy</option>
                     </select>
@@ -44,31 +47,30 @@
                                     Xem chi tiết
                                 </button>
 
-                                <div class="border-end mx-2"></div>
-                                <button class="btn-order-action cancel">Hủy đơn</button>
+                                <div class="border-end mx-2" *ngIf="order.orderStatus === 'Chờ xác nhận'"></div>
+                                <button class="btn-order-action cancel" *ngIf="order.orderStatus === 'Chờ xác nhận'" (click)="cancelOrder(order?.order_ID || 0)">Hủy đơn</button>
                             </div>
                         </div>
                         <div class="col-md-6 d-flex justify-content-end" style="font-style: italic;">
-                            <p>Mã đơn hàng: {{order.order_id}}</p>
+                            <p>Mã đơn hàng: {{order.order_ID}}</p>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Thời gian</div>
-                        <div class="d-none d-lg-block col-lg-2 order-title">Phí vận chuyển</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Ngày đặt</div>
                         <div class="d-none d-lg-block col-lg-2 order-title">Giảm giá</div>
+                        <div class="d-none d-lg-block col-lg-2 order-title">Phí vận chuyển</div>
                         <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Tổng tiền</div>
                         <div class="d-none d-sm-block col-md-3 col-lg-2 order-title">Thanh toán</div>
                         <div class="col-4 col-sm-4 col-md-3 col-lg-2 order-title">Trạng thái</div>
                     </div>
 
                     <div class="row mt-2">
-                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.order_date}}</div>
-                        <div class="d-none d-lg-block col-lg-2">{{order.shipping_charge | currency:" "}} đ</div>
-                        <div class="d-none d-lg-block col-lg-2">{{order.discount | currency:" "}} đ</div>
-                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.estimated_price - order.shipping_charge -
-                            order.discount | currency:" "}} đ</div>
-                        <div class="d-none d-sm-block col-md-3 col-lg-2">{{order.form_of_payment}}</div>
-                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.order_status}}</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.datetime|date:"dd-mm-YYYY"}}</div>
+                        <div class="d-none d-lg-block col-lg-2">{{ order.discount_amount | currency: 'VND' }}</div>
+                        <div class="d-none d-lg-block col-lg-2">{{ order.shipping_Charge | currency: 'VND' }}</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{(order?.total || 0) - (order?.discount_amount || 0) -  (order?.shipping_Charge || 0) | currency: "VND"}}</div>
+                        <div class="d-none d-sm-block col-md-3 col-lg-2">{{order.formOfPayment}}</div>
+                        <div class="col-4 col-sm-4 col-md-3 col-lg-2">{{order.orderStatus}}</div>
                     </div>
 
                     <div class="divided-section-top mx-auto my-3"></div>
@@ -85,7 +87,7 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <h6 class="modal-title" style="font-style: italic;">Mã đơn hàng: {{selectedOrder.order_id}}</h6>
+                <h6 class="modal-title" style="font-style: italic;">Mã đơn hàng: {{selectedOrder.order_ID}}</h6>
                 <button type="button" class="btn-close"
                     data-bs-dismiss="modal"></button>
             </div>
@@ -93,7 +95,7 @@
             <!-- Modal body -->
             <div class="modal-body">
                 <div class="detail-order-container scrollable-order-details">
-                    <div class="card mb-3 p-2" *ngFor="let o_detail of selectedOrder.orderDetails">
+                    <div class="card mb-3 p-2" *ngFor="let o_detail of selectedOrder.detailOrders">
                         <div class="row">
                             <p class="col-2 text-center order-title">Ảnh</p>
                             <p class="col-2 order-title">Tên sản phẩm</p>
@@ -105,13 +107,13 @@
 
                         <div class="row">
                             <div class="col-2 text-center">
-                                <img width="60px" height="60px" class="" src="../../../../assets/images/record/{{o_detail.product_pic}}" alt="ảnh quần áo"/>
+                                <img width="60px" height="60px" class="" [src]="o_detail.productVariation?.pic" alt="ảnh quần áo"/>
                             </div>
                             
-                            <p class="col-2 mt-2">{{o_detail.product_name}}</p>
-                            <p class="col-2 mt-2">{{o_detail.product_color}}</p>
-                            <p class="col-2 mt-2">{{o_detail.product_size}}</p>
-                            <p class="col-2 mt-2">{{o_detail.unit_price}}</p>
+                            <p class="col-2 mt-2">{{o_detail.productVariation?.product?.name}}</p>
+                            <p class="col-2 mt-2">{{o_detail.productVariation?.color?.name}}</p>
+                            <p class="col-2 mt-2">{{o_detail.productVariation?.size?.name}}</p>
+                            <p class="col-2 mt-2">{{o_detail.unit_Price}}</p>
                             <p class="col-2 mt-2">{{o_detail.quantity}}</p>
                         </div>
                     </div>
@@ -120,27 +122,27 @@
                 <div class="divided-section-top mx-auto"></div>
 
                 <div class="order-details-common-infor1 card my-3 p-2">
-                    <p>Đặt ngày: {{selectedOrder.order_date}}</p>
-                    <p class="mb-0">Hình thức thanh toán: {{selectedOrder.form_of_payment}}</p>
+                    <p>Đặt ngày: {{selectedOrder.datetime|date:"dd-mm-YYYY"}}</p>
+                    <p class="mb-0">Hình thức thanh toán: {{selectedOrder.formOfPayment}}</p>
                 </div>
                 <div class="order-details-common-infor2 d-flex">
                     <div class="flex-fill card p-2 me-2">
-                        <p>Người nhận: {{selectedOrder.customer_name}}</p>
-                        <p>Địa chỉ: {{selectedOrder.order_address}}</p>
-                        <p class="mb-0">Số điện thoại: {{selectedOrder.customer_phone}}</p>
+                        <p>Người nhận: {{user?.name}}</p>
+                        <p>Địa chỉ: {{selectedOrder.address}}</p>
+                        <p class="mb-0">Số điện thoại: {{user?.phoneNumber}}</p>
                     </div>
                     <div class="flex-fill card p-2 ms-2">
                         <div class="row">
-                            <p class="col-6">Tạm tính ({{selectedOrder.orderDetails.length}} sản phẩm)</p>
-                            <p class="col-6 text-end">{{selectedOrder.estimated_price | currency:" "}} đ</p>
+                            <p class="col-6">Tạm tính ({{selectedOrder.detailOrders?.length || 0}} sản phẩm)</p>
+                            <p class="col-6 text-end">{{selectedOrder.total | currency:"VND"}} đ</p>
                         </div>
                         <div class="row">
                             <p class="col-6">Phí vận chuyển</p>
-                            <p class="col-6 text-end" style="color: #184AFA !important">+ {{selectedOrder.shipping_charge | currency:" "}} đ</p>
+                            <p class="col-6 text-end" style="color: #184AFA !important">+ {{selectedOrder.shipping_Charge | currency:"VND"}}</p>
                         </div>
                         <div class="row">
                             <p class="col-6">Giảm giá</p>
-                            <p class="col-6 text-end" style="color: #F03B13 !important;">- {{selectedOrder.discount | currency:" "}} đ</p>
+                            <p class="col-6 text-end" style="color: #F03B13 !important;">- {{selectedOrder.discount_amount | currency:"VND"}}</p>
                         </div>
                         <div class="row">
                             <div class="col-6">
@@ -152,7 +154,7 @@
                         </div>
                         <div class="row">
                             <p class="col-6 mt-3">Tổng cộng</p>
-                            <p class="col-6 mt-3 text-end">{{selectedOrder.estimated_price - selectedOrder.discount - selectedOrder.shipping_charge | currency:" "}} đ</p>
+                            <p class="col-6 mt-3 text-end">{{(selectedOrder.total || 0) - (selectedOrder.discount_amount || 0) -  (selectedOrder.shipping_Charge || 0) | currency: "VND"}}</p>
                         </div>
                     </div>
                 </div>

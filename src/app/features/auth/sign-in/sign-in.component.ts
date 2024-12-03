@@ -22,7 +22,7 @@ export class SignInComponent {
   isLoading: boolean = false;
   loginF: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, 
+    password: new FormControl('', [Validators.required,
     Validators.minLength(8),
     Validators.maxLength(20),
     Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{1,}$/)])
@@ -30,7 +30,7 @@ export class SignInComponent {
 
   constructor(
     private authService: AuthService,
-    private tokenStorageService: TokenStorageService, 
+    private tokenStorageService: TokenStorageService,
     private router: Router,
     private messageService: MessageService
   ) { }
@@ -55,10 +55,22 @@ export class SignInComponent {
           severity: 'success',
           summary: 'Đăng nhập thành công!',
         });
-        // Đợi 1 giây rồi điều hướng đến trang đăng nhập
-        setTimeout(() => {
-          this.router.navigate(['/']); // Điều hướng sau 1 giây
-        }, 1000); // 1000ms = 1 giây
+        const token = this.tokenStorageService.getToken();
+
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const userRole = payload.role;
+
+          if (userRole === 'CUSTOMER') {
+            setTimeout(() => {
+              this.router.navigate(['/']);
+            }, 500);
+          } else {
+            setTimeout(() => {
+              this.router.navigate(['/admin']);
+            }, 500);
+          }
+        }
       },
       error: err => {
         this.isLoading = false;
