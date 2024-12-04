@@ -35,6 +35,8 @@ export class MyOrdersComponent {
     discount_amount: 0,
     total: 0,
     orderStatus: "",
+    formOfPayment: "",
+    shipping_Charge: 0,
     detailOrders: [],
   };
   
@@ -73,7 +75,11 @@ export class MyOrdersComponent {
     try {
       const data = await firstValueFrom(this.orderService.getOrdersByCustomerId(this.user!.id));
       if (data.isSuccess && Array.isArray(data.result)) {
-        this.orderList = data.result;
+        this.orderList = data.result.sort((a, b) => {
+          const dateA = a.datetime ? new Date(a.datetime).getTime() : 0; // Gán giá trị 0 nếu undefined
+          const dateB = b.datetime ? new Date(b.datetime).getTime() : 0; // Gán giá trị 0 nếu undefined
+          return dateB - dateA; // Sắp xếp giảm dần
+        });
       }
     } catch (error) {
       console.error('Error fetching orders', error);

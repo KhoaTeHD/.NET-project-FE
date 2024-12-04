@@ -63,6 +63,16 @@
     background-color: #fff; /* Tùy chọn: Màu nền cho div */
 }
 
+a.text-decoration {
+    text-decoration: underline; /* Hoặc 'none' nếu bạn không muốn underline */
+    color: #184AFA !important; /* Đảm bảo giữ nguyên màu sắc nếu cần */
+}
+
+a.text-decoration:hover {
+    text-decoration: none; /* Tùy chỉnh hiệu ứng hover */
+    cursor: pointer; /* Hiển thị icon tay khi rê chuột vào */
+}
+
 /* DT */
 @media (max-width: 767px) {
     .payment-container-parent {
