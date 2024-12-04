@@ -3,7 +3,7 @@ import { SidebarPersonalInfoComponent } from '../../../shared/components/sidebar
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
-import { OrderDto } from '../../../core/models/order_v2.model';
+import { OrderDto } from '../../../core/models/order.model';
 import { firstValueFrom } from 'rxjs';
 import { OrderService } from '../../../core/services/order.service';
 import { UserDto } from '../../../core/models/auth/user-dto.model';
@@ -29,7 +29,7 @@ export class MyOrdersComponent {
   selectedOrder: OrderDto = {
     order_ID: 0,
     customer_ID: '',
-    coupon_Code: 0,
+    coupon_Code: '',
     address: "",
     datetime: new Date(),
     discount_amount: 0,

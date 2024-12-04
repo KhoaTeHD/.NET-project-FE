@@ -3,12 +3,14 @@ import { ProductVariationDto } from "./productVariation.model";
 export interface OrderDto {
   order_ID?: number;
   customer_ID?: string;
-  coupon_Code?: number;
+  coupon_Code?: string;
   address?: string;
   datetime?: Date;
   discount_amount?: number;
   total?: number;
   orderStatus?: string;
+  formOfPayment?: string;
+  shipping_Charge?: number;
   detailOrders?: DetailOrderDto[];
 }
 

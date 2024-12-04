@@ -18,7 +18,7 @@ import { ToastModule } from 'primeng/toast';
 // npm install sweetalert2
 import Swal from 'sweetalert2';
 import { OrderService } from '../../core/services/order.service';
-import { OrderDto } from '../../core/models/order_v2.model';
+import { OrderDto } from '../../core/models/order.model';
 import { CartDto } from '../../core/models/cart.model';
 
 @Component({
@@ -51,7 +51,7 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
   selectedAddress: AddressDto | null = null;
 
   currentCoupon: CouponDto | null = null; // Mã giảm giá hiện tại (chỉ 1 mã)
-  couponName: string = ''; // Mã giảm giá nhập từ input
+  couponCode: string = ''; // Mã giảm giá nhập từ input
   errorMessage: string = ''; // Thông báo lỗi (nếu có)
   coupons: CouponDto[] = []; // Danh sách mã giảm giá
 
@@ -150,13 +150,13 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
 
   applyCoupon(): void {
     // Kiểm tra nếu mã giảm giá chưa được nhập
-    if (!this.couponName) {
+    if (!this.couponCode) {
       this.errorMessage = 'Vui lòng nhập mã giảm giá.';
       return;
     }
 
     // Tìm mã giảm giá trong danh sách đã load
-    const selectedCoupon = this.coupons.find(coupon => coupon.couponName === this.couponName);
+    const selectedCoupon = this.coupons.find(coupon => coupon.coupon_Code === this.couponCode);
 
     if (selectedCoupon) {
       const now = new Date(); // Lấy ngày hiện tại
@@ -195,7 +195,7 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
   // Xóa mã giảm giá
   removeCoupon(): void {
     this.currentCoupon = null; // Xóa mã giảm giá hiện tại
-    this.couponName = ''; // Reset input
+    this.couponCode = ''; // Reset input
     this.errorMessage = '';
     this.voucher = 0;
   }

@@ -105,7 +105,7 @@
                     <!-- Mã giảm giá đã áp dụng -->
                     <p *ngIf="currentCoupon" class="col-4 col-sm-4 col-md-3 text-center mb-0 mx-2"
                         style="background-color: #ccc; border-radius: 20px;">
-                        {{ currentCoupon.couponName }}
+                        {{ currentCoupon.coupon_Code }}
                     </p>
                     <!-- Xóa mã giảm giá -->
                     <div *ngIf="currentCoupon" class="col-1" style="cursor: pointer;" (click)="removeCoupon()">
@@ -119,7 +119,7 @@
                     <div *ngIf="!currentCoupon"
                         class="col-md-6 row align-items-center justify-content-between input-coupon-container">
                         <div class="col-7">
-                            <input type="text" class="form-control" [(ngModel)]="couponName"
+                            <input type="text" class="form-control" [(ngModel)]="couponCode"
                                 placeholder="Nhập mã giảm giá" />
                         </div>
                         <div class="col-5">
