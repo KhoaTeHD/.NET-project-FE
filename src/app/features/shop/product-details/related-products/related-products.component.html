@@ -79,6 +79,7 @@
 
 
 
+
               }}%</span
             >
           </p>
@@ -100,7 +101,10 @@
             class="btn btn-dark btn-add-to-cart d-flex"
           >
             <i class="fa-solid fa-cart-shopping"></i>
-            <p style="margin: 0; font-size: 14px; font-family: 'Roboto'">
+            <p
+              style="margin: 0; font-size: 14px; font-family: 'Roboto'"
+              [routerLink]="['/shop/product/details', product.id]"
+            >
               Thêm vào giỏ hàng
             </p>
           </button>
