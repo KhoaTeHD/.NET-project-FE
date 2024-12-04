@@ -145,7 +145,7 @@ export class PaymentComponent
     const targetUrl = nextState?.url || '';
     console.log('Target URL:', targetUrl);
 
-    const exemptUrls = ['my-orders', 'address-book'];
+    const exemptUrls = ['my-orders'];
     const isExempt = exemptUrls.some((url) => targetUrl.includes(url));
 
     if (!isExempt && component.hasUnsavedChanges()) {
@@ -311,7 +311,7 @@ export class PaymentComponent
               detail: 'Thanh toán đơn hàng thành công!',
             });
             setTimeout(() => {
-              this.router.navigate(['my-orders']);
+              this.router.navigate(['my-orders'], { replaceUrl: true });
             }, 500);
           },
           error: (err) => {

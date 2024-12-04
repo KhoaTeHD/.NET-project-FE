@@ -24,7 +24,7 @@ export class CanDeactivateGuard implements CanDeactivate<PaymentComponent> {
     const targetUrl = nextState?.url || '';
     console.log('Target URL:', targetUrl);
 
-    const exemptUrls = ['my-orders', 'address-book'];
+    const exemptUrls = ['my-orders'];
     const isExempt = exemptUrls.some((url) => targetUrl.includes(url));
 
     if (!isExempt && component.hasUnsavedChanges()) {
@@ -36,6 +36,7 @@ export class CanDeactivateGuard implements CanDeactivate<PaymentComponent> {
       }
       return confirmLeave;
     }
+
     return true;
   }
 }
