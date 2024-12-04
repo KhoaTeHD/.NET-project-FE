@@ -10,7 +10,7 @@ import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường d�
 export class AddressService {
   private baseUrl = 'https://localhost:7777/api/Address'; // Base URL của API
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Lấy danh sách tất cả các Address (GET /api/Address)
   getAllAddresss(): Observable<ApiResponse<AddressDto[]>> {
@@ -35,5 +35,16 @@ export class AddressService {
   // Xóa một Address theo ID (DELETE /api/Address/{id})
   deleteAddress(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
+  }
+
+  // Lấy danh sách Address theo customerId (GET /api/Address/customer/{customerId})
+  getAddressesByCustomerId(customerId: string): Observable<ApiResponse<AddressDto[]>> {
+    return this.http.get<ApiResponse<AddressDto[]>>(`${this.baseUrl}/customer/${customerId}`);
+  }
+
+  setDefaultAddress(addressId: number, customerId: string): Observable<ApiResponse<void>> {
+    const url = `${this.baseUrl}/set-default/${addressId}`;
+    console.log('Calling API URL:', url);  // Đảm bảo URL là đúng
+    return this.http.put<ApiResponse<void>>(`${this.baseUrl}/set-default/${addressId}/${customerId}`, null);
   }
 }

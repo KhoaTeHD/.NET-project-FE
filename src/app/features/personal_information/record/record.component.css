@@ -80,7 +80,7 @@ small {
 }
 
 /* Tablet */
-@media (min-width: 768px) and (max-width: 992px){
+@media (min-width: 768px) and (max-width: 992px) {
     .record-container {
         margin: 0 20px;
     }

@@ -9,6 +9,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../core/services/cart.service';
 import { CartDtoExtendStatus } from '../../../core/models/cart.model';
+import { CategoryDto } from '../../../core/models/category.model';
+import { CategoryService } from '../../../core/services/category.service';
+import { ShareUserDtoService } from '../../../core/services/shared/data/share_userDto.service';
 
 @Component({
   selector: 'app-header',
@@ -19,13 +22,16 @@ import { CartDtoExtendStatus } from '../../../core/models/cart.model';
 })
 export class HeaderComponent implements OnInit {
   cartItems: CartDtoExtendStatus[] = []; // Khởi tạo
+  categories: CategoryDto[] = [];
 
   user: UserDto | null = null;
   searchQuery: string = '';
   constructor(
     private cartService: CartService,
     private tokenStorageService: TokenStorageService,
-    private router: Router
+    private router: Router,
+    private categoryService: CategoryService,
+    private shareUserDtoService: ShareUserDtoService
   ) {}
 
   ngOnInit() {
@@ -35,18 +41,29 @@ export class HeaderComponent implements OnInit {
     // });
     this.user = this.tokenStorageService.getUser();
 
+    this.categoryService.getAllCategorys().subscribe((response) => {
+      this.categories = response.result || [];
+    });
+
     const userId = this.tokenStorageService.getUser()?.id;
     if (userId) {
       this.cartService.getCartItemsByCusId(userId).subscribe((response) => {
         this.cartItems = response.result || [];
       });
     }
+
+    this.shareUserDtoService.user$.subscribe((user) => {
+      if (user) {
+        this.user = user;
+      }
+    });
   }
 
   logout(): void {
     this.tokenStorageService.clearToken();
     this.tokenStorageService.deleteUser();
     this.user = null;
+    this.router.navigate(['/']);
   }
 
   onSearch(): void {

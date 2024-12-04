@@ -20,18 +20,19 @@
   </section>
 
   <section class="featured-products">
-    <h2>Sản phẩm nổi bật</h2>
+    <h2>Siêu giảm giá - Chốt đơn liền tay</h2>
     <div class="product-grid">
       <div
         class="product-card p-2"
-        *ngFor="let product of vipItems_v2"
+        *ngFor="let product of vipProducts"
         style="border-radius: 8px"
       >
         <img
-          src="{{ product.productVariations[0].pic }}"
-          alt="{{ product.name }}"
+          src="{{ product.variation.pic }}"
+          alt="{{ product.product.name }}"
           style="border-radius: 12px; cursor: pointer"
           loading="lazy"
+          [routerLink]="['/shop/product/details', product.product.id]"
         />
         <h5
           style="
@@ -47,7 +48,7 @@
           "
         >
           <a style="text-decoration: none" class="text-dark">{{
-            product.name
+            product.product.name
           }}</a>
         </h5>
         <div class="d-flex justify-content-between">
@@ -61,22 +62,22 @@
                 font-weight: bold;
                 font-family: 'Roboto';
               "
-              >{{
-                product.productVariations[0].price | currency : "VND" : "symbol"
+              >            
+              {{
+                (product.variation.price ?? 0) -
+                  ((product.variation.price ?? 0) * (product.variation.discount ?? 0) / 100)
+              | currency : "VND" : "symbol"
               }}</a
             >
           </p>
           <p style="text-decoration: line-through; font-family: 'Roboto'">
             {{
-              product.productVariations[0].price -
-                (product.productVariations[0].price *
-                  product.productVariations[0].discount) /
-                  100 | currency : "VND" : "symbol"
+              product.variation.price | currency : "VND" : "symbol"
             }}
             <span class="badge bg-danger" style="font-family: 'Roboto'"
-              >{{
-                product.productVariations[0].discount | number : "1.0-2"
-              }}%</span
+              >        
+              {{ product.variation.discount | number: '1.0-2' }}%
+              </span
             >
           </p>
         </div>
@@ -98,6 +99,7 @@
             data-mdb-button-init
             data-mdb-ripple-init
             class="btn btn-dark btn-add-to-cart d-flex"
+            [routerLink]="['/shop/product/details', product.product.id]"
           >
             <img
               src="../../../../assets/images/icons/icons8-add-shopping-cart-32.png"
@@ -112,21 +114,23 @@
   </section>
 
   <section class="categories">
-    <h2>Danh mục sản phẩm</h2>
+    <h2>Các thương hiệu độc quyền</h2>
     <div class="category-grid">
       <div
         class="category-card"
-        *ngFor="let category of uniqueBrandItems_v2 | keyvalue"
+        *ngFor="let brand of uniqueBrandItems_v2"
       >
         <img
-          src="{{ category.value.productVariations[0].pic }}"
-          [alt]="category.value.bra_Id"
+          src="{{ brand.product.productVariations?.[0]?.pic }}"
+          [alt]="brand.brand.name"
           style="cursor: pointer"
+          [routerLink]="['/shop']" [queryParams]="{ bra_Id: brand.brand.id }"
         />
-        <h3 style="filter: drop-shadow(0 0 0.75rem #000); cursor: pointer">
-          {{ category.key }}
+        <h3 style="filter: drop-shadow(0 0 0.75rem #000); cursor: pointer" [routerLink]="['/shop']" [queryParams]="{ bra_Id: brand.brand.id }">
+          {{ brand.brand.name }}
         </h3>
       </div>
+      
     </div>
   </section>
 </div>

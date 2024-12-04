@@ -10,7 +10,230 @@
       <div class="col-lg-5 mt-5">
         <div class="card">
           <div class="card-body">
-            <h1 class="h2">{{ product?.name }}</h1>
+            <div>
+              <h1 class="h2">{{ product?.name }}</h1>
+              <button
+                type="button"
+                class="btn btn-primary btn-sm mb-2"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalFullscreen"
+                fdprocessedid="8he3e"
+              >
+                Thử áo online (thử nghiệm)
+              </button>
+
+              <div
+                class="modal fade"
+                id="exampleModalFullscreen"
+                tabindex="-1"
+                aria-labelledby="exampleModalFullscreenLabel"
+                style="display: none"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-fullscreen">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1
+                        class="modal-title fs-4"
+                        id="exampleModalFullscreenLabel"
+                      >
+                        Thử áo online (thử nghiệm)
+                      </h1>
+                    </div>
+                    <div
+                      class="modal-body d-flex flex-wrap justify-content-evenly"
+                    >
+                      <!-- Phần 1: Chọn và hiển thị ảnh người dùng tải lên -->
+                      <div
+                        class="col-12 col-md-4 d-flex align-items-center justify-content-center col-avatar border-section"
+                      >
+                        <div class="d-flex align-items-center flex-column">
+                          <!-- Nút chọn ảnh -->
+                          <label
+                            for="choose-pic"
+                            class="border p-1 mt-3 mb-2 rounded-2"
+                            style="cursor: pointer"
+                            >Chọn ảnh selfie của bạn</label
+                          >
+                          <input
+                            type="file"
+                            name="choose-pic"
+                            id="choose-pic"
+                            hidden
+                            (change)="onFileSelected($event)"
+                          />
+
+                          <p class="format-pic-title">
+                            Ảnh càng đơn giản - "thử áo" càng nhanh
+                          </p>
+                          <img
+                            *ngIf="uploadedImage"
+                            [src]="uploadedImage"
+                            alt="Uploaded Image"
+                            style="max-width: 200px; margin-top: 10px"
+                          />
+
+                          <button
+                            type="button"
+                            class="btn btn-primary btn-sm mt-3"
+                            (click)="uploadImageToCloud()"
+                            [hidden]="
+                              !uploadedImage ||
+                              (!isLoading && responseImageFromCloudinary) ||
+                              isLoading
+                            "
+                          >
+                            Tải lên
+                          </button>
+                          <p *ngIf="isLoading">Đang tải lên...</p>
+                          <p *ngIf="!isLoading && responseImageFromCloudinary">
+                            Đã tải lên ✔
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Phần giữa: Chọn ảnh trong this.variationList và hiển thị ảnh người dùng chọn -->
+                      <div
+                        class="col-12 col-md-3 d-flex flex-column align-items-center justify-content-center border-section"
+                      >
+                        <h2>Chọn áo cần thử</h2>
+                        <div class="image-selection d-flex flex-wrap">
+                          <div
+                            *ngFor="let variation of variationList"
+                            class="image-option m-2"
+                            (click)="onImageSelect(variation.value)"
+                          >
+                            <img
+                              [src]="variation.value"
+                              alt="Product Variation"
+                              style="max-width: 60px; cursor: pointer"
+                            />
+                          </div>
+                        </div>
+                        <div *ngIf="selectedImage" class="selected-image mt-3">
+                          <img
+                            [src]="selectedImage"
+                            alt="Selected Image"
+                            style="max-width: 200px"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Phần cuối: Để trống cho code sau -->
+                      <div
+                        class="col-12 col-md-4 d-flex flex-column border-section align-items-center justify-content-center"
+                      >
+                        <p *ngIf="isLoadingStart && !isLoadingRender">
+                          Đang khởi tạo... <span>{{ timerValue }} giây</span>
+                        </p>
+                        <p *ngIf="isLoadingStart && isLoadingRender">
+                          Khởi tạo thành công ✔
+                        </p>
+                        <p *ngIf="isLoadingStart && isLoadingRender">
+                          Đang tiến hành thay áo...
+                          <span>{{ timerValue }} giây</span>
+                        </p>
+                        <p *ngIf="isLoadingError">
+                          Đã có lỗi xảy ra. Vui lòng thử lại sau! 😢
+                        </p>
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-sm mb-2"
+                          (click)="handleTryOnClothes()"
+                          [hidden]="
+                            (isLoadingStart && isLoadingRender) || outputImage
+                          "
+                          [disabled]="
+                            isLoadingStart ||
+                            !uploadedImage ||
+                            !selectedImage ||
+                            !responseImageFromCloudinary
+                          "
+                        >
+                          Mặc áo (~ 45 giây)
+                        </button>
+                        <div>
+                          <img
+                            src="{{ outputImage }}"
+                            alt=""
+                            style="max-width: 200px"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-sm mt-2"
+                          (click)="downloadImage()"
+                          [disabled]="outputImage === null"
+                        >
+                          Tải ảnh xuống
+                        </button>
+                      </div>
+
+                      <div class="col-12 col-md-12 d-flex flex-column">
+                        <strong>HƯỚNG DẪN SỬ DỤNG:</strong>
+                        <strong>Bước 1:</strong>
+                        <p>
+                          Bạn hãy chọn ảnh selfie của mình bằng cách nhấn vào
+                          nút "Chọn ảnh selfie của bạn" và chọn ảnh từ máy tính
+                          của bạn. Sau đó nhấn nút "Tải lên". Trang web hiển thị
+                          "Đã tải lên ✔" là đã tải ảnh thành công.
+                        </p>
+                        <strong
+                          >Lưu ý: ảnh càng đơn giản, càng rõ ràng, dung lượng
+                          ảnh càng nhẹ thì tốc độ "Mặc áo" càng nhanh!</strong
+                        >
+                        <img
+                          src="../../../../assets/images/hdsdtryon.png"
+                          alt=""
+                        />
+                        <strong>Bước 2:</strong>
+                        <p>
+                          Hãy chọn 1 trong những chiếc áo mà bạn muốn mặc thử.
+                        </p>
+                        <strong>Bước 3:</strong>
+                        <p>
+                          Nhấn nút "Mặc áo (~ 45 giây)" để xem kết quả. Trong
+                          khoảng thời gian từ 30-45 giây, trang web sẽ hiển thị
+                          ảnh của bạn mặc chiếc áo bạn đã chọn.
+                        </p>
+                        <strong>Bước 4:</strong>
+                        <p>
+                          Nhấn nút <strong>"Tải ảnh xuống"</strong> để lưu ảnh
+                          về máy tính của bạn. Bởi vì chức năng "Thử áo online"
+                          đang trong giai đoạn thử nghiệm nên
+                          <strong>chưa hỗ trợ </strong>lưu trữ ảnh đã tạo của
+                          khách hàng.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        id="exitButton"
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                        (click)="resetData()"
+                        [hidden]="
+                          (uploadedImage && selectedImage) ||
+                          uploadedImage ||
+                          selectedImage
+                        "
+                      >
+                        Thoát
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        (click)="checkStatusExit()"
+                        [hidden]="!uploadedImage && !selectedImage"
+                      >
+                        Đóng
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <p>Thương hiệu: {{ product?.brand?.name }}</p>
             <p>Xuất xứ: {{ product?.nation?.name }}</p>
             <span class="d-flex" *ngIf="getVariationBySize(selectedSizeId)">

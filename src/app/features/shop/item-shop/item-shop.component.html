@@ -74,10 +74,6 @@
             {{ product.productVariations?.[0]?.price | currency : "VND" : "symbol" }}
             <span class="badge bg-danger"
               >{{ product.productVariations?.[0]?.discount | number : "1.0-2"
-
-
-
-
               }}%</span
             >
           </p>
@@ -107,6 +103,13 @@
         </div>
       </div>
     </div>
+  </div>
+  <div *ngIf="displayedProducts.length === 0">
+    <div class="no-item" style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;">Không tìm thấy sản phẩm nào. <strong [routerLink]="['/shop']"> &nbsp;Làm mới trang</strong></div>
   </div>
   <pagination-controls
     class="pagination-controls"

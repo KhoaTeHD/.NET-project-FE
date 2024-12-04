@@ -23,6 +23,7 @@ export class SignUpComponent {
   isReInputPasswordVisible: boolean = false;
   ReInputPasswordVisible = "Hiện";
   today: string = '';
+  isLoading = false;
   registrationRequestDto: RegistrationRequestDto = {
     name: '',
     email: '',
@@ -77,8 +78,13 @@ export class SignUpComponent {
     this.ReInputPasswordVisible = this.isReInputPasswordVisible === true ? "Ẩn" : "Hiện";
   }
 
+  preventPaste(event: ClipboardEvent): void {
+    event.preventDefault(); // Ngăn không cho dán nội dung
+  }
+
   register(): void {
     if (this.sign_up_F.valid) {
+      this.isLoading = true;
       // Cập nhật registrationRequestDto từ giá trị của form
       this.registrationRequestDto = {
         ...this.registrationRequestDto,
@@ -87,6 +93,7 @@ export class SignUpComponent {
 
       this.authService.register(this.registrationRequestDto).subscribe({
         next: response => {
+          this.isLoading = false;
           this.messageService.add({
             severity: 'success',
             summary: 'Đăng ký thành công!',
@@ -98,6 +105,7 @@ export class SignUpComponent {
           }, 1000); // 1000ms = 1 giây
         },
         error: err => {
+          this.isLoading = false;
           this.messageService.add({
             severity: 'error',
             summary: 'Đăng ký thất bại!'

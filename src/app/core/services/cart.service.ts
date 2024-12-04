@@ -10,6 +10,21 @@ import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường d�
 export class CartService {
   private baseUrl = 'https://localhost:7777/api/CartItem'; // Base URL của API
 
+/**
+ * 
+ * Khúc này để chuyển data từ cart sang payment 
+ * 
+ */
+  private checkedItems: any[] = [];
+
+  setCheckedItems(items: any[]) {
+    this.checkedItems = items;
+  }
+
+  getCheckedItems(): any[] {
+    return this.checkedItems;
+  }
+
   constructor(private http: HttpClient) {}
 
   // Lấy danh sách tất cả các Cart (GET /api/Cart)

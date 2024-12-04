@@ -1,3 +1,5 @@
+<!-- Toast sẽ hiển thị ở đây trong 1s, mặc định là top-right -->
+<p-toast [life]="1000"></p-toast>
 <app-header />
 <div class="row personal-info-container mb-5 mx-auto">
     <div class="col-lg-3 d-none d-lg-block">
@@ -43,59 +45,104 @@
 
                                 <!-- Modal body -->
                                 <div class="modal-body">
-                                    <form action="">
+                                    <form [formGroup]="insert_address_F" (submit)="insertAdress()">
                                         <!-- input name and phone -->
                                         <div class="row mt-2">
-                                            <div class="col-6">
-                                                <input type="text" id="name" placeholder="Họ và tên" name="name"
-                                                    class="input-text">
+                                            <div class="col-6 mb-24 ">
+                                                <input type="text" id="name" placeholder="Họ và tên"
+                                                    formControlName="name" class="input-text">
+                                                <div
+                                                    *ngIf="insert_address_F['controls']['name'].dirty && insert_address_F['controls']['name'].errors">
+                                                    <small
+                                                        *ngIf="insert_address_F['controls']['name'].errors['required']">Tên
+                                                        không được bỏ trống!</small>
+                                                    <small
+                                                        *ngIf="insert_address_F['controls']['name'].errors['minlength']">Tên
+                                                        phải chứa tối thiểu 3 kí tự!</small>
+                                                    <small
+                                                        *ngIf="insert_address_F['controls']['name'].errors['maxlength']">Tên
+                                                        chỉ chứa tối đa 50 kí tự!</small>
+                                                </div>
                                             </div>
-                                            <div class="col-6">
-                                                <input type="text" id="phone" placeholder="Số điện thoại" name="phone"
-                                                    class="input-text">
+                                            <div class="col-6 mb-24 ">
+                                                <input type="text" id="phone" placeholder="Số điện thoại"
+                                                    formControlName="phone" class="input-text"
+                                                    onkeypress="if(event.key.length === 1 && !/[0-9]/.test(event.key)) event.preventDefault();">
+                                                <div
+                                                    *ngIf="insert_address_F['controls']['phone'].dirty && insert_address_F['controls']['phone'].errors">
+                                                    <small
+                                                        *ngIf="insert_address_F['controls']['phone'].errors['required']">Số
+                                                        điện thoại không được bỏ trống!</small>
+                                                    <small
+                                                        *ngIf="insert_address_F['controls']['phone'].errors['pattern']">Số
+                                                        điện thoại không đúng định dạng!</small>
+                                                    <small
+                                                        *ngIf="insert_address_F.get('phone')?.hasError('unique') && insert_address_F.get('phone')?.touched">Số
+                                                        điện thoại đã được sử dụng, vui lòng nhập số điện thoại
+                                                        khác!</small>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <!-- input province/city -->
-                                        <select class="form-select">
-                                            <option>Tỉnh/Thành phố</option>
-                                            <option>Thành phố Hồ Chí Minh</option>
-                                            <option>Tỉnh Long An</option>
-                                            <option>Tỉnh An Giang</option>
+                                        <select class="form-select mb-24" formControlName="province"
+                                            (change)="onProvinceChange()">
+                                            <option value="" disabled selected>Tỉnh/Thành phố (*)</option>
+                                            <option *ngFor="let province of provinces"
+                                                [value]="province.id + '#' + province.name">
+                                                {{ province.name }}
+                                            </option>
                                         </select>
 
                                         <!-- input district -->
-                                        <select class="form-select">
-                                            <option>Quận/Huyện</option>
-                                            <option>Quận 1</option>
-                                            <option>Quận 2</option>
-                                            <option>Quận 3</option>
+                                        <select class="form-select mb-24" formControlName="district"
+                                            (change)="onDistrictChange()">
+                                            <option value="" disabled selected>Quận/Huyện (*)</option>
+                                            <option *ngFor="let district of districts"
+                                                [value]="district.id + '#' + district.name">
+                                                {{ district.name }}
+                                            </option>
                                         </select>
 
                                         <!-- input town -->
-                                        <select class="form-select">
-                                            <option>Phường/Xã</option>
-                                            <option>Phường 1</option>
-                                            <option>Phường 2</option>
-                                            <option>Phường 3</option>
+                                        <select class="form-select mb-24" formControlName="ward">
+                                            <option value="" disabled selected>Phường/Xã (*)</option>
+                                            <option *ngFor="let ward of wards" [value]="ward.id + '#' + ward.name"
+                                                name="ward">
+                                                {{ ward.name }}
+                                            </option>
                                         </select>
 
-                                        <!-- input: home number, street name -->
-                                        <input type="text" id="home-number" placeholder="Số nhà, tên đường"
-                                            name="home-number" class="input-text">
 
+                                        <!-- input: home number, street name -->
+                                        <div class="mb-24">
+                                            <input type="text" id="home-number" placeholder="Số nhà, tên đường"
+                                                class="input-text" formControlName="addressLine">
+                                            <div
+                                                *ngIf="insert_address_F['controls']['addressLine'].dirty && insert_address_F['controls']['addressLine'].errors">
+                                                <small
+                                                    *ngIf="insert_address_F['controls']['addressLine'].errors['required']">Trường
+                                                    này không được bỏ trống!</small>
+                                            </div>
+                                        </div>
                                         <!-- set address default -->
                                         <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="radio1"
-                                                name="set-address-default" value="option1">
+                                            <input type="checkbox" class="form-check-input mb-24" id="radio1"
+                                                name="set-address-default" value="option1" formControlName="isDefault">
                                             <label class="form-check-label" for="radio1">Đặt làm địa chỉ mặc
                                                 định</label>
                                         </div>
 
                                         <!-- Modal footer -->
                                         <div class="modal-footer mt-4">
-                                            <button type="button" class="btn" data-bs-dismiss="modal">Trở lại</button>
-                                            <button type="submit" class="btn bg-dark text-light">Hoàn thành</button>
+                                            <button type="button" class="btn" data-bs-dismiss="modal">Trở
+                                                lại</button>
+                                            <button type="submit" class="btn bg-dark text-light"
+                                                [disabled]="insert_address_F.invalid || isLoading">
+                                                <span *ngIf="isLoading" class="spinner-border spinner-border-sm"
+                                                    role="status" aria-hidden="true"></span>
+                                                <span *ngIf="!isLoading">Hoàn thành</span>
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -105,31 +152,32 @@
                 </div>
             </div>
             <div class="divided-section-top mx-auto mt-2"></div>
-            <div class="mt-4">
+            <div class="mt-4 overflow-y-auto overflow-x-hidden" style="height: 500px;">
                 <div class="row mb-4" *ngFor="let address of address_book">
                     <div class="col-md-6">
                         <div class="d-flex mb-2">
-                            <p class="name-infor mb-0">{{address.full_name}}</p>
+                            <p class="name-infor mb-0">{{address.name}}</p>
                             <p class="border-end mb-0 mx-2 separation"></p>
                             <p class="mb-0">{{address.phone}}</p>
                         </div>
-                        <p class="mb-1">{{address.address_line}}</p>
-                        <p class="mb-1">{{address.ward}}, {{address.district}}, {{address.province}}</p>
-                        <p class="mb-1 default-label" *ngIf="address.is_default === 1">Mặc định</p>
+                        <p class="mb-1">{{address.addressLine}}</p>
+                        <p class="mb-1" *ngIf="address.province && address.district && address.ward">{{address.ward.split('#')[1]}}, {{address.district.split('#')[1]}}, {{address.province.split('#')[1]}}</p>
+                        <p class="mb-1 default-label" *ngIf="address.isDefault === true">Mặc định</p>
                     </div>
-                    <div class="col-md-6 d-flex align-items-center justify-content-end area-edit-btn-address">
+                    <div class="col-md-6 d-flex align-items-center justify-content-end area-edit-btn-address pe-4">
                         <div class="row">
                             <div class="col-12 d-flex justify-content-end">
-                                <button type="button" class="btn btn-update" (click)="openModal(address.id)"
-                                    data-bs-toggle="modal" data-bs-target="#updateModal">
+                                <button type="button" class="btn btn-update"
+                                    (click)="openUpdateModal(address.address_ID ?? 0)" data-bs-toggle="modal"
+                                    data-bs-target="#updateModal">
                                     Cập nhật
                                 </button>
-                                <button class="btn-update btn-delete" *ngIf="address.is_default !== 1">Xóa</button>
+                                <button class="btn-update btn-delete" *ngIf="address.isDefault !== true" (click)="delete(address.address_ID!)">Xóa</button>
                             </div>
                             <div class="col-12 d-flex justify-content-end mt-2">
-                                <button class="btn-set-default" [disabled]="address.is_default === 1"
-                                    [ngClass]="{'btn-disabled': address.is_default === 1}"
-                                    (click)="setDefaultAddress(address.id)">Thiết lập mặc định</button>
+                                <button class="btn-set-default" [disabled]="address.isDefault === true"
+                                    [ngClass]="{'btn-disabled': address.isDefault === true}"
+                                    (click)="setDefaultAddress(address.address_ID!)">Thiết lập mặc định</button>
                             </div>
                         </div>
                     </div>
@@ -154,59 +202,104 @@
 
             <!-- Modal body -->
             <div class="modal-body">
-                <form action="">
+                <form [formGroup]="update_address_F" (submit)="updateAdress()">
                     <!-- input name and phone -->
                     <div class="row mt-2">
-                        <div class="col-6">
-                            <input type="text" id="name" placeholder="Họ và tên" name="name" class="input-text"
-                                [(ngModel)]="selectedAddress.full_name">
+                        <div class="col-6 mb-24 ">
+                            <input type="text" id="name" placeholder="Họ và tên"
+                                formControlName="name" class="input-text">
+                            <div
+                                *ngIf="update_address_F['controls']['name'].dirty && update_address_F['controls']['name'].errors">
+                                <small
+                                    *ngIf="update_address_F['controls']['name'].errors['required']">Tên
+                                    không được bỏ trống!</small>
+                                <small
+                                    *ngIf="update_address_F['controls']['name'].errors['minlength']">Tên
+                                    phải chứa tối thiểu 3 kí tự!</small>
+                                <small
+                                    *ngIf="update_address_F['controls']['name'].errors['maxlength']">Tên
+                                    chỉ chứa tối đa 50 kí tự!</small>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <input type="text" id="phone" placeholder="Số điện thoại" name="phone" class="input-text"
-                                [(ngModel)]="selectedAddress.phone">
+                        <div class="col-6 mb-24 ">
+                            <input type="text" id="phone" placeholder="Số điện thoại"
+                                formControlName="phone" class="input-text"
+                                onkeypress="if(event.key.length === 1 && !/[0-9]/.test(event.key)) event.preventDefault();">
+                            <div
+                                *ngIf="update_address_F['controls']['phone'].dirty && update_address_F['controls']['phone'].errors">
+                                <small
+                                    *ngIf="update_address_F['controls']['phone'].errors['required']">Số
+                                    điện thoại không được bỏ trống!</small>
+                                <small
+                                    *ngIf="update_address_F['controls']['phone'].errors['pattern']">Số
+                                    điện thoại không đúng định dạng!</small>
+                                <small
+                                    *ngIf="update_address_F.get('phone')?.hasError('unique') && update_address_F.get('phone')?.touched">Số
+                                    điện thoại đã được sử dụng, vui lòng nhập số điện thoại
+                                    khác!</small>
+                            </div>
                         </div>
                     </div>
 
                     <!-- input province/city -->
-                    <select class="form-select">
-                        <option value="">Tỉnh/Thành phố</option>
-                        <option value="Thành phố Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
-                        <option value="Tỉnh Long An">Tỉnh Long An</option>
-                        <option value="Tỉnh An Giang">Tỉnh An Giang</option>
+                    <select class="form-select mb-24" formControlName="province"
+                        (change)="onProvinceUpdateFChange()">
+                        <option value="" disabled selected>Tỉnh/Thành phố (*)</option>
+                        <option *ngFor="let province of provinces"
+                            [value]="province.id + '#' + province.name">
+                            {{ province.name }}
+                        </option>
                     </select>
 
                     <!-- input district -->
-                    <select class="form-select">
-                        <option>Quận/Huyện</option>
-                        <option>Quận 1</option>
-                        <option>Quận 2</option>
-                        <option>Quận 3</option>
+                    <select class="form-select mb-24" formControlName="district"
+                        (change)="onDistrictUpdateFChange()">
+                        <option value="" disabled selected>Quận/Huyện (*)</option>
+                        <option *ngFor="let district of districts"
+                            [value]="district.id + '#' + district.name">
+                            {{ district.name }}
+                        </option>
                     </select>
 
                     <!-- input town -->
-                    <select class="form-select">
-                        <option>Phường/Xã</option>
-                        <option>Phường 1</option>
-                        <option>Phường 2</option>
-                        <option>Phường 3</option>
+                    <select class="form-select mb-24" formControlName="ward">
+                        <option value="" disabled selected>Phường/Xã (*)</option>
+                        <option *ngFor="let ward of wards" [value]="ward.id + '#' + ward.name"
+                            name="ward">
+                            {{ ward.name }}
+                        </option>
                     </select>
 
-                    <!-- input: home number, street name -->
-                    <input type="text" id="home-number" placeholder="Số nhà, tên đường" name="home-number"
-                        class="input-text" [(ngModel)]="selectedAddress.address_line">
 
+                    <!-- input: home number, street name -->
+                    <div class="mb-24">
+                        <input type="text" id="home-number" placeholder="Số nhà, tên đường"
+                            class="input-text" formControlName="addressLine">
+                        <div
+                            *ngIf="update_address_F['controls']['addressLine'].dirty && update_address_F['controls']['addressLine'].errors">
+                            <small
+                                *ngIf="update_address_F['controls']['addressLine'].errors['required']">Trường
+                                này không được bỏ trống!</small>
+                        </div>
+                    </div>
                     <!-- set address default -->
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="radio1" name="set-address-default"
-                            value="option1" [checked]="selectedAddress.is_default === 1">
+                        <input type="checkbox" class="form-check-input mb-24" id="radio1"
+                            name="set-address-default" value="option1" formControlName="isDefault">
                         <label class="form-check-label" for="radio1">Đặt làm địa chỉ mặc
                             định</label>
                     </div>
 
                     <!-- Modal footer -->
                     <div class="modal-footer mt-4">
-                        <button type="button" class="btn" data-bs-dismiss="modal">Trở lại</button>
-                        <button type="submit" class="btn bg-dark text-light">Lưu thay đổi</button>
+                        <button type="button" class="btn" data-bs-dismiss="modal">Trở
+                            lại</button>
+                        <button type="submit" class="btn bg-dark text-light"
+                            [disabled]="update_address_F.invalid || isLoading">
+                            <span *ngIf="isLoading" class="spinner-border spinner-border-sm"
+                                role="status" aria-hidden="true"></span>
+                            <span *ngIf="!isLoading">Hoàn thành</span>
+                        </button>
                     </div>
                 </form>
             </div>

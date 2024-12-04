@@ -3,7 +3,7 @@
 <app-header />
 <div class="row personal-info-container mb-5 mx-auto">
     <div class="col-lg-3 d-none d-lg-block">
-        <app-sidebar-personal-info/>
+        <app-sidebar-personal-info />
     </div>
     <div class="d-block d-lg-none">
         <div class="offcanvas offcanvas-start offfcanvas-option" id="demo">
@@ -11,8 +11,8 @@
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
             </div>
             <div class="offcanvas-body">
-                <app-sidebar-personal-info/>
-            </div> 
+                <app-sidebar-personal-info />
+            </div>
         </div>
         <!-- Button to open the offcanvas sidebar -->
         <button class="btn btn-primary btn-option" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
@@ -27,7 +27,7 @@
             <div class="row mt-4">
                 <div class="col-md-7 col-infor">
                     <form [formGroup]="record_F" (submit)="updateUser()">
-                        
+
                         <!-- Field: Name -->
                         <div class="row mb-4">
                             <div class="col-3 d-flex align-items-center">
@@ -36,9 +36,12 @@
                             <div class="col-9">
                                 <input type="text" class="form-control" id="name" formControlName="name">
                                 <div *ngIf="record_F['controls']['name'].dirty && record_F['controls']['name'].errors">
-                                    <small *ngIf="record_F['controls']['name'].errors['required']">Tên không được bỏ trống!</small>
-                                    <small *ngIf="record_F['controls']['name'].errors['minlength']">Tên phải chứa tối thiểu 3 kí tự!</small>
-                                    <small *ngIf="record_F['controls']['name'].errors['maxlength']">Tên chỉ chứa tối đa 50 kí tự!</small>
+                                    <small *ngIf="record_F['controls']['name'].errors['required']">Tên không được bỏ
+                                        trống!</small>
+                                    <small *ngIf="record_F['controls']['name'].errors['minlength']">Tên phải chứa tối
+                                        thiểu 3 kí tự!</small>
+                                    <small *ngIf="record_F['controls']['name'].errors['maxlength']">Tên chỉ chứa tối đa
+                                        50 kí tự!</small>
                                 </div>
                             </div>
                         </div>
@@ -50,10 +53,15 @@
                             </div>
                             <div class="col-9">
                                 <input type="email" class="form-control" id="email" formControlName="email">
-                                <div *ngIf="record_F['controls']['email'].dirty && record_F['controls']['email'].errors">
-                                    <small *ngIf="record_F['controls']['email'].errors['required']">Email không được bỏ trống!</small>
-                                    <small *ngIf="record_F['controls']['email'].errors['email']">Email không đúng định dạng!</small>
-                                    <small *ngIf="record_F.get('email')?.hasError('unique') && record_F.get('email')?.touched">Email đã tồn tại!</small>
+                                <div
+                                    *ngIf="record_F['controls']['email'].dirty && record_F['controls']['email'].errors">
+                                    <small *ngIf="record_F['controls']['email'].errors['required']">Email không được bỏ
+                                        trống!</small>
+                                    <small *ngIf="record_F['controls']['email'].errors['email']">Email không đúng định
+                                        dạng!</small>
+                                    <small
+                                        *ngIf="record_F.get('email')?.hasError('unique') && record_F.get('email')?.touched">Email
+                                        đã tồn tại!</small>
                                 </div>
                             </div>
                         </div>
@@ -64,11 +72,17 @@
                                 <label for="phone" class="form-label">Điện thoại</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" id="phone" formControlName="phoneNumber" onkeypress="if(event.key.length === 1 && !/[0-9]/.test(event.key)) event.preventDefault();">
-                                <div *ngIf="record_F['controls']['phoneNumber'].dirty && record_F['controls']['phoneNumber'].errors">
-                                    <small *ngIf="record_F['controls']['phoneNumber'].errors['required']">Số điện thoại không được bỏ trống!</small>
-                                    <small *ngIf="record_F['controls']['phoneNumber'].errors['pattern']">Số điện thoại không đúng định dạng!</small>
-                                    <small *ngIf="record_F.get('phoneNumber')?.hasError('unique') && record_F.get('phoneNumber')?.touched">Số điện thoại đã được sử dụng, vui lòng nhập số điện thoại khác!</small>
+                                <input type="text" class="form-control" id="phone" formControlName="phoneNumber"
+                                    onkeypress="if(event.key.length === 1 && !/[0-9]/.test(event.key)) event.preventDefault();">
+                                <div
+                                    *ngIf="record_F['controls']['phoneNumber'].dirty && record_F['controls']['phoneNumber'].errors">
+                                    <small *ngIf="record_F['controls']['phoneNumber'].errors['required']">Số điện thoại
+                                        không được bỏ trống!</small>
+                                    <small *ngIf="record_F['controls']['phoneNumber'].errors['pattern']">Số điện thoại
+                                        không đúng định dạng!</small>
+                                    <small
+                                        *ngIf="record_F.get('phoneNumber')?.hasError('unique') && record_F.get('phoneNumber')?.touched">Số
+                                        điện thoại đã được sử dụng, vui lòng nhập số điện thoại khác!</small>
                                 </div>
                             </div>
                         </div>
@@ -109,21 +123,30 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="record_F.invalid">Lưu thay đổi</button>
+                        <button type="submit" class="btn btn-dark w-100 mt-3"
+                            [disabled]="record_F.invalid || isLoading">
+                            <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
+                                aria-hidden="true"></span>
+                            <span *ngIf="!isLoading">Lưu thay đổi</span>
+                        </button>
                     </form>
                 </div>
                 <div class="col-1 divided-section d-none d-md-block"></div>
                 <div class="ms-4 col-md-4 d-flex align-items-center justify-content-center col-avatar">
                     <div class="d-flex align-items-center flex-column">
                         <div class="avatar">
-                            <img width="100%" src="../../../../assets/images/record/avtar_temp.webp" alt="avatar"
-                                class="right-hand-side-avatar">
+                            <!-- Hiển thị ảnh đã upload hoặc ảnh mặc định -->
+                            <img width="100%" [src]="avatarUrl || '../../../../assets/images/record/avatar.png'"
+                                alt="avatar" class="right-hand-side-avatar" style="object-fit: cover;" />
                         </div>
-                        <label for="choose-pic" class="border p-1 mt-3 mb-2 rounded-2" style="cursor: pointer;">Chọn Ảnh</label>
-                        <input type="file" name="choose-pic" id="choose-pic" value="Chọn Ảnh" hidden>
+                        <!-- Nút chọn ảnh -->
+                        <label for="choose-pic" class="border p-1 mt-3 mb-2 rounded-2" style="cursor: pointer;">Chọn
+                            Ảnh</label>
+                        <input type="file" name="choose-pic" id="choose-pic" (change)="onFileSelected($event)" hidden />
                         <p class="format-pic-title">Định dạng: .JPEG, .PNG</p>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

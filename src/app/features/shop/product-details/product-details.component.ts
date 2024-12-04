@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, output, Renderer2 } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ImageSliderComponent } from '../image-slider/image-slider.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
@@ -24,12 +24,15 @@ import { BRANDS } from '../../../data_test/brand/brand-data';
 import { ApiResponse } from '../../../core/models/auth/api-resonse.model';
 import { ProductService } from '../../../core/services/product.service';
 import { ProductDto } from '../../../core/models/product.model';
-import {
-  ProductVariationDto
-} from '../../../core/models/productVariation.model';
+import { ProductVariationDto } from '../../../core/models/productVariation.model';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CartDto } from '../../../core/models/cart.model';
+import { CloudinaryService } from '../../../core/upload_images/upload_image';
+import { VirtualTryOnService } from '../../../core/services/virtual-try-on.service';
+
+import Swal from 'sweetalert2';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-product-detail',
@@ -66,12 +69,32 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   cartItem: CartDto | null = null;
   //product: ProductDto | undefined;
   variationList: { id: number; value: string }[] = [];
+  uploadedImage: string | ArrayBuffer | null = null;
+  selectedImage: string | null = null;
+  responseImageFromCloudinary: string | null = null;
+  outputImage: string | null = null;
+
+  isLoading: boolean = false;
+
+  isLoadingStart: boolean = false;
+  isLoadingRender: boolean = false;
+  isLoadingCancle: boolean = false;
+  isLoadingError: boolean = false;
+
+  isExit: boolean = false;
+
+  timerValue = 0;
+  private timerInterval: any;
 
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService,
     private productService: ProductService,
-    private cartService: CartService
+    private cartService: CartService,
+    protected router: Router,
+    private cloudinaryService: CloudinaryService,
+    private virtualTryOnService: VirtualTryOnService,
+    private renderer: Renderer2
   ) {}
 
   /**Xu ly item v2 */
@@ -124,13 +147,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     return undefined;
   }
 
-  getVariationBySizeAndColor(
-  ): ProductVariationDto | undefined {
+  getVariationBySizeAndColor(): ProductVariationDto | undefined {
     if (this.product && this.product.productVariations) {
       if (this.selectedSizeId && this.selectedColorId) {
         const variation = this.product.productVariations.find(
           (variation: ProductVariationDto) => {
-            return variation.col_Id === this.selectedColorId && variation.siz_Id === this.selectedSizeId;
+            return (
+              variation.col_Id === this.selectedColorId &&
+              variation.siz_Id === this.selectedSizeId
+            );
           }
         );
         //console.log("Get variation by size " + this.selectedSizeId + " and color " + this.selectedColorId, variation);
@@ -424,25 +449,264 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     productVariation.product = product;
     console.log(variation);
 
-    const cartDto: CartDto = {
-      item_Id: productVariation.id,
-      cus_Id: userId,
-      price: productVariation.price,
-      quantity: 1,
-    };
-    console.log(cartDto);
+    //Tạo một form để nhập số lượng
+    let quantity = window.prompt('Nhập số lượng cần mua:', '1');
+    let validQuantity = false;
 
-    // Call cartService to create cart
-    // this.cartService.createCart(cartDto).subscribe({
-    //   next: (response) => {
-    //     console.log('Cart created successfully:', response);
-    //   },
-    //   error: (error) => {
-    //     console.error('Error creating cart:', error);
-    //   },
-    // });
+    while (!validQuantity) {
+      const input = window.prompt('Nhập số lượng cần mua:', '1');
+      if (input !== null) {
+        const parsedQuantity = parseInt(input, 10);
+        if (
+          !isNaN(parsedQuantity) &&
+          parsedQuantity >= 1 &&
+          parsedQuantity <= productVariation.quantity
+        ) {
+          quantity = parsedQuantity.toString();
 
+          const cartDto: CartDto = {
+            item_Id: productVariation.id,
+            cus_Id: userId,
+            price: productVariation.price,
+            quantity: quantity ? parseInt(quantity) : 1,
+            productVariation: productVariation,
+          };
+          console.log(cartDto);
+
+          this.cartService.setCheckedItems([cartDto]);
+          this.router.navigate(['/payment']);
+
+          validQuantity = true;
+        } else {
+          window.alert(
+            `Vui lòng nhập số lượng hợp lệ từ 1 đến ${productVariation.quantity}`
+          );
+        }
+      } else {
+        return;
+      }
+    }
     // Return the product variation
     return this.getProductVariation(product, sizeId, colorId);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      console.log(file);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.uploadedImage = e.target?.result ?? null;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  uploadImageToCloud(): void {
+    if (this.uploadedImage) {
+      this.isLoading = true;
+      const file = this.uploadedImage as unknown as File;
+      console.log('Uploading image to cloud:', file);
+      const userId = this.getCookieValue('user');
+      const folder = 'user_selfie';
+      const publicId = `user_selfie_${userId}_${Date.now()}`;
+
+      new Promise<void>((resolve, reject) => {
+        this.cloudinaryService
+          .uploadImage(file, folder, publicId)
+          .then((result) => {
+            this.responseImageFromCloudinary = result.secure_url;
+            resolve();
+            console.log(
+              'URL ảnh sau khi upload:',
+              this.responseImageFromCloudinary
+            );
+            this.isLoading = false;
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Thành công!',
+              detail: 'Ảnh của bạn đã được tải lên!',
+            });
+          })
+          .catch((error) => {
+            console.error('Lỗi khi lưu ảnh:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Thất bại!',
+              detail: 'Lỗi xảy ra khi lưu ảnh!',
+            });
+            reject(error);
+            this.isLoading = false;
+          });
+      });
+    } else {
+      console.error('No image selected for upload.');
+    }
+  }
+
+  onImageSelect(imageUrl: string): void {
+    this.selectedImage = imageUrl;
+    console.log('Selected image:', imageUrl);
+  }
+
+  downloadImage() {
+    const a = document.createElement('a'); // Tạo thẻ <a>
+    a.href = this.outputImage!; // Đường dẫn file tải xuống
+    a.download = 'photo.jpg'; // Tên file tải xuống
+    a.target = '_blank'; // Mở file trong tab mới
+    document.body.appendChild(a); // Thêm thẻ <a> vào DOM
+    a.click(); // Tự động click để tải file
+    document.body.removeChild(a); // Xóa thẻ <a> sau khi tải xong
+  }
+
+  handleTryOnClothes(): void {
+    this.startTimer();
+    console.log('Ảnh tải lên:', this.responseImageFromCloudinary);
+    console.log('Ảnh chọn:', this.selectedImage);
+
+    const modelImage = this.responseImageFromCloudinary;
+    const garmentImage = this.selectedImage;
+    const category = 'tops';
+
+    this.isLoadingStart = true;
+
+    this.virtualTryOnService
+      .runVirtualTryOn(modelImage!, garmentImage!, category)
+      .then((response) => {
+        this.clearTimer();
+        if (response.error === null) {
+          this.startTimer();
+          this.isLoadingRender = true;
+          return this.pollStatus(response.id); // Gọi hàm kiểm tra trạng thái
+        } else {
+          this.isLoadingError = true;
+          this.isLoadingStart = false;
+          this.isLoadingRender = false;
+          console.error('Request failed, canceling:', response.id);
+          return this.virtualTryOnService.cancelRequest(response.id);
+        }
+      })
+      .then((statusResponse) => {
+        this.clearTimer();
+        if (statusResponse && statusResponse.status === 'completed') {
+          this.isLoadingError = false;
+          console.log('Output Image:', statusResponse.output);
+          this.outputImage = statusResponse.output;
+        } else {
+          this.isLoadingRender = false;
+          this.isLoadingError = true;
+          console.log('Final status response:', statusResponse);
+        }
+      })
+      .catch((error) => {
+        this.clearTimer();
+        console.error('Error:', error);
+        this.isLoadingError = true;
+      });
+  }
+
+  /**
+   * Hàm kiểm tra trạng thái với polling
+   */
+  private pollStatus(requestId: string): Promise<any> {
+    const delay = 2000; // Kiểm tra sau mỗi 2 giây
+
+    return new Promise((resolve, reject) => {
+      const checkStatus = () => {
+        this.virtualTryOnService
+          .getStatus(requestId)
+          .then((statusResponse) => {
+            console.log('Status Response:', statusResponse);
+
+            if (statusResponse.status === 'completed') {
+              resolve(statusResponse); // Kết thúc khi trạng thái là "completed"
+            } else if (statusResponse.status === 'error') {
+              reject(new Error('Error occurred while processing.'));
+            } else if (statusResponse.status === 'failed') {
+              reject(new Error('Request failed.'));
+              console.error('Request failed, canceling:', requestId);
+              this.virtualTryOnService.cancelRequest(requestId);
+            } else {
+              // Tiếp tục kiểm tra
+              setTimeout(checkStatus, delay);
+            }
+          })
+          .catch((error) => {
+            console.error('Error in polling status:', error);
+            reject(error);
+          });
+      };
+
+      checkStatus(); // Bắt đầu kiểm tra
+    });
+  }
+
+  // checkAndCloseModal() {
+  //   if (this.uploadedImage) {
+  //     // Hiển thị popup
+  //     alert('Bạn có chắc chắn muốn đóng mà không lưu ảnh đã tải lên?');
+  //   } else {
+  //     // Đóng modal
+  //     this.resetData();
+  //     const modal = document.getElementById('exampleModalFullscreen');
+  //     if (modal) {
+  //       const bootstrapModal = bootstrap.Modal.getInstance(modal);
+  //       if (bootstrapModal) {
+  //         bootstrapModal.hide();
+  //       }
+  //     }
+  //   }
+  // }
+
+  resetData(): void {
+    this.uploadedImage = null;
+    this.selectedImage = null;
+    this.responseImageFromCloudinary = null;
+    this.outputImage = null;
+    this.isExit = false;
+    this.isLoadingError = false;
+    this.isLoadingRender = false;
+    this.isLoadingStart = false;
+  }
+
+  checkStatusExit(): void {
+    if (this.uploadedImage !== null) {
+      Swal.fire({
+        title: 'Bạn có chắc chắn thoát?',
+        text: 'Những gì bạn chọn sẽ biến mất và bạn sẽ phải thao tác lại từ đầu!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Có, tôi chắc chắn!',
+        cancelButtonText: 'Không!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.isExit = true;
+          this.resetData();
+          const exitButton = document.getElementById(
+            'exitButton'
+          ) as HTMLButtonElement;
+          if (exitButton) {
+            exitButton.click();
+          }
+        }
+      });
+    } else {
+      this.isExit = true;
+    }
+  }
+
+  startTimer() {
+    this.timerValue = 0;
+    this.timerInterval = setInterval(() => {
+      this.timerValue = parseFloat((this.timerValue + 0.1).toFixed(1));
+    }, 100);
+  }
+
+  clearTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
   }
 }

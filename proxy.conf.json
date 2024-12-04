@@ -1,0 +1,18 @@
+{
+  "/api": {
+    "target": "https://esgoo.net",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/fashn-api": {
+    "target": "https://api.fashn.ai",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/fashn-api": "/v1"
+    }
+  }
+}
