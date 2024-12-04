@@ -145,7 +145,7 @@ export class PaymentComponent
     const targetUrl = nextState?.url || '';
     console.log('Target URL:', targetUrl);
 
-    const exemptUrls = ['my-orders'];
+    const exemptUrls = ['my-orders', 'address-book'];
     const isExempt = exemptUrls.some((url) => targetUrl.includes(url));
 
     if (!isExempt && component.hasUnsavedChanges()) {
