@@ -36,6 +36,10 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/login`, loginData);
   }
 
+  // get
+  getAllUsers(): Observable<UserDto[]> {
+    return this.http.get<UserDto[]>(`${this.baseUrl}`);
+  }
 
   // assignRole
   assignRole(registrationRequestDto: RegistrationRequestDto): Observable<any> {

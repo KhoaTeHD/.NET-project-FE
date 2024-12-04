@@ -3,6 +3,7 @@ import { BrandDto } from "./brand.model";
 import { CategoryDto } from "./category.model";
 import { NationDto } from "./nation.model";
 import { SupplierDto } from "./supplier.model";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export interface PlaceholderItem extends ProductDto {
   isPlaceholder: boolean;

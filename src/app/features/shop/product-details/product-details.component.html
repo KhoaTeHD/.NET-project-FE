@@ -64,7 +64,7 @@
                           />
 
                           <p class="format-pic-title">
-                            Yêu cầu: đủ sáng, chính diện và thấy rõ phần thân.
+                            Ảnh càng đơn giản - "thử áo" càng nhanh
                           </p>
                           <img
                             *ngIf="uploadedImage"
@@ -123,19 +123,25 @@
                       <div
                         class="col-12 col-md-4 d-flex flex-column border-section align-items-center justify-content-center"
                       >
-                        <p *ngIf="isLoadingStart">Đang khởi tạo...</p>
-                        <p *ngIf="!isLoadingStart && isLoadingRender">
+                        <p *ngIf="isLoadingStart && !isLoadingRender">
+                          Đang khởi tạo... <span>{{ timerValue }} giây</span>
+                        </p>
+                        <p *ngIf="isLoadingStart && isLoadingRender">
                           Khởi tạo thành công ✔
                         </p>
-                        <p *ngIf="!isLoadingStart && isLoadingRender">
+                        <p *ngIf="isLoadingStart && isLoadingRender">
                           Đang tiến hành thay áo...
+                          <span>{{ timerValue }} giây</span>
+                        </p>
+                        <p *ngIf="isLoadingError">
+                          Đã có lỗi xảy ra. Vui lòng thử lại sau! 😢
                         </p>
                         <button
                           type="button"
                           class="btn btn-primary btn-sm mb-2"
                           (click)="handleTryOnClothes()"
                           [hidden]="
-                            (!isLoadingStart && isLoadingRender) || outputImage
+                            (isLoadingStart && isLoadingRender) || outputImage
                           "
                           [disabled]="
                             isLoadingStart ||
@@ -144,7 +150,7 @@
                             !responseImageFromCloudinary
                           "
                         >
-                          Mặc áo (30 - 40 giây)
+                          Mặc áo (~ 45 giây)
                         </button>
                         <div>
                           <img
@@ -162,6 +168,43 @@
                           Tải ảnh xuống
                         </button>
                       </div>
+
+                      <div class="col-12 col-md-12 d-flex flex-column">
+                        <strong>HƯỚNG DẪN SỬ DỤNG:</strong>
+                        <strong>Bước 1:</strong>
+                        <p>
+                          Bạn hãy chọn ảnh selfie của mình bằng cách nhấn vào
+                          nút "Chọn ảnh selfie của bạn" và chọn ảnh từ máy tính
+                          của bạn. Sau đó nhấn nút "Tải lên". Trang web hiển thị
+                          "Đã tải lên ✔" là đã tải ảnh thành công.
+                        </p>
+                        <strong
+                          >Lưu ý: ảnh càng đơn giản, càng rõ ràng, dung lượng
+                          ảnh càng nhẹ thì tốc độ "Mặc áo" càng nhanh!</strong
+                        >
+                        <img
+                          src="../../../../assets/images/hdsdtryon.png"
+                          alt=""
+                        />
+                        <strong>Bước 2:</strong>
+                        <p>
+                          Hãy chọn 1 trong những chiếc áo mà bạn muốn mặc thử.
+                        </p>
+                        <strong>Bước 3:</strong>
+                        <p>
+                          Nhấn nút "Mặc áo (~ 45 giây)" để xem kết quả. Trong
+                          khoảng thời gian từ 30-45 giây, trang web sẽ hiển thị
+                          ảnh của bạn mặc chiếc áo bạn đã chọn.
+                        </p>
+                        <strong>Bước 4:</strong>
+                        <p>
+                          Nhấn nút <strong>"Tải ảnh xuống"</strong> để lưu ảnh
+                          về máy tính của bạn. Bởi vì chức năng "Thử áo online"
+                          đang trong giai đoạn thử nghiệm nên
+                          <strong>chưa hỗ trợ </strong>lưu trữ ảnh đã tạo của
+                          khách hàng.
+                        </p>
+                      </div>
                     </div>
                     <div class="modal-footer">
                       <button
@@ -170,7 +213,11 @@
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
                         (click)="resetData()"
-                        [hidden]="isExit === false"
+                        [hidden]="
+                          (uploadedImage && selectedImage) ||
+                          uploadedImage ||
+                          selectedImage
+                        "
                       >
                         Thoát
                       </button>
@@ -178,7 +225,7 @@
                         type="button"
                         class="btn btn-secondary"
                         (click)="checkStatusExit()"
-                        [hidden]="isExit === true"
+                        [hidden]="!uploadedImage && !selectedImage"
                       >
                         Đóng
                       </button>

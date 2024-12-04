@@ -6,9 +6,117 @@
                 <button type="button" class="btn btn-dark" (click)="showDialog()">Thêm tài khoản</button>
             </div>
             <div class="card mb-4">
-                
+                <p-toast></p-toast>
+                <p-confirmDialog></p-confirmDialog>
                 <div class="card-body">
-                    
+                    <p-table #dt editMode="row" [value]="users" dataKey="id" [paginator]="true" [rows]="10"
+                        [globalFilterFields]="['id', 'name', 'email', 'phoneNumber', 'birthDate', 'gender', 'status']" [responsiveLayout]="'scroll'">
+                        <ng-template pTemplate="caption">
+                            <div class="d-flex">
+                                <span class="p-input-icon-left ml-auto">
+                                    <i class="pi pi-search"></i>
+                                    <input pInputText type="text" style="width: 200px;" (input)="handleInput($event, dt)" placeholder="Tìm kiếm" />
+                                </span>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width:10%">ID</th>
+                                <th style="width:15%">Tên</th>
+                                <th style="width:15%">Email</th>
+                                <th style="width:10%">Số Điện Thoại</th>
+                                <th style="width:10%">Ngày Sinh</th>
+                                <th style="width:10%">Giới Tính</th>
+                                <th style="width:10%">Trạng Thái</th>
+                                <th style="width:10%"></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-user let-editing="editing" let-ri="rowIndex">
+                            <tr [pEditableRow]="user">
+                                <td>{{ user.id }}</td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="user.name" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ user.name }}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="user.email" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ user.email }}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="user.phoneNumber" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ user.phoneNumber }}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="date" [(ngModel)]="user.birthDate" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ user.birthDate | date: 'dd/MM/yyyy' }}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="user.gender" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ user.gender }}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <p-dropdown [options]="statuses" appendTo="body" [(ngModel)]="user.status" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            <p-tag [value]="user.status ? 'Hoạt động' : 'Chặn' " [severity]="getSeverity(user.status)" />
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <div class="flex align-items-center justify-content-center gap-2">
+                                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                            icon="pi pi-pencil" (click)="onRowEditInit(user)"
+                                            class="p-button-rounded p-button-text">
+                                        </button>
+                                        <button *ngIf="!editing" pButton pRipple type="button"
+                                            icon="pi pi-trash" (click)="deleteUser(user)"
+                                            class="p-button-rounded p-button-text p-button-danger">
+                                        </button>
+                                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                            icon="pi pi-check" (click)="onRowEditSave(user, ri)"
+                                            class="p-button-rounded p-button-text p-button-success mr-2">
+                                        </button>
+                                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                            icon="pi pi-times" (click)="onRowEditCancel(user, ri)"
+                                            class="p-button-rounded p-button-text p-button-danger">
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
                 </div>
             </div>
         </div>
@@ -18,59 +126,34 @@
 
 <p-dialog header="Thêm người dùng" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem' }" styleClass="p-fluid">
     <form>
-        <!-- Customer Name -->
         <div class="mb-3">
-            <label for="Cus_Name" class="form-label">Tên khách hàng</label>
-            <input type="text" class="form-control" id="Cus_Name" placeholder="Nhập tên khách hàng" name="Cus_Name">
+            <label for="name" class="form-label">Tên</label>
+            <input type="text" class="form-control" id="name" [(ngModel)]="createUser.name" placeholder="Nhập tên" name="name">
         </div>
-
-        <!-- Customer Avatar -->
         <div class="mb-3">
-            <label for="Cus_Avatar" class="form-label">Ảnh đại diện</label>
-            <input type="file" class="form-control" id="Cus_Avatar" name="Cus_Avatar">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" [(ngModel)]="createUser.email" placeholder="Nhập email" name="email">
         </div>
-
-        <!-- Customer Email -->
         <div class="mb-3">
-            <label for="Cus_Email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="Cus_Email" placeholder="Nhập email" name="Cus_Email">
+            <label for="phoneNumber" class="form-label">Số điện thoại</label>
+            <input type="tel" class="form-control" id="phoneNumber" [(ngModel)]="createUser.phoneNumber" placeholder="Nhập số điện thoại" name="phoneNumber">
         </div>
-
-        <!-- Customer Password -->
         <div class="mb-3">
-            <label for="Cus_PassWord" class="form-label">Mật khẩu</label>
-            <input type="password" class="form-control" id="Cus_PassWord" placeholder="Nhập mật khẩu" name="Cus_PassWord">
+            <label for="birthDate" class="form-label">Ngày sinh</label>
+            <input type="date" class="form-control" id="birthDate" [(ngModel)]="createUser.birthDate" name="birthDate">
         </div>
-
-        <!-- Customer Gender -->
         <div class="mb-3">
-            <label for="Cus_Gender" class="form-label">Giới tính</label>
-            <input type="text" class="form-control" id="Cus_Gender" placeholder="Nhập giới tính (Nam/Nữ)" name="Cus_Gender">
+            <label for="gender" class="form-label">Giới tính</label>
+            <input type="text" class="form-control" id="gender" [(ngModel)]="createUser.gender" placeholder="Nhập giới tính" name="gender">
         </div>
-
-        <!-- Customer Phone -->
         <div class="mb-3">
-            <label for="Cus_Phone" class="form-label">Số điện thoại</label>
-            <input type="tel" class="form-control" id="Cus_Phone" placeholder="Nhập số điện thoại" name="Cus_Phone">
+            <label class="form-check-label me-2" for="status">Trạng thái:</label>
+            <input class="form-check-input" type="radio" name="status" id="active" [value]="true" [(ngModel)]="createUser.status"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="status" id="inactive" [value]="false" [(ngModel)]="createUser.status"> Chặn
         </div>
-
-        <!-- Customer Birthday -->
-        <div class="mb-3">
-            <label for="Cus_Birthday" class="form-label">Ngày sinh</label>
-            <input type="date" class="form-control" id="Cus_Birthday" name="Cus_Birthday">
-        </div>
-
-        <!-- Customer Status -->
-        <div class="mb-3">
-            <label class="form-check-label me-2" for="Cus_Status">Trạng thái:</label>
-            <input class="form-check-input" type="radio" name="Cus_Status" id="active"> Hoạt động
-            <input class="form-check-input ms-2" type="radio" name="Cus_Status" id="inactive"> Chặn
-        </div>
-
-        <!-- Submit Button -->
         <div class="d-flex justify-content-end gap-2 mt-4">
             <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />
-            <p-button label="Lưu" (onClick)="visible = false" />
+            <p-button label="Lưu" (onClick)="visible = false" type="submit" />
         </div>
     </form>
 </p-dialog>

@@ -24,7 +24,6 @@
                         <ng-template pTemplate="header">
                             <tr>
                                 <th style="width:15%">Mã phiếu nhập</th>
-                                <th style="width:15%">Mã nhà cung cấp</th>
                                 <th style="width:20%">Nhà cung cấp</th>
                                 <th style="width:20%">Ngày nhập</th>
                                 <th style="width:15%">Tổng tiền</th>
@@ -34,16 +33,8 @@
                         <ng-template pTemplate="body" let-goodsReceipt let-editing="editing" let-ri="rowIndex">
                             <tr [pEditableRow]="goodsReceipt">
                                 <td>{{ goodsReceipt.goo_ID }}</td>
-                                <td>{{ goodsReceipt.supplier_ID }}</td>
                                 <td>
-                                    <!-- <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="goodsReceipt.Supplier_Name" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{ goodsReceipt.Supplier_Name }}
-                                        </ng-template>
-                                    </p-cellEditor> -->
+                                    {{ goodsReceipt.supplier?.supplierName }}
                                 </td>
                                 <td>
                                     <p-cellEditor>
@@ -51,7 +42,7 @@
                                             <input pInputText type="text" [(ngModel)]="goodsReceipt.datetime" />
                                         </ng-template>
                                         <ng-template pTemplate="output">
-                                            {{ goodsReceipt.datetime | date:'yyyy-MM-dd HH:mm:ss' }}
+                                            {{ goodsReceipt.datetime | date:'yyyy-MM-dd' }}
                                         </ng-template>
                                     </p-cellEditor>
                                 </td>
@@ -111,15 +102,7 @@
             </p>
             <p>Nhà cung cấp:
                 <p-dropdown [(ngModel)]="selectedGoodsReceipt.supplier_ID" [options]="suppliers"
-                    optionValue="SupplierName">
-                    <!-- <ng-template pTemplate="selectedItem">
-                        <div *ngIf="selectedGoodsReceipt.Supplier_Name">
-                            {{ selectedGoodsReceipt.Supplier_Name }}
-                        </div>
-                    </ng-template>
-                    <ng-template let-supplier pTemplate="item">
-                        {{ supplier.SupplierName }}
-                    </ng-template> -->
+                    optionValue="supplier_ID" optionLabel="supplierName">
                 </p-dropdown>
             </p>
             <p>Tổng tiền:
@@ -132,13 +115,13 @@
                 [suggestions]="filteredProducts"
                 (completeMethod)="filterCountry($event)" 
                 (onSelect)="addProductToSelected($event)" 
-                optionLabel="Pro_name">
-                <ng-template let-product pTemplate="item">
+                optionLabel="product.name">
+                <ng-template let-productVar pTemplate="item">
                     <div class="d-flex align-items-center gap-2">
                         <img 
                             src="https://placehold.co/40x40" 
                             style="width: 40px" />
-                        <div>{{ product.Pro_name }}</div>
+                        <div>{{ productVar.product.name }}</div>
                     </div>
                 </ng-template>
             </p-autoComplete>

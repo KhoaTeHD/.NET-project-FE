@@ -64,10 +64,6 @@
                                                 icon="pi pi-pencil" (click)="onRowEditInit(brand)"
                                                 class="p-button-rounded p-button-text">
                                             </button>
-                                            <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
-                                                (click)="deleteProduct(brand)"
-                                                class="p-button-rounded p-button-text p-button-danger">
-                                            </button>
                                             <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
                                                 icon="pi pi-check" (click)="onRowEditSave(brand, ri)"
                                                 class="p-button-rounded p-button-text p-button-success mr-2">
@@ -92,15 +88,18 @@
 
 <p-dialog header="Thêm thương hiệu" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }"
     styleClass="p-fluid">
-    <form (ngSubmit) = "createNewBrand()">
+    <form [formGroup]="createBrandForm" (ngSubmit) = "createNewBrand()">
         <div class="mb-4">
             <label for="name" class="form-label">Tên thương hiệu</label>
-            <input type="text" class="form-control" id="name" placeholder="Nhập tên" name="name" [(ngModel)]="createBrand.name">
+            <input type="text" class="form-control" id="name" placeholder="Nhập tên" formControlName="name">
+            <div *ngIf="createBrandForm.controls['name'].invalid && (createBrandForm.controls['name'].dirty || createBrandForm.controls['name'].touched)" class="text-error">
+                Tên thương hiệu không được để trống!
+            </div>
         </div>
         <div class="mb-4">
-            <label class="form-check-label me-2" for="active">Trạng thái:</label>
-            <input class="form-check-input" type="radio" name="active" id="visible" [value]="true" [(ngModel)]="createBrand.status"> Hoạt động
-            <input class="form-check-input ms-2" type="radio" name="active" id="disable" [value]="false" [(ngModel)]="createBrand.status"> ngừng bán
+            <label class="form-check-label me-2" for="status">Trạng thái:</label>
+            <input class="form-check-input" type="radio" name="status" [value]="true"  formControlName="status"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="status" [value]="false"  formControlName="status"> ngừng bán
         </div>
         <div class="d-flex justify-content-end gap-2 mt-4">
             <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />

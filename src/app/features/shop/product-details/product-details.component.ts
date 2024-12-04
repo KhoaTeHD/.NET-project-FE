@@ -83,6 +83,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
   isExit: boolean = false;
 
+  timerValue = 0;
+  private timerInterval: any;
+
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService,
@@ -559,6 +562,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   }
 
   handleTryOnClothes(): void {
+    this.startTimer();
     console.log('Ảnh tải lên:', this.responseImageFromCloudinary);
     console.log('Ảnh chọn:', this.selectedImage);
 
@@ -571,20 +575,22 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     this.virtualTryOnService
       .runVirtualTryOn(modelImage!, garmentImage!, category)
       .then((response) => {
+        this.clearTimer();
         if (response.error === null) {
-          this.isLoadingStart = false;
+          this.startTimer();
           this.isLoadingRender = true;
           return this.pollStatus(response.id); // Gọi hàm kiểm tra trạng thái
         } else {
-          this.isLoadingStart = false;
           this.isLoadingError = true;
+          this.isLoadingStart = false;
+          this.isLoadingRender = false;
           console.error('Request failed, canceling:', response.id);
           return this.virtualTryOnService.cancelRequest(response.id);
         }
       })
       .then((statusResponse) => {
+        this.clearTimer();
         if (statusResponse && statusResponse.status === 'completed') {
-          this.isLoadingRender = false;
           this.isLoadingError = false;
           console.log('Output Image:', statusResponse.output);
           this.outputImage = statusResponse.output;
@@ -595,6 +601,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
         }
       })
       .catch((error) => {
+        this.clearTimer();
         console.error('Error:', error);
         this.isLoadingError = true;
       });
@@ -617,6 +624,10 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
               resolve(statusResponse); // Kết thúc khi trạng thái là "completed"
             } else if (statusResponse.status === 'error') {
               reject(new Error('Error occurred while processing.'));
+            } else if (statusResponse.status === 'failed') {
+              reject(new Error('Request failed.'));
+              console.error('Request failed, canceling:', requestId);
+              this.virtualTryOnService.cancelRequest(requestId);
             } else {
               // Tiếp tục kiểm tra
               setTimeout(checkStatus, delay);
@@ -655,17 +666,20 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     this.responseImageFromCloudinary = null;
     this.outputImage = null;
     this.isExit = false;
+    this.isLoadingError = false;
+    this.isLoadingRender = false;
+    this.isLoadingStart = false;
   }
 
   checkStatusExit(): void {
     if (this.uploadedImage !== null) {
       Swal.fire({
         title: 'Bạn có chắc chắn thoát?',
-        text: 'Kết quả sẽ biến mất nếu bạn thoát, hãy lưu lại kết quả nếu muốn!',
+        text: 'Những gì bạn chọn sẽ biến mất và bạn sẽ phải thao tác lại từ đầu!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Có, tôi chắc chắn!',
-        cancelButtonText: 'Không, hủy bỏ!',
+        cancelButtonText: 'Không!',
       }).then((result) => {
         if (result.isConfirmed) {
           this.isExit = true;
@@ -680,6 +694,19 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       });
     } else {
       this.isExit = true;
+    }
+  }
+
+  startTimer() {
+    this.timerValue = 0;
+    this.timerInterval = setInterval(() => {
+      this.timerValue = parseFloat((this.timerValue + 0.1).toFixed(1));
+    }, 100);
+  }
+
+  clearTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
     }
   }
 }

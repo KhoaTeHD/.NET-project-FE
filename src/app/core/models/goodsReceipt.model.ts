@@ -1,4 +1,5 @@
 import { ProductVariationDto } from "./productVariation.model";
+import { SupplierDto } from "./supplier.model";
 
 export interface GoodsReceiptDto {
   goo_ID?: number;
@@ -6,6 +7,7 @@ export interface GoodsReceiptDto {
   datetime?: Date;
   total?: number;
   detailGoodsReceipts?: DetailGoodsReceiptDto[];
+  supplier?: SupplierDto;
 }
 
 export interface DetailGoodsReceiptDto {

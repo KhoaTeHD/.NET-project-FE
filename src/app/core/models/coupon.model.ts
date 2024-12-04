@@ -1,5 +1,5 @@
 export interface CouponDto {
-  coupon_Code?: number;
+  coupon_Code?: string;
   startDate?: Date;
   expirationDate?: Date;
   couponName?: string;

@@ -17,6 +17,8 @@ import { ProductDto } from '../../../core/models/product.model';
 import { ProductVariationDto } from '../../../core/models/productVariation.model';
 import { GoodsReceiptService } from '../../../core/services/goodsReceipt.service';
 import { firstValueFrom } from 'rxjs';
+import { SupplierService } from '../../../core/services/supplier.service';
+import { ProductVariationService } from '../../../core/services/productVariation.service';
 
 @Component({
   selector: 'app-manage-goods-receipt',
@@ -42,20 +44,23 @@ export class ManageGoodsReceiptComponent implements OnInit {
 
   selectedProduct!: ProductVariationDto;
 
-  filteredProducts!: any[];
+  filteredProducts!: ProductVariationDto[];
 
   constructor(private messageService: MessageService, private confirmationService: ConfirmationService,
-    private goodsReceiptService: GoodsReceiptService
+    private goodsReceiptService: GoodsReceiptService, private supplierService: SupplierService, private productVariationService: ProductVariationService
   ) { }
 
-  showDialog(goodsReceipt: GoodsReceiptDto | null) {
+  showDialog(goodsReceipt: GoodsReceiptDto | null): void {
     this.visible = true;
-    if (goodsReceipt!) this.selectedGoodsReceipt = goodsReceipt;
+    if (goodsReceipt!) this.selectedGoodsReceipt = goodsReceipt
+    else this.selectedGoodsReceipt = {};
   }
 
   ngOnInit(): void {
     this.selectedGoodsReceipt = {};
     this.loadReceipts();
+    this.loadSuppliers();
+    this.loadVariations();
   }
 
   handleInput(event: Event, dt: any): void {
@@ -74,12 +79,35 @@ export class ManageGoodsReceiptComponent implements OnInit {
   async loadReceipts(): Promise<void> {
     try {
       const data = await firstValueFrom(this.goodsReceiptService.getAllGoodsReceipts());
-      console.log(data.result)
+      //console.log(data.result)
       if (data.isSuccess && Array.isArray(data.result)) {
         this.goodsReceipts = data.result;
       }
     } catch (error) {
       console.error('Error fetching goodreceipt', error);
+    }
+  }
+
+  async loadSuppliers(): Promise<void> {
+    try {
+      // Sử dụng firstValueFrom để lấy dữ liệu từ observable
+      const data = await firstValueFrom(this.supplierService.getAllSuppliers());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.suppliers = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching suppliers', error);
+    }
+  }
+
+  async loadVariations(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.productVariationService.getAllProductVariations());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.productVariations = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching products', error);
     }
   }
 
@@ -115,12 +143,12 @@ export class ManageGoodsReceiptComponent implements OnInit {
   }
 
   filterCountry(event: AutoCompleteCompleteEvent) {
-    let filtered: any[] = [];
+    let filtered: ProductVariationDto[] = [];
     let query = event.query;
 
-    for (let i = 0; i < (this.productVariations as any[]).length; i++) {
-        let productVar = (this.productVariations as any[])[i];
-        if (productVar.product.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+    for (let i = 0; i < this.productVariations.length; i++) {
+        let productVar = this.productVariations[i];
+        if (productVar?.product?.name && productVar.product.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
             filtered.push(productVar);
         }
     }
@@ -135,8 +163,8 @@ addProductToSelected(event: AutoCompleteSelectEvent){
     if (productVar != null) {
       let detailedGoodsReceipt: DetailGoodsReceiptDto = {
         product_ID: productVar.id,
-        quantity: 0,
-        unit_Price: 0
+        quantity: 1,
+        unit_Price: productVar.price
       };
 
       if(this.selectedGoodsReceipt.detailGoodsReceipts == null){
@@ -152,7 +180,10 @@ addProductToSelected(event: AutoCompleteSelectEvent){
       }
       
       this.selectedProduct = productVar;
-      console.log(this.selectedGoodsReceipt);
+      if (detailedGoodsReceipt.unit_Price !== undefined) {
+        this.selectedGoodsReceipt.total = (this.selectedGoodsReceipt.total || 0) + detailedGoodsReceipt.unit_Price * (detailedGoodsReceipt.quantity ?? 0);
+      }
+      //console.log(this.selectedGoodsReceipt);
     }
   }
 }

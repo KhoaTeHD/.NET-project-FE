@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RevenueComponent } from "./revenue/revenue.component";
 import { ProductStaticComponent } from "./product-static/product-static.component";
 import { InputTextModule } from 'primeng/inputtext';
@@ -12,8 +12,11 @@ import { Table } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
-
-
+import { OrderDto } from '../../../core/models/order.model';
+import { OrderService } from '../../../core/services/order.service';
+import { firstValueFrom } from 'rxjs';
+import { ProductDto } from '../../../core/models/product.model';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,115 +25,77 @@ import { DropdownModule } from 'primeng/dropdown';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
-  customers: Customer[] = [
-    {
-      id: 1000,
-      name: 'James Butt',
-      country: {
-        name: 'Algeria',
-        code: 'dz',
-      },
-      company: 'Benton, John B Jr',
-      date: '2015-09-13',
-      status: 'unqualified',
-      verified: true,
-      activity: 77,
-      representative: {
-        name: 'Ioni Bowcher',
-        image: 'ionibowcher.png',
-      },
-      balance: 70663,
-    },
-    {
-      id: 1000,
-      name: 'James Butt',
-      country: {
-        name: 'Algeria',
-        code: 'dz',
-      },
-      company: 'Benton, John B Jr',
-      date: '2015-09-13',
-      status: 'unqualified',
-      verified: true,
-      activity: 17,
-      representative: {
-        name: 'Ioni Bowcher',
-        image: 'ionibowcher.png',
-      },
-      balance: 70663,
-    },
-    {
-      id: 1000,
-      name: 'James Butt',
-      country: {
-        name: 'Algeria',
-        code: 'dz',
-      },
-      company: 'Benton, John B Jr',
-      date: '2015-09-13',
-      status: 'unqualified',
-      verified: true,
-      activity: 38,
-      representative: {
-        name: 'Ioni Bowcher',
-        image: 'ionibowcher.png',
-      },
-      balance: 70663,
-    },
-    {
-      id: 1000,
-      name: 'James Butt',
-      country: {
-        name: 'Algeria',
-        code: 'dz',
-      },
-      company: 'Benton, John B Jr',
-      date: '2015-09-13',
-      status: 'unqualified',
-      verified: true,
-      activity: 17,
-      representative: {
-        name: 'Ioni Bowcher',
-        image: 'ionibowcher.png',
-      },
-      balance: 70663,
-    },
-  ];
+  orders: OrderDto[] = [];
+  products: ProductDto[] = [];
+  soldProducts: any[] = [];
 
-  representatives: Representative[] = [
-    { name: 'Amy Elsner', image: 'amyelsner.png' },
-    { name: 'Anna Fali', image: 'annafali.png' },
-    { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-    { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-    { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-    { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-    { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-    { name: 'Onyama Limba', image: 'onyamalimba.png' },
-    { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-    { name: 'Xuxue Feng', image: 'xuxuefeng.png' }
-  ];
+  searchValue: string = '';
 
-  statuses: any[] = [
-    { label: 'Unqualified', value: 'unqualified' },
-    { label: 'Qualified', value: 'qualified' },
-    { label: 'New', value: 'new' },
-    { label: 'Negotiation', value: 'negotiation' },
-    { label: 'Renewal', value: 'renewal' },
-    { label: 'Proposal', value: 'proposal' }
-  ];
+  constructor(private orderService: OrderService, private productService: ProductService) {}
 
-  loading: boolean = false;
-
-  activityValues: number[] = [0, 100];
-
-  searchValue: string | undefined;
-
+  ngOnInit(): void {
+    this.loadOrders();
+    
+  }
 
   clear(table: Table) {
     table.clear();
     this.searchValue = ''
+  }
+
+  async loadOrders(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.orderService.getAllOrders());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.orders = data.result;
+        await this.loadProducts();
+        this.calculateSoldProducts();
+      }
+    } catch (error) {
+      console.error('Error fetching orders', error);
+    }
+  }
+
+  async loadProducts(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.productService.getAllProducts());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.products = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching products', error);
+    }
+  }
+
+  calculateSoldProducts(): void {
+    const productCount: { [key: string]: any } = {};
+
+    this.orders.forEach(order => {
+      order.detailOrders?.forEach(detail => {
+        var product = this.products.find(p => p.id === detail.productVariation?.product?.id);
+        //console.log(product);
+        //const productVar = product?.productVariations?.find(pv => pv.id === detail.productVariation?.id);
+        if (product) {
+          const key = `${product.id}-${detail.productVariation?.col_Id}-${detail.productVariation?.siz_Id}`;
+          if (!productCount[key]) {
+            productCount[key] = {
+              name: product.name,
+              category: product.category?.name,
+              brand: product.brand?.name,
+              size: detail.productVariation?.size?.name,
+              color: detail.productVariation?.color?.name,
+              quantity: 0
+            };
+          }
+          productCount[key].quantity += detail.quantity ?? 0;
+        }
+      });
+    });
+
+    this.soldProducts = Object.values(productCount).sort((a, b) => b.quantity - a.quantity);
+    console.log(this.soldProducts);
   }
 
   handleInput(event: Event, dt: any): void {
@@ -160,27 +125,4 @@ export class DashboardComponent {
         return undefined;
     }
   }
-}
-
-interface Country {
-  name: string;
-  code: string;
-}
-
-interface Representative {
-  name: string;
-  image: string;
-}
-
-interface Customer {
-  id: number;
-  name: string;
-  country: Country;
-  company: string;
-  date: string;
-  status: string;
-  verified: boolean;
-  activity: number;
-  representative: Representative;
-  balance: number;
 }
