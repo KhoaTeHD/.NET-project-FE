@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -37,6 +37,12 @@ export class ManageProductComponent implements OnInit {
   product: ProductDto = {};
   variation: ProductVariationDto = {};
 
+  // process product images
+  avatarUrl: string | ArrayBuffer | null = null;
+  selectedFile: File | null = null;
+
+  productForm: FormGroup;
+
   ngOnInit(): void {
     this.loadProducts();
     this.loadSizes();
@@ -44,12 +50,66 @@ export class ManageProductComponent implements OnInit {
   }
 
   constructor(
+    private fb: FormBuilder,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private productService: ProductService,
     private productVariationService: ProductVariationService,
     private sizeService: SizeService,
-    private colorService: ColorService) { }
+    private colorService: ColorService) {
+      this.productForm = this.fb.group({
+        name: ['', Validators.required],
+        cat_Id: [null, Validators.required],
+        nat_Id: [null, Validators.required],
+        bra_Id: [null, Validators.required],
+        sup_Id: [null, Validators.required],
+        status: [true]
+      });
+     }
+
+  async onFileSelected(event: Event): Promise<void> {
+    const fileInput = event.target as HTMLInputElement;
+
+    if (fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+
+      // Kiểm tra định dạng file
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thất bại!',
+          detail: 'Chỉ chấp nhận file có định dạng JPEG hoặc PNG!',
+        });
+        return;
+      }
+
+      try {
+        // Đọc file và gán URL để hiển thị trước
+        this.avatarUrl = await this.readFileAsDataURL(file);
+
+        // Ghi nhận file được chọn
+        this.selectedFile = file;
+      } catch (error) {
+        console.error('Lỗi khi đọc file:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thất bại!',
+          detail: 'Lỗi đọc file!',
+        });
+      }
+    }
+  }
+
+  private readFileAsDataURL(file: File): Promise<string | ArrayBuffer | null> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => resolve(reader.result); // Trả về kết quả khi đọc xong
+      reader.onerror = (error) => reject(error);   // Xử lý lỗi nếu có
+
+      reader.readAsDataURL(file); // Bắt đầu đọc file
+    });
+  }
 
   showDialogProduct(action: string, product: ProductDto) {
     this.dialogTitle = action === 'Add' ? 'Thêm' : 'Chỉnh sửa';

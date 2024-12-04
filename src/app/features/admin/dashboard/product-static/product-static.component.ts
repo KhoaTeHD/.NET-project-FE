@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import Chart from 'chart.js/auto';
+import { OrderService } from '../../../../core/services/order.service';
+import { OrderDto } from '../../../../core/models/order.model';
+import { firstValueFrom } from 'rxjs';
+import { Chart } from 'chart.js/auto';
+import { CategoryDto } from '../../../../core/models/category.model';
+import { CategoryService } from '../../../../core/services/category.service';
 
 @Component({
   selector: 'app-product-static',
@@ -10,21 +15,74 @@ import Chart from 'chart.js/auto';
 })
 export class ProductStaticComponent implements OnInit {
   chart: any;
-  constructor() {}
+  orders: OrderDto[] = [];
+  categories: CategoryDto[] = [];
+
+  constructor(private orderService: OrderService, 
+    private categoryService: CategoryService
+  ) {}
 
   ngOnInit(): void {
-    this.renderChart();
+    this.loadOrders();
+    this.loadCategories();
   }
 
-  renderChart():void {
+  async loadOrders(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.orderService.getAllOrders());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.orders = data.result;
+        //console.log(this.orders);
+        this.calculateTopCategories();
+      }
+    } catch (error) {
+      console.error('Error fetching orders', error);
+    }
+  }
+  async loadCategories(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.categoryService.getAllCategorys());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.categories = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching categories', error);
+    }
+  }
+
+  calculateTopCategories(): void {
+    const categoryCount: { [key: string]: number } = {};
+
+    this.orders.forEach(order => {
+      order.detailOrders?.forEach(detail => {
+        const categoryName = this.categories.find(c => c.id === detail.productVariation?.product?.cat_Id)?.name;
+        if (categoryName) {
+          if (!categoryCount[categoryName]) {
+            categoryCount[categoryName] = 0;
+          }
+          categoryCount[categoryName] += detail.quantity ?? 0;
+        }
+      });
+    });
+
+    const sortedCategories = Object.entries(categoryCount).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const labels = sortedCategories.map(entry => entry[0]);
+    const data = sortedCategories.map(entry => entry[1]);
+
+    //console.log(labels);
+
+    this.renderChart(labels, data);
+  }
+
+  renderChart(labels: string[], data: number[]): void {
     const ctx = document.getElementById('myDoughnutChart') as HTMLCanvasElement;
     this.chart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Áo thun', 'Áo polo', 'Áo khoác', 'Quần đùi', 'Áo ba lỗ', 'Quần dài'],
+        labels: labels,
         datasets: [{
-          label: 'My Doughnut Dataset',
-          data: [12, 19, 3, 5, 2, 3],
+          label: 'Đã bán',
+          data: data,
           backgroundColor: [
             'rgba(255, 99, 132, 0.2)',
             'rgba(54, 162, 235, 0.2)',

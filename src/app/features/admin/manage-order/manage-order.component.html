@@ -67,8 +67,8 @@
                                 <td>{{ order.coupon_Code }}</td>
                                 <td>{{ order.address }}</td>
                                 <td>{{ order.datetime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td>{{ order.discount_amount | currency }}</td>
-                                <td>{{ order.total | currency }}</td>
+                                <td>{{ order.discount_amount | currency:'VND' }}</td>
+                                <td>{{ order.total | currency:'VND' }}</td>
                                 <td>{{ order.orderStatus }}</td>
                                 <td>
                                     <button pButton type="button" class="btn btn-dark" (click)="showDialog(order)">Xem</button>

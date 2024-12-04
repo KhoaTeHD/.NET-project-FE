@@ -3,7 +3,7 @@ import { AdminFooterComponent } from '../../../shared/components/admin-footer/ad
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
@@ -15,11 +15,12 @@ import { DialogModule } from 'primeng/dialog';
 import { ColorService } from '../../../core/services/color.service';
 import { firstValueFrom } from 'rxjs';
 import { ColorDto } from '../../../core/models/color.model';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-manage-color',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule, ReactiveFormsModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-color.component.html',
   styleUrl: './manage-color.component.css'
@@ -33,8 +34,10 @@ export class ManageColorComponent implements OnInit {
 
   clonedColors: { [id: number]: ColorDto } = {};
 
-
-  createColor: ColorDto = {};
+  createColorForm: FormGroup = new FormGroup({
+    name: new FormControl('', [Validators.required]),
+    status: new FormControl(true),
+  });
 
   searchValue: string = '';
 
@@ -53,7 +56,7 @@ export class ManageColorComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
-    this.createColor = { status: true };
+    this.createColorForm.reset({ status: true });
   }
 
   onRowEditInit(color: ColorDto) {
@@ -73,25 +76,6 @@ export class ManageColorComponent implements OnInit {
   onRowEditCancel(color: ColorDto, index: number) {
     this.colors[index] = this.clonedColors[color.id as number];
     delete this.clonedColors[color.id as number];
-  }
-
-  deleteColor(color: ColorDto) {
-    this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa ' + color.name + ' không?',
-      header: 'Xác nhận',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.colorService.deleteColor(color.id as number).subscribe({
-          next: () => {
-            this.colors = this.colors.filter((val) => val.id !== color.id);
-            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa màu sắc', life: 3000 });
-          },
-          error: () => {
-            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-          }
-        });
-      }
-    });
   }
 
   handleInput(event: Event, dt: any): void {
@@ -124,15 +108,20 @@ export class ManageColorComponent implements OnInit {
   }
 
   createNewColor(): void {
-    this.colorService.createColor(this.createColor).subscribe({
-      next: response => {
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Màu sắc đã được tạo' });
-        this.loadColors(); // Reload colors after creation
-      },
-      error: err => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-      }
-    });
+    if (this.createColorForm.valid) {
+      const newColor: ColorDto = this.createColorForm.value;
+      this.colorService.createColor(newColor).subscribe({
+        next: response => {
+          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Màu sắc đã được tạo' });
+          this.loadColors(); // Reload colors after creation
+        },
+        error: err => {
+          this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+        }
+      });
+    } else {
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin' });
+    }
   }
 
   editColor(color: ColorDto): void {

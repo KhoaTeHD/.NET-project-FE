@@ -3,7 +3,7 @@ import { AdminFooterComponent } from '../../../shared/components/admin-footer/ad
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
@@ -15,11 +15,12 @@ import { DialogModule } from 'primeng/dialog';
 import { CategoryService } from '../../../core/services/category.service';
 import { firstValueFrom } from 'rxjs';
 import { CategoryDto } from '../../../core/models/category.model';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-manage-category',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule, ReactiveFormsModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-category.component.html',
   styleUrl: './manage-category.component.css'
@@ -33,7 +34,11 @@ export class ManageCategoryComponent implements OnInit {
 
   clonedCategories: { [id: number]: CategoryDto } = {};
 
-  createCategory: CategoryDto = {};
+  createCategoryForm: FormGroup = new FormGroup({
+    name: new FormControl('', [Validators.required]),
+    description: new FormControl('', [Validators.required]),
+    status: new FormControl(true),
+  });
 
   searchValue: string = '';
 
@@ -48,11 +53,12 @@ export class ManageCategoryComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private categoryService: CategoryService) { }
+    private categoryService: CategoryService,
+    private fb: FormBuilder) { }
 
   showDialog() {
     this.visible = true;
-    this.createCategory = { status: true};
+    this.createCategoryForm.reset({ status: true });
   }
 
   onRowEditInit(category: CategoryDto) {
@@ -72,25 +78,6 @@ export class ManageCategoryComponent implements OnInit {
   onRowEditCancel(category: CategoryDto, index: number) {
     this.categories[index] = this.clonedCategories[category.id as number];
     delete this.clonedCategories[category.id as number];
-  }
-
-  deleteCategory(category: CategoryDto) {
-    this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa ' + category.name + ' không?',
-      header: 'Xác nhận',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.categoryService.deleteCategory(category.id as number).subscribe({
-          next: () => {
-            this.categories = this.categories.filter((val) => val.id !== category.id);
-            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa danh mục', life: 3000 });
-          },
-          error: () => {
-            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-          }
-        });
-      }
-    });
   }
 
   handleInput(event: Event, dt: any): void {
@@ -123,15 +110,20 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   createNewCategory(): void {
-    this.categoryService.createCategory(this.createCategory).subscribe({
-      next: response => {
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Danh mục đã được tạo' });
-        this.loadCategories(); // Reload categories after creation
-      },
-      error: err => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-      }
-    });
+    if (this.createCategoryForm.valid) {
+      const newCategory: CategoryDto = this.createCategoryForm.value;
+      this.categoryService.createCategory(newCategory).subscribe({
+        next: response => {
+          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Danh mục đã được tạo' });
+          this.loadCategories(); // Reload categories after creation
+        },
+        error: err => {
+          this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+        }
+      });
+    } else {
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin' });
+    }
   }
 
   editCategory(category: CategoryDto): void {

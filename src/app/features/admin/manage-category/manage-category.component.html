@@ -3,113 +3,125 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4">Danh mục</h1>
             <div class="mb-3 d-flex flex-row-reverse">
-                <button type="button" class="btn btn-dark" (click)="showDialog()">Thêm danh mục</button>
+                <button type="button" class="btn btn-dark" (click)="showDialog()">
+                    Thêm danh mục
+                </button>
             </div>
             <div class="card mb-4">
                 <p-toast></p-toast>
-                <p-confirmDialog></p-confirmDialog>
+                <p-confirmDialog />
                 <div class="card-body">
-                    <p-table #dt editMode="row" [value]="categories" dataKey="id" [paginator]="true" [rows]="10"
-                        [globalFilterFields]="['id', 'name', 'description', 'status']" [responsiveLayout]="'scroll'">
-                        <ng-template pTemplate="caption">
-                            <div class="d-flex">
-                                <span class="p-input-icon-left ml-auto">
-                                    <i class="pi pi-search"></i>
-                                    <input pInputText type="text" style="width: 200px;" (input)="handleInput($event, dt)" placeholder="Tìm kiếm" />
-                                </span>
-                            </div>
-                        </ng-template>
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th style="width:10%">ID</th>
-                                <th style="width:20%">Tên Danh Mục</th>
-                                <th style="width:30%">Mô Tả</th>
-                                <th style="width:20%">Trạng Thái</th>
-                                <th style="width:20%"></th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-category let-editing="editing" let-ri="rowIndex">
-                            <tr [pEditableRow]="category">
-                                <td>{{ category.id }}</td>
-                                <td>
-                                    <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="category.name" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{ category.name }}
-                                        </ng-template>
-                                    </p-cellEditor>
-                                </td>
-                                <td>
-                                    <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="category.description" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{ category.description }}
-                                        </ng-template>
-                                    </p-cellEditor>
-                                </td>
-                                <td>
-                                    <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <p-dropdown [options]="statuses" appendTo="body" [(ngModel)]="category.status" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            <p-tag [value]="category.status ? 'Hoạt động' : 'Ngừng bán' " [severity]="getSeverity(category.status)" />
-                                        </ng-template>
-                                    </p-cellEditor>
-                                </td>
-                                <td>
-                                    <div class="flex align-items-center justify-content-center gap-2">
-                                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
-                                            icon="pi pi-pencil" (click)="onRowEditInit(category)"
-                                            class="p-button-rounded p-button-text">
-                                        </button>
-                                        <button *ngIf="!editing" pButton pRipple type="button"
-                                            icon="pi pi-trash" (click)="deleteCategory(category)"
-                                            class="p-button-rounded p-button-text p-button-danger">
-                                        </button>
-                                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
-                                            icon="pi pi-check" (click)="onRowEditSave(category, ri)"
-                                            class="p-button-rounded p-button-text p-button-success mr-2">
-                                        </button>
-                                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
-                                            icon="pi pi-times" (click)="onRowEditCancel(category, ri)"
-                                            class="p-button-rounded p-button-text p-button-danger">
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
+                    <div class="card-body">
+                        <p-table #dt editMode="row" [value]="categories" dataKey="id" [paginator]="true" [rows]="10"
+                            [globalFilterFields]="['id', 'name', 'description', 'status']" [responsiveLayout]="'scroll'">
+                            <ng-template pTemplate="caption">
+                                <div class="d-flex">
+                                    <span class="p-input-icon-left ml-auto">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="width: 200px;"
+                                            (input)="handleInput($event, dt)" placeholder="Tìm kiếm" />
+                                    </span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width:10%">ID</th>
+                                    <th style="width:30%">Tên Danh Mục</th>
+                                    <th style="width:30%">Mô Tả</th>
+                                    <th style="width:10%">Trạng Thái</th>
+                                    <th style="width:20%"></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-category let-editing="editing" let-ri="rowIndex">
+                                <tr [pEditableRow]="category">
+                                    <td>
+                                        {{ category.id }}
+                                    </td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" [(ngModel)]="category.name" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{ category.name }}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" [(ngModel)]="category.description" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{ category.description }}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <p-dropdown [options]="statuses" appendTo="body"
+                                                    [(ngModel)]="category.status" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                <p-tag [value]="category.status ? 'Hoạt động' : 'Ngừng bán' "
+                                                    [severity]="getSeverity(category.status)" />
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                    <td>
+                                        <div class="flex align-items-center justify-content-center gap-2">
+                                            <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                                icon="pi pi-pencil" (click)="onRowEditInit(category)"
+                                                class="p-button-rounded p-button-text">
+                                            </button>
+                                            <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                                icon="pi pi-check" (click)="onRowEditSave(category, ri)"
+                                                class="p-button-rounded p-button-text p-button-success mr-2">
+                                            </button>
+                                            <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                                icon="pi pi-times" (click)="onRowEditCancel(category, ri)"
+                                                class="p-button-rounded p-button-text p-button-danger">
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
+
     <app-admin-footer></app-admin-footer>
 </div>
 
 <p-dialog header="Thêm danh mục" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }"
     styleClass="p-fluid">
-    <form (ngSubmit) = "createNewCategory()">
+    <form [formGroup]="createCategoryForm" (ngSubmit)="createNewCategory()">
         <div class="mb-4">
             <label for="name" class="form-label">Tên danh mục</label>
-            <input type="text" class="form-control" id="name" placeholder="Nhập tên" name="name" [(ngModel)]="createCategory.name">
+            <input type="text" class="form-control" id="name" placeholder="Nhập tên" formControlName="name">
+            <div *ngIf="createCategoryForm.controls['name'].invalid && (createCategoryForm.controls['name'].dirty || createCategoryForm.controls['name'].touched)" class="text-danger">
+                Tên danh mục không được để trống!
+            </div>
         </div>
         <div class="mb-4">
-            <label for="desc" class="form-label">Mô tả</label>
-            <textarea class="form-control" id="desc" placeholder="Nhập mô tả" name="desc" rows="3" [(ngModel)]="createCategory.description"></textarea>
+            <label for="description" class="form-label">Mô tả</label>
+            <textarea class="form-control" id="description" placeholder="Nhập mô tả" formControlName="description" rows="3"></textarea>
+            <div *ngIf="createCategoryForm.controls['description'].invalid && (createCategoryForm.controls['description'].dirty || createCategoryForm.controls['description'].touched)" class="text-danger">
+                Mô tả không được để trống!
+            </div>
         </div>
         <div class="mb-4">
-            <label class="form-check-label me-2" for="active">Trạng thái:</label>
-            <input class="form-check-input" type="radio" name="active" id="visible" [(ngModel)]="createCategory.status" [value]="true"> Hoạt động
-            <input class="form-check-input ms-2" type="radio" name="active" id="disable" [(ngModel)]="createCategory.status" [value]="false"> Ngừng bán
+            <label class="form-check-label me-2" for="status">Trạng thái:</label>
+            <input class="form-check-input" type="radio" name="status" [value]="true" formControlName="status"> Hoạt động
+            <input class="form-check-input ms-2" type="radio" name="status" [value]="false" formControlName="status"> Ngừng bán
         </div>
         <div class="d-flex justify-content-end gap-2 mt-4">
             <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />
-            <p-button label="Lưu" (onClick)="visible = false" type="submit" />
+            <p-button label="Lưu" (onClick)="visible = false" type="submit"/>
         </div>
     </form>
 </p-dialog>

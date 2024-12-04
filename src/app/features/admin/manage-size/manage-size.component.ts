@@ -3,7 +3,7 @@ import { AdminFooterComponent } from '../../../shared/components/admin-footer/ad
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
@@ -15,11 +15,12 @@ import { DialogModule } from 'primeng/dialog';
 import { SizeService } from '../../../core/services/size.service';
 import { firstValueFrom } from 'rxjs';
 import { SizeDto } from '../../../core/models/size.model';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-manage-size',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule, ReactiveFormsModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-size.component.html',
   styleUrl: './manage-size.component.css'
@@ -33,7 +34,11 @@ export class ManageSizeComponent implements OnInit {
 
   clonedSizes: { [id: number]: SizeDto } = {};
 
-  createSize: SizeDto = {};
+  createSizeForm: FormGroup = new FormGroup({
+    name: new FormControl('', [Validators.required]),
+    desc: new FormControl('', [Validators.required]),
+    status: new FormControl(true),
+  });
 
   searchValue: string = '';
 
@@ -48,11 +53,12 @@ export class ManageSizeComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private sizeService: SizeService) { }
+    private sizeService: SizeService,
+    private fb: FormBuilder) { }
 
   showDialog() {
     this.visible = true;
-    this.createSize = { status: true};
+    this.createSizeForm.reset({ status: true });
   }
 
   onRowEditInit(size: SizeDto) {
@@ -72,25 +78,6 @@ export class ManageSizeComponent implements OnInit {
   onRowEditCancel(size: SizeDto, index: number) {
     this.sizes[index] = this.clonedSizes[size.id as number];
     delete this.clonedSizes[size.id as number];
-  }
-
-  deleteSize(size: SizeDto) {
-    this.confirmationService.confirm({
-      message: 'Bạn có chắc xóa ' + size.name + ' không?',
-      header: 'Xác nhận',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.sizeService.deleteSize(size.id as number).subscribe({
-          next: () => {
-            this.sizes = this.sizes.filter((val) => val.id !== size.id);
-            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa kích thước', life: 3000 });
-          },
-          error: () => {
-            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-          }
-        });
-      }
-    });
   }
 
   handleInput(event: Event, dt: any): void {
@@ -123,15 +110,20 @@ export class ManageSizeComponent implements OnInit {
   }
 
   createNewSize(): void {
-    this.sizeService.createSize(this.createSize).subscribe({
-      next: response => {
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Kích thước đã được tạo' });
-        this.loadSizes(); // Reload sizes after creation
-      },
-      error: err => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-      }
-    });
+    if (this.createSizeForm.valid) {
+      const newSize: SizeDto = this.createSizeForm.value;
+      this.sizeService.createSize(newSize).subscribe({
+        next: response => {
+          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Kích thước đã được tạo' });
+          this.loadSizes(); // Reload sizes after creation
+        },
+        error: err => {
+          this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
+        }
+      });
+    } else {
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin' });
+    }
   }
 
   editSize(size: SizeDto): void {
