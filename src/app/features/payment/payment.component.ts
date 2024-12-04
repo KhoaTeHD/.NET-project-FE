@@ -5,7 +5,12 @@ import { HeaderComponent } from '../../shared/components/header/header.component
 import { CartService } from '../../core/services/cart.service';
 import { firstValueFrom, Observable } from 'rxjs';
 import { CanDeactivateGuard } from '../../guards/can-deactivate.guard';
-import { ActivatedRouteSnapshot, Router, RouterModule, RouterStateSnapshot } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  Router,
+  RouterModule,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { CanDeactivate } from '@angular/router';
 import { AddressDto } from '../../core/models/address.model';
 import { AddressService } from '../../core/services/address.service';
@@ -24,24 +29,45 @@ import { CartDto } from '../../core/models/cart.model';
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent, RouterModule, ToastModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HeaderComponent,
+    RouterModule,
+    ToastModule,
+  ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css',
   providers: [MessageService],
 })
-
-export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent> {
-
+export class PaymentComponent
+  implements OnInit, CanDeactivate<PaymentComponent>
+{
   paymentMethods = [
     { name: 'Thẻ ATM', icon: '../../../assets/images/payment/credit_card.png' },
-    { name: 'Thanh toán khi nhận hàng', icon: '../../../assets/images/payment/local_atm.png' },
-    { name: 'Ví điện tử Momo', icon: '../../../assets/images/payment/logo-momo-png-1.png' },
-    { name: 'Ví điện tử VNPAY', icon: '../../../assets/images/payment/vnpay_icon.png' },
-    { name: 'Internet banking', icon: '../../../assets/images/payment/account_balance.png' },
-    { name: 'QR Code', icon: '../../../assets/images/payment/qr_code_scanner.png' }
+    {
+      name: 'Thanh toán khi nhận hàng',
+      icon: '../../../assets/images/payment/local_atm.png',
+    },
+    {
+      name: 'Ví điện tử Momo',
+      icon: '../../../assets/images/payment/logo-momo-png-1.png',
+    },
+    {
+      name: 'Ví điện tử VNPAY',
+      icon: '../../../assets/images/payment/vnpay_icon.png',
+    },
+    {
+      name: 'Internet banking',
+      icon: '../../../assets/images/payment/account_balance.png',
+    },
+    {
+      name: 'QR Code',
+      icon: '../../../assets/images/payment/qr_code_scanner.png',
+    },
   ];
 
-  selectedMethodIndex: number = 0;  // Chọn mặc định phương thức đầu tiên
+  selectedMethodIndex: number = 0; // Chọn mặc định phương thức đầu tiên
   delivery: number = 30000; // Phí vận chuyển
   voucher: number = 0; // Giảm giá
 
@@ -55,15 +81,15 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
   errorMessage: string = ''; // Thông báo lỗi (nếu có)
   coupons: CouponDto[] = []; // Danh sách mã giảm giá
 
-  constructor(private cartService: CartService,
+  constructor(
+    private cartService: CartService,
     private router: Router,
     private addressService: AddressService,
     private tokenStorageService: TokenStorageService,
     private couponService: CouponService,
     private messageService: MessageService,
     private orderService: OrderService
-  ) { }
-
+  ) {}
 
   async ngOnInit() {
     this.checkedItems = this.cartService.getCheckedItems();
@@ -78,13 +104,20 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
     await this.loadCoupons();
   }
 
-
   selectMethod(index: number) {
     this.selectedMethodIndex = index;
   }
 
   totalAmount_temp() {
-    return this.checkedItems.reduce((total, item) => total + (item.productVariation.price - item.productVariation.price * item.productVariation.discount / 100) * item.quantity, 0);
+    return this.checkedItems.reduce(
+      (total, item) =>
+        total +
+        (item.productVariation.price -
+          (item.productVariation.price * item.productVariation.discount) /
+            100) *
+          item.quantity,
+      0
+    );
   }
 
   totalAmount() {
@@ -112,7 +145,7 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
     const targetUrl = nextState?.url || '';
     console.log('Target URL:', targetUrl);
 
-    const exemptUrls = ['record', 'shop'];
+    const exemptUrls = ['my-orders'];
     const isExempt = exemptUrls.some((url) => targetUrl.includes(url));
 
     if (!isExempt && component.hasUnsavedChanges()) {
@@ -131,7 +164,9 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
   async loadAddress(): Promise<void> {
     try {
       // Sử dụng firstValueFrom để lấy dữ liệu từ observable
-      const data = await firstValueFrom(this.addressService.getAddressesByCustomerId(this.user!.id));
+      const data = await firstValueFrom(
+        this.addressService.getAddressesByCustomerId(this.user!.id)
+      );
       if (data.isSuccess && Array.isArray(data.result)) {
         this.address_book = data.result;
       }
@@ -141,7 +176,7 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
   }
 
   getDefaulAddress(): AddressDto | null {
-    return this.address_book.find(address => address.isDefault) || null;
+    return this.address_book.find((address) => address.isDefault) || null;
   }
 
   selectAddress(address: AddressDto) {
@@ -156,13 +191,18 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
     }
 
     // Tìm mã giảm giá trong danh sách đã load
-    const selectedCoupon = this.coupons.find(coupon => coupon.coupon_Code === this.couponCode);
+    const selectedCoupon = this.coupons.find(
+      (coupon) => coupon.coupon_Code === this.couponCode
+    );
 
     if (selectedCoupon) {
       const now = new Date(); // Lấy ngày hiện tại
 
       // Kiểm tra ngày hết hạn
-      if (selectedCoupon.expirationDate && new Date(selectedCoupon.expirationDate) < now) {
+      if (
+        selectedCoupon.expirationDate &&
+        new Date(selectedCoupon.expirationDate) < now
+      ) {
         this.errorMessage = 'Mã giảm giá đã hết hạn.';
         return;
       }
@@ -175,7 +215,8 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
 
       if (selectedCoupon.discount !== undefined) {
         if (selectedCoupon.unit === '%') {
-          this.voucher = this.totalAmount_temp() * selectedCoupon.discount / 100;
+          this.voucher =
+            (this.totalAmount_temp() * selectedCoupon.discount) / 100;
         } else {
           this.voucher = selectedCoupon.discount;
         }
@@ -189,8 +230,6 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
       this.errorMessage = 'Mã giảm giá không hợp lệ.';
     }
   }
-
-
 
   // Xóa mã giảm giá
   removeCoupon(): void {
@@ -226,17 +265,28 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
       order_ID: 0,
       customer_ID: this.user?.id,
       coupon_Code: this.currentCoupon?.coupon_Code,
-      address: this.selectedAddress?.name + "#" +this.selectedAddress?.phone + "#" + this.selectedAddress?.addressLine + ", " + this.selectedAddress?.ward?.split('#')[1] + ", " + this.selectedAddress?.district?.split('#')[1] + ", " + this.selectedAddress?.province?.split('#')[1],
+      address:
+        this.selectedAddress?.name +
+        '#' +
+        this.selectedAddress?.phone +
+        '#' +
+        this.selectedAddress?.addressLine +
+        ', ' +
+        this.selectedAddress?.ward?.split('#')[1] +
+        ', ' +
+        this.selectedAddress?.district?.split('#')[1] +
+        ', ' +
+        this.selectedAddress?.province?.split('#')[1],
       datetime: new Date(),
       discount_amount: this.voucher,
       total: this.totalAmount_temp(),
       formOfPayment: this.paymentMethods[this.selectedMethodIndex].name,
       shipping_Charge: this.delivery,
-      orderStatus: "Chờ xác nhận",
+      orderStatus: 'Chờ xác nhận',
       detailOrders: [],
     };
 
-    this.checkedItems.forEach(item => {
+    this.checkedItems.forEach((item) => {
       newOrder.detailOrders?.push({
         order_ID: 0,
         product_ID: item.productVariation.id,
@@ -278,5 +328,4 @@ export class PaymentComponent implements OnInit, CanDeactivate<PaymentComponent>
       }
     }
   }
-
 }
