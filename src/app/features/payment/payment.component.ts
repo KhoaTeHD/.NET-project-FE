@@ -176,7 +176,11 @@ export class PaymentComponent
   }
 
   getDefaulAddress(): AddressDto | null {
-    return this.address_book.find((address) => address.isDefault) || null;
+    if (this.address_book.length === 0) {
+      return null;
+    } else {
+      return this.address_book.find((address) => address.isDefault) || this.address_book[0];
+    }
   }
 
   selectAddress(address: AddressDto) {
