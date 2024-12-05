@@ -30,6 +30,7 @@
                         <option>Tất cả</option>
                         <option>Chờ xác nhận</option>
                         <option>Đã xác nhận</option>
+                        <option>Đã thanh toán</option>
                         <option>Đang giao</option>
                         <option>Đã giao</option>
                         <option>Đã hủy</option>
@@ -133,7 +134,7 @@
                     </div>
                     <div class="flex-fill card p-2 ms-2">
                         <div class="row">
-                            <p class="col-6">Tạm tính ({{selectedOrder.detailOrders?.length || 0}} sản phẩm)</p>
+                            <p class="col-6">Tạm tính</p>
                             <p class="col-6 text-end">{{selectedOrder.total | currency:"VND"}} đ</p>
                         </div>
                         <div class="row">

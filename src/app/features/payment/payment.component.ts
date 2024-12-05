@@ -25,6 +25,8 @@ import Swal from 'sweetalert2';
 import { OrderService } from '../../core/services/order.service';
 import { OrderDto } from '../../core/models/order.model';
 import { CartDto } from '../../core/models/cart.model';
+import { loadScript, PayPalScriptOptions } from '@paypal/paypal-js';
+import { PaymentService } from '../../core/services/payment.service';
 
 @Component({
   selector: 'app-payment',
@@ -41,8 +43,7 @@ import { CartDto } from '../../core/models/cart.model';
   providers: [MessageService],
 })
 export class PaymentComponent
-  implements OnInit, CanDeactivate<PaymentComponent>
-{
+  implements OnInit, CanDeactivate<PaymentComponent> {
   paymentMethods = [
     { name: 'Thẻ ATM', icon: '../../../assets/images/payment/credit_card.png' },
     {
@@ -88,8 +89,9 @@ export class PaymentComponent
     private tokenStorageService: TokenStorageService,
     private couponService: CouponService,
     private messageService: MessageService,
-    private orderService: OrderService
-  ) {}
+    private orderService: OrderService,
+    private paymentService: PaymentService
+  ) { }
 
   async ngOnInit() {
     this.checkedItems = this.cartService.getCheckedItems();
@@ -102,6 +104,9 @@ export class PaymentComponent
     await this.loadAddress();
     this.selectedAddress = this.getDefaulAddress();
     await this.loadCoupons();
+    await this.initPayPalButton();
+    console.log('Exchange rate:', await this.paymentService.getExchangeRate());
+    console.log(this.checkedItems);
   }
 
   selectMethod(index: number) {
@@ -114,8 +119,8 @@ export class PaymentComponent
         total +
         (item.productVariation.price -
           (item.productVariation.price * item.productVariation.discount) /
-            100) *
-          item.quantity,
+          100) *
+        item.quantity,
       0
     );
   }
@@ -255,16 +260,7 @@ export class PaymentComponent
     }
   }
 
-  async placeAnOrder(): Promise<void> {
-    const result = await Swal.fire({
-      title: 'Thanh toán',
-      text: 'Bạn có chắc chắn muốn thanh toán đơn hàng này?',
-      icon: 'info',
-      showCancelButton: true,
-      cancelButtonText: 'Hủy',
-      confirmButtonText: 'Chấp nhận',
-    });
-
+  async placeAnOrder(formOfPayment: string, orderStatus: string): Promise<void> {
     const newOrder: OrderDto = {
       order_ID: 0,
       customer_ID: this.user?.id,
@@ -284,9 +280,9 @@ export class PaymentComponent
       datetime: new Date(),
       discount_amount: this.voucher,
       total: this.totalAmount_temp(),
-      formOfPayment: this.paymentMethods[this.selectedMethodIndex].name,
+      formOfPayment: formOfPayment,
       shipping_Charge: this.delivery,
-      orderStatus: 'Chờ xác nhận',
+      orderStatus: orderStatus,
       detailOrders: [],
     };
 
@@ -295,41 +291,150 @@ export class PaymentComponent
         order_ID: 0,
         product_ID: item.productVariation.id,
         quantity: item.quantity,
-        unit_Price: item.price,
+        unit_Price: item.productVariation.price - (item.productVariation.price * item.productVariation.discount) / 100,
       });
     });
 
     console.log('New order:', newOrder);
+    try {
+      this.orderService.createOrder(newOrder).subscribe({
+        next: async (response) => {
+          for (const item of this.checkedItems) {
+            console.log('Deleting item with ID:', item.item_Id);
+            await firstValueFrom(this.cartService.deleteCart(item.item_Id));
+          }
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Thành công!',
+            detail: 'Thanh toán đơn hàng thành công!',
+          });
+          setTimeout(() => {
+            this.router.navigate(['my-orders'], { replaceUrl: true });
+          }, 1500);
+        },
+        error: (err) => {
+          console.error('Error when canceling order:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Thất bại!',
+            detail: 'Thanh toán đơn hàng thất bại!',
+          });
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-    if (result.isConfirmed) {
-      try {
-        this.orderService.createOrder(newOrder).subscribe({
-          next: async (response) => {
-            for (const item of this.checkedItems) {
-              console.log('Deleting item with ID:', item.item_Id);
-              await firstValueFrom(this.cartService.deleteCart(item.item_Id));
+  async confirmPlaceAnOrder(formOfPayment: string, orderStatus: string): Promise<void> {
+    const result = await Swal.fire({
+      title: 'Thanh toán',
+      text: 'Bạn có chắc chắn muốn thanh toán đơn hàng này?',
+      icon: 'info',
+      showCancelButton: true,
+      cancelButtonText: 'Hủy',
+      confirmButtonText: 'Chấp nhận',
+    });
+    if(result.isConfirmed){
+      this.placeAnOrder(formOfPayment, orderStatus);
+    }
+  }
+
+  //Thanh toán Paypal
+  async convertVNDToUSD(amountInVND: number): Promise<number> {
+    const exchangeRate = await this.paymentService.getExchangeRate(); // Gọi hàm lấy tỷ giá từ service
+    return parseFloat((amountInVND / exchangeRate).toFixed(2)); // Chuyển đổi và làm tròn 2 chữ số thập phân
+  }
+
+  async initPayPalButton(): Promise<void> {
+    try {
+      const scriptOptions: any = {
+        'client-id': 'Acn9sqBS8UeLZ3nOuiTKLo1ztImm3UI_bRofbYT2NgSbtGuaikQFStMBT8dr30Q0MOVeW18Gj2rI9w15', // Client ID
+        currency: 'USD',
+      };
+
+
+      // Tải PayPal SDK
+      const paypal = await loadScript(scriptOptions);
+
+      // Kiểm tra SDK đã được tải hay chưa
+      if (!paypal) {
+        console.error('PayPal SDK failed to load.');
+        return;
+      }
+
+      if (typeof paypal.Buttons !== 'function') {
+        console.error('PayPal Buttons API is not available.');
+        return;
+      }
+
+      // Khởi tạo và render nút PayPal
+      paypal.Buttons({
+        fundingSource: paypal?.FUNDING?.['PAYPAL'], // Chỉ hiển thị nút PayPal (màu vàng)
+        style: {
+          layout: 'vertical', // Layout của nút
+          color: 'gold', // Màu sắc của nút
+          shape: 'rect', // Hình dạng của nút
+          label: 'paypal', // Nhãn của nút
+          height: 40, // Chiều cao của nút (giá trị hợp lệ: 25 - 55)
+        },
+        // Tạo đơn hàng
+        createOrder: async (data, actions) => {
+          // Chuyển đổi từ VNĐ sang USD
+          const amountInUSD = await this.convertVNDToUSD(this.totalAmount());
+          console.log('total:', this.totalAmount());
+          console.log('Amount in USD:', amountInUSD);
+
+          return actions.order.create({
+            intent: 'CAPTURE',
+            purchase_units: [
+              {
+                amount: {
+                  currency_code: 'USD',
+                  value: (await amountInUSD).toFixed(2), // Chuyển thành chuỗi và làm tròn 2 chữ số thập phân
+                },
+              },
+            ],
+          });
+        },
+
+        onApprove: async (data, actions) => {
+          if (!actions.order) {
+            console.error('Order actions are not available.');
+            return;
+          }
+          try {
+            // Capture the transaction
+            const details = await actions.order.capture();
+
+            if (details.payer && details.payer.name) {
+              console.log('Transaction completed by', details.payer.name.given_name);
+
+              this.placeAnOrder('Thanh toán bằng Ví Paypal', 'Đã thanh toán'); // Gọi hàm thanh toán
+            } else {
+              console.log('Transaction completed');
             }
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Thành công!',
-              detail: 'Thanh toán đơn hàng thành công!',
-            });
-            setTimeout(() => {
-              this.router.navigate(['my-orders'], { replaceUrl: true });
-            }, 500);
-          },
-          error: (err) => {
-            console.error('Error when canceling order:', err);
+          } catch (error) {
+            console.error('Error capturing the transaction:', error);
+
+            // Hiển thị thông báo lỗi
             this.messageService.add({
               severity: 'error',
-              summary: 'Thất bại!',
-              detail: 'Thanh toán đơn hàng thất bại!',
+              summary: 'Lỗi!',
+              detail: 'Có lỗi xảy ra khi xử lý thanh toán.',
             });
-          },
-        });
-      } catch (error) {
-        console.error(error);
-      }
+          }
+        },
+
+
+        // Xử lý lỗi khi thanh toán
+        onError: (err) => {
+          console.error('Error during PayPal payment:', err);
+          alert('Đã xảy ra lỗi trong quá trình thanh toán!');
+        },
+      }).render('#paypal-button-container'); // Render nút vào container
+    } catch (error) {
+      console.error('Error initializing PayPal button:', error);
     }
   }
 }

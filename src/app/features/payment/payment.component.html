@@ -134,8 +134,9 @@
                 <!-- Hiển thị thông báo lỗi -->
                 <p *ngIf="errorMessage" style="color: red; margin-top: -8px; padding-left: 41px;">{{ errorMessage }}</p>
 
-                <div class="d-flex justify-content-center btn-payment-container" style="margin: 16px 40px;">
-                    <button class="btn btn-dark" style="width: 100%;" (click)="placeAnOrder()">Thanh toán</button>
+                <div class="d-flex justify-content-center btn-payment-container row" style="margin: 16px 40px;">
+                    <div id="paypal-button-container" class="col-12 px-0 mb-2"></div>
+                    <button class="btn btn-dark col-12" style="width: 100%;" (click)="confirmPlaceAnOrder(paymentMethods[selectedMethodIndex].name, 'Chờ xác nhận')">Thanh toán</button>
                 </div>
             </div>
         </div>
