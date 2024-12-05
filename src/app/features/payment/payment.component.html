@@ -18,7 +18,7 @@
                 <div class="divided-section"></div>
 
                 <div class="pb-0" style="padding: 16px 16px 16px 0;">
-                    <p class="me-3">{{selectedAddress!.name}} - {{selectedAddress!.phone}} -
+                    <p *ngIf="selectedAddress" class="me-3">{{selectedAddress!.name}} - {{selectedAddress!.phone}} -
                         {{selectedAddress!.addressLine}}, {{ selectedAddress!.ward!.split('#')[1]}},
                         {{ selectedAddress!.district!.split('#')[1]}},
                         {{ selectedAddress!.province!.split('#')[1]}}&nbsp;
@@ -26,6 +26,9 @@
                         <a class="text-decoration" data-bs-toggle="modal" data-bs-target="#myModal">
                             Thay đổi
                         </a>
+                    </p>
+                    <p *ngIf="!selectedAddress" class="text-decoration">
+                        Vui lòng thêm một địa chỉ nhận hàng
                     </p>
                 </div>
 
