@@ -24,7 +24,6 @@ export class ProductStaticComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrders();
-    this.loadCategories();
   }
 
   async loadOrders(): Promise<void> {
@@ -32,6 +31,7 @@ export class ProductStaticComponent implements OnInit {
       const data = await firstValueFrom(this.orderService.getAllOrders());
       if (data.isSuccess && Array.isArray(data.result)) {
         this.orders = data.result;
+        await this.loadCategories();
         //console.log(this.orders);
         this.calculateTopCategories();
       }
@@ -68,8 +68,6 @@ export class ProductStaticComponent implements OnInit {
     const sortedCategories = Object.entries(categoryCount).sort((a, b) => b[1] - a[1]).slice(0, 6);
     const labels = sortedCategories.map(entry => entry[0]);
     const data = sortedCategories.map(entry => entry[1]);
-
-    //console.log(labels);
 
     this.renderChart(labels, data);
   }

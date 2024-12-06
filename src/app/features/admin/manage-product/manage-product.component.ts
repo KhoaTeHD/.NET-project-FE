@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -18,11 +18,15 @@ import { ProductVariationDto } from '../../../core/models/productVariation.model
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SizeService } from '../../../core/services/size.service';
 import { ColorService } from '../../../core/services/color.service';
+import { SupplierService } from '../../../core/services/supplier.service';
+import { NationService } from '../../../core/services/nation.service';
+import { BrandService } from '../../../core/services/brand.service';
+import { CategoryService } from '../../../core/services/category.service';
 
 @Component({
   selector: 'app-manage-product',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, ButtonModule, DialogModule, FormsModule, ToastModule, ConfirmDialogModule, DropdownModule, InputNumberModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, ButtonModule, DialogModule, FormsModule, ToastModule, ConfirmDialogModule, DropdownModule, InputNumberModule, ReactiveFormsModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-product.component.html',
   styleUrl: './manage-product.component.css'
@@ -31,6 +35,10 @@ export class ManageProductComponent implements OnInit {
   products: ProductDto[] = [];
   colors: any[] = [];
   sizes: any[] = [];
+  categories: any[] = [];
+  nations: any[] = [];
+  brands: any[] = [];
+  suppliers: any[] = [];
   visibleDialogProduct: boolean = false;
   visibleDialogVariation: boolean = false;
   dialogTitle: string = '';
@@ -42,14 +50,23 @@ export class ManageProductComponent implements OnInit {
   selectedFile: File | null = null;
 
   productForm: FormGroup;
+  variationForm: FormGroup;
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadSizes();
     this.loadColors();
+    this.loadCategories();
+    this.loadNations();
+    this.loadBrands();
+    this.loadSuppliers();
   }
 
   constructor(
+    private supplierService: SupplierService,
+    private nationService: NationService,
+    private brandService: BrandService,
+    private categoryService: CategoryService,
     private fb: FormBuilder,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
@@ -57,15 +74,42 @@ export class ManageProductComponent implements OnInit {
     private productVariationService: ProductVariationService,
     private sizeService: SizeService,
     private colorService: ColorService) {
-      this.productForm = this.fb.group({
-        name: ['', Validators.required],
-        cat_Id: [null, Validators.required],
-        nat_Id: [null, Validators.required],
-        bra_Id: [null, Validators.required],
-        sup_Id: [null, Validators.required],
-        status: [true]
-      });
-     }
+      this.productForm = this.createProductForm();
+      this.variationForm = this.createVariationForm();
+    }
+
+  private initializeForms(): void {
+    this.productForm.reset();
+    this.variationForm.reset();
+  }
+
+  private createProductForm(): FormGroup {
+    return this.fb.group({
+      id: [{ value: 0, disabled: true }],
+      name: ['', Validators.required],
+      cat_Id: [null, Validators.required],
+      nat_Id: [null, Validators.required],
+      bra_Id: [null, Validators.required],
+      sup_Id: [null, Validators.required],
+      status: [true]
+    });
+  }
+
+  private createVariationForm(): FormGroup {
+    return this.fb.group({
+      id: [{ value: null, disabled: true }],
+      pro_Id: [{ value: 0, disabled: true }],
+      col_Id: [null, Validators.required],
+      siz_Id: [null, Validators.required],
+      discount: [0, Validators.min(0)],
+      price: [null, Validators.required],
+      importPrice: [null, Validators.required],
+      quantity: [{ value: 0, disabled: true }],
+      status: [true],
+      pic: ['', Validators.required], // Thêm trường pic
+      desc: ['', Validators.required]
+    });
+  }
 
   async onFileSelected(event: Event): Promise<void> {
     const fileInput = event.target as HTMLInputElement;
@@ -113,15 +157,23 @@ export class ManageProductComponent implements OnInit {
 
   showDialogProduct(action: string, product: ProductDto) {
     this.dialogTitle = action === 'Add' ? 'Thêm' : 'Chỉnh sửa';
-    this.product = { ...product };
-    if(action === 'Add') {this.product.id = undefined; this.product.status = true;}
+    if (action === 'Add') {
+      this.productForm.reset({ status: true }); // Reset và set trạng thái mặc định
+
+    } else {
+      this.productForm.patchValue(product); // Gán giá trị vào form
+    }
     this.visibleDialogProduct = true;
   }
 
   showDialogVariation(action: string, variation: ProductVariationDto) {
     this.dialogTitle = action === 'Add' ? 'Thêm' : 'Chỉnh sửa';
-    this.variation = { ...variation };
-    console.log(this.variation);
+    if (action === 'Add') {
+      this.variationForm.reset({ status: true }); // Reset và set trạng thái mặc định
+    } else {
+      this.variationForm.patchValue(variation); // Gán giá trị vào form
+      //console.log(this.variationForm);
+    }
     this.visibleDialogVariation = true;
   }
 
@@ -196,8 +248,57 @@ export class ManageProductComponent implements OnInit {
     }
   }
 
+  async loadCategories(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.categoryService.getAllCategorys());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.categories = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching categories', error);
+    }
+  }
+
+  async loadNations(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.nationService.getAllNations());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.nations = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching nations', error);
+    }
+  }
+
+  async loadBrands(): Promise<void> {
+    try {
+      // Sử dụng firstValueFrom để lấy dữ liệu từ observable
+      const data = await firstValueFrom(this.brandService.getAllBrands());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.brands = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching brands', error);
+    }
+  }
+
+  async loadSuppliers(): Promise<void> {
+    try {
+      // Sử dụng firstValueFrom để lấy dữ liệu từ observable
+      const data = await firstValueFrom(this.supplierService.getAllSuppliers());
+      if (data.isSuccess && Array.isArray(data.result)) {
+        this.suppliers = data.result;
+      }
+    } catch (error) {
+      console.error('Error fetching suppliers', error);
+    }
+  }
+
   createNewProduct(): void {
-    this.productService.createProduct(this.product).subscribe({
+    if(this.productForm.invalid) return;
+
+    const productData = this.productForm.getRawValue();
+    this.productService.createProduct(productData).subscribe({
       next: response => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Sản phẩm đã được tạo' });
         this.loadProducts(); // Reload products after creation
@@ -210,7 +311,10 @@ export class ManageProductComponent implements OnInit {
   }
 
   editProduct(): void {
-    this.productService.updateProduct(this.product).subscribe({
+    if(this.productForm.invalid) return;
+    const productData = this.productForm.getRawValue();
+
+    this.productService.updateProduct(productData).subscribe({
       next: response => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Sản phẩm đã được cập nhật' });
         this.loadProducts(); // Reload products after update
@@ -223,28 +327,29 @@ export class ManageProductComponent implements OnInit {
   }
 
   createNewVariation(): void {
-    console.log(this.variation);
-    this.productVariationService.createProductVariation(this.variation).subscribe({
-      next: response => {
+    if (this.variationForm.invalid) return;
+    const variationData = this.variationForm.getRawValue(); // Lấy dữ liệu từ form
+    this.productVariationService.createProductVariation(variationData).subscribe({
+      next: () => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Biến thể đã được tạo' });
         this.loadProducts(); // Reload products after creation
+        this.visibleDialogVariation = false;
       },
-      error: err => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-      }
-    });
+      error: () => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' })
+    }); 
     this.visibleDialogVariation = false;
   }
 
   editVariation(): void {
-    this.productVariationService.updateProductVariation(this.variation).subscribe({
-      next: response => {
+    if (this.variationForm.invalid) return;
+    const variationData = this.variationForm.getRawValue(); // Lấy dữ liệu từ form
+    this.productVariationService.updateProductVariation(variationData).subscribe({
+      next: () => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Biến thể đã được cập nhật' });
         this.loadProducts(); // Reload products after update
+        this.visibleDialogVariation = false;
       },
-      error: err => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' });
-      }
+      error: () => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra!' })
     });
     this.visibleDialogVariation = false;
   }

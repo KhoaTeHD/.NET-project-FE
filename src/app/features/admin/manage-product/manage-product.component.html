@@ -103,12 +103,12 @@
 
                     <ng-template pTemplate="body" let-variation>
                       <tr>
-                        <td>{{ variation.id }}</td>
-                        <td>{{ variation.color.name }}</td>
-                        <td>{{ variation.size.name }}</td>
-                        <td>{{ variation.price | currency : "VND" }}</td>
-                        <td>{{ variation.quantity }}</td>
-                        <td>{{ variation.discount }}%</td>
+                        <td>{{ variation?.id }}</td>
+                        <td>{{ variation?.color?.name }}</td>
+                        <td>{{ variation?.size?.name }}</td>
+                        <td>{{ variation?.price | currency : "VND" }}</td>
+                        <td>{{ variation?.quantity }}</td>
+                        <td>{{ variation?.discount }}%</td>
                         <td>
                           {{ variation.status ? "Hoạt động" : "Ngừng bán" }}
                         </td>
@@ -154,37 +154,24 @@
   [(visible)]="visibleDialogProduct"
   [style]="{ width: '50rem', height: '30rem' }"
   styleClass="p-fluid"
+  [formGroup]="productForm"
 >
-  <!-- <div class="mb-4">
-    <label for="id" class="form-label">Mã sản phẩm</label>
-    <input type="text" class="form-control" [(ngModel)]="product.id" id="id" name="id" disabled>
-  </div>
-  <div class="mb-4">
-    <label for="name" class="form-label">Tên sản phẩm</label>
-    <input type="text" class="form-control" [(ngModel)]="product.name" id="name" placeholder="Nhập tên" name="name">
-  </div>
-  <div class="mb-4">
-    <label class="form-check-label me-2" for="active">Trạng thái:</label>
-    <input class="form-check-input" type="radio" name="active" id="visible" [(ngModel)]="product.status" [value]="true"> Hoạt động
-    <input class="form-check-input ms-2" type="radio" name="active" id="disable" [(ngModel)]="product.status" [value]="false"> Ngừng bán
-  </div> -->
   <div class="row m-2">
     <div class="col-md-4 mb-4">
       <label for="id" class="form-label">Mã sản phẩm</label>
       <input
         type="text"
         class="form-control"
-        [(ngModel)]="product.id"
+        formControlName="id"
         id="id"
         name="id"
-        disabled
       />
     </div>
     <div class="col-md-4 mb-4">
       <label for="col_Id" class="form-label">Danh mục</label>
       <p-dropdown
-        [(ngModel)]="product.cat_Id"
-        [options]="colors"
+        formControlName="cat_Id"
+        [options]="categories"
         placeholder="Chọn danh mục"
         optionValue="id"
         optionLabel="name"
@@ -194,8 +181,8 @@
     <div class="col-md-4 mb-4">
       <label for="col_Id" class="form-label">Xuất xứ</label>
       <p-dropdown
-        [(ngModel)]="product.nat_Id"
-        [options]="colors"
+        formControlName="nat_Id"
+        [options]="nations"
         placeholder="Chọn xuất xứ"
         optionValue="id"
         optionLabel="name"
@@ -207,7 +194,7 @@
       <input
         type="text"
         class="form-control"
-        [(ngModel)]="product.name"
+        formControlName="name"
         id="name"
         placeholder="Nhập tên"
         name="name"
@@ -216,8 +203,8 @@
     <div class="col-md-4 mb-4">
       <label for="col_Id" class="form-label">Thương hiệu</label>
       <p-dropdown
-        [(ngModel)]="product.bra_Id"
-        [options]="colors"
+        formControlName="bra_Id"
+        [options]="brands"
         placeholder="Chọn thương hiệu"
         optionValue="id"
         optionLabel="name"
@@ -227,32 +214,30 @@
     <div class="col-md-4 mb-4">
       <label for="col_Id" class="form-label">Nhà cung cấp</label>
       <p-dropdown
-        [(ngModel)]="product.sup_Id"
-        [options]="colors"
+        formControlName="sup_Id"
+        [options]="suppliers"
         placeholder="Chọn nhà cung cấp"
-        optionValue="id"
-        optionLabel="name"
+        optionValue="supplier_ID"
+        optionLabel="supplierName"
       >
       </p-dropdown>
     </div>
 
     <div class="col-md-6 mb-5">
-      <label class="form-check-label me-2" for="active">Trạng thái:</label>
+      <label class="form-check-label me-2" for="status">Trạng thái:</label>
       <input
         class="form-check-input"
         type="radio"
-        name="active"
-        id="visible"
-        [(ngModel)]="product.status"
+        name="status"
+        formControlName="status"
         [value]="true"
       />
       Hoạt động
       <input
         class="form-check-input ms-2"
         type="radio"
-        name="active"
-        id="disable"
-        [(ngModel)]="product.status"
+        name="status"
+        formControlName="status"
         [value]="false"
       />
       Ngừng bán
@@ -279,72 +264,66 @@
   [(visible)]="visibleDialogVariation"
   [style]="{ width: '55rem' }"
   styleClass="p-fluid"
+  [formGroup]="variationForm"
 >
   <div id="variationsContainer">
     <div class="variation-item mb-3">
-      <!-- <div class="col-1 divided-section d-none d-md-block"></div> -->
-      <div class="row d-flex justify-content-center align-items-center">
-        <div class="ms-4 col-md-4 col-avatar">
-          <div class="d-flex align-items-center flex-column">
-            <div class="avatar">
-              <!-- Hiển thị ảnh đã upload hoặc ảnh mặc định -->
-              <img
-                width="100%"
-                [src]="
-                  avatarUrl || '../../../../assets/images/record/avatar.png'
-                "
-                alt="avatar"
-                class="right-hand-side-avatar"
-                style="object-fit: cover"
-              />
-            </div>
-            <!-- Nút chọn ảnh -->
-            <label
-              for="choose-pic"
-              class="border p-1 mt-3 mb-2 rounded-2"
-              style="cursor: pointer"
-              >Chọn Ảnh</label
-            >
-            <input
-              type="file"
-              name="choose-pic"
-              id="choose-pic"
-              (change)="onFileSelected($event)"
-              hidden
+      <!-- Hiển thị ảnh và chọn file -->
+      <div class="row d-flex justify-content-center align-items-center mb-4">
+        <div class="col-md-4">
+          <div class="avatar">
+            <!-- Hiển thị ảnh đã chọn hoặc ảnh mặc định -->
+            <img
+              [src]="variationForm.get('pic')?.value || '../../../../assets/images/record/avatar.png'"
+              alt="Preview"
+              style="width: 100%; height: auto; object-fit: cover;"
             />
-            <p class="format-pic-title">Định dạng: .JPEG, .PNG</p>
           </div>
+          <!-- Nút chọn ảnh -->
+          <label
+            for="choose-pic"
+            class="btn btn-secondary mt-3"
+            style="cursor: pointer;"
+          >
+            Chọn Ảnh
+          </label>
+          <input
+            type="file"
+            id="choose-pic"
+            (change)="onFileSelected($event)"
+            hidden
+          />
+          <p class="text-muted mt-1">Định dạng: .JPEG, .PNG</p>
         </div>
       </div>
 
+      <!-- Các thông tin khác của biến thể -->
       <div class="row">
         <div class="col-md-4">
           <label for="col_Id" class="form-label">Màu sắc</label>
           <p-dropdown
-            [(ngModel)]="variation.col_Id"
+            formControlName="col_Id"
             [options]="colors"
             placeholder="Chọn màu sắc"
             optionValue="id"
             optionLabel="name"
-          >
-          </p-dropdown>
+          ></p-dropdown>
         </div>
         <div class="col-md-4">
           <label for="siz_Id" class="form-label">Kích thước</label>
           <p-dropdown
-            [(ngModel)]="variation.siz_Id"
+            formControlName="siz_Id"
             [options]="sizes"
             placeholder="Chọn kích thước"
             optionValue="id"
             optionLabel="name"
-          >
-          </p-dropdown>
+          ></p-dropdown>
         </div>
         <div class="col-md-4">
           <label for="discount" class="form-label">Khuyến mãi</label>
           <input
             type="number"
-            [(ngModel)]="variation.discount"
+            formControlName="discount"
             class="form-control"
             name="discount"
           />
@@ -353,30 +332,29 @@
           <label for="price" class="form-label">Đơn giá</label>
           <p-inputNumber
             inputId="price"
-            [(ngModel)]="variation.price"
+            formControlName="price"
             mode="currency"
             currency="VND"
             locale="vi-VN"
-          />
+          ></p-inputNumber>
         </div>
         <div class="col-md-4 mt-3">
           <label for="import_price" class="form-label">Giá nhập</label>
           <p-inputNumber
             inputId="import_price"
-            [(ngModel)]="variation.importPrice"
+            formControlName="importPrice"
             mode="currency"
             currency="VND"
             locale="vi-VN"
-          />
+          ></p-inputNumber>
         </div>
         <div class="col-md-4 mt-3">
           <label for="quantity" class="form-label">Số lượng</label>
           <input
             type="number"
-            [(ngModel)]="variation.quantity"
+            formControlName="quantity"
             class="form-control"
             name="quantity"
-            disabled
           />
         </div>
         <div class="col-md-4 mt-3">
@@ -384,7 +362,7 @@
             <input
               class="form-check-input"
               type="checkbox"
-              [(ngModel)]="variation.status"
+              formControlName="status"
               name="status"
             />
             <label class="form-check-label" for="status"> Hoạt động </label>
@@ -398,12 +376,13 @@
       label="Hủy"
       severity="secondary"
       (onClick)="visibleDialogVariation = false"
-    />
+    ></p-button>
     <p-button
       label="Lưu"
       (onClick)="
         dialogTitle === 'Thêm' ? createNewVariation() : editVariation()
       "
-    />
+    ></p-button>
   </div>
 </p-dialog>
+
