@@ -210,6 +210,43 @@ formatDateToYYYYMMDD(date: Date): string {
         return undefined;
     }
   }
+
+  updateTotals() {
+    // Tính tổng tiền cho mỗi chi tiết và tổng tiền toàn bộ
+    if (this.selectedGoodsReceipt.detailGoodsReceipts) {
+        this.selectedGoodsReceipt.total = this.selectedGoodsReceipt.detailGoodsReceipts
+            .reduce((acc, detail) => acc + ((detail.quantity ?? 0) * (detail.unit_Price ?? 0)), 0);
+    }
+  }
+
+  saveGoodsReceipt() {
+    this.goodsReceiptService.createGoodsReceipt(this.selectedGoodsReceipt).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.messageService.add({severity:'success', summary: 'Thành công', detail: 'Phiếu nhập đã được lưu.'});
+          this.visible = false;
+          this.getAllGoodsReceipts();
+        } else {
+          this.messageService.add({severity:'error', summary: 'Lỗi', detail: response.message || 'Lưu phiếu nhập thất bại.'});
+        }
+      },
+      error: (err) => {
+        this.messageService.add({severity:'error', summary: 'Lỗi', detail: 'Có lỗi xảy ra khi lưu phiếu nhập.'});
+        console.error(err);
+      }
+    });
+  }
+
+  getAllGoodsReceipts() {
+    this.goodsReceiptService.getAllGoodsReceipts().subscribe(response => {
+      if (response.isSuccess) {
+        if (response.result) {
+          this.goodsReceipts = response.result;
+        }
+      }
+    });
+  }
+
 }
 
 
@@ -217,3 +254,4 @@ interface AutoCompleteCompleteEvent {
   originalEvent: Event;
   query: string;
 }
+

@@ -15,12 +15,12 @@ import { DialogModule } from 'primeng/dialog';
 import { firstValueFrom } from 'rxjs';
 import { CouponDto } from '../../../core/models/coupon.model';
 import { CouponService } from '../../../core/services/coupon.service';
-
+import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'app-manage-coupon',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule, CalendarModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-coupon.component.html',
   styleUrl: './manage-coupon.component.css'
@@ -78,13 +78,25 @@ export class ManageCouponComponent implements OnInit {
     this.clonedCoupons[coupon.coupon_Code as string] = { ...coupon };
   }
 
-  onRowEditSave(coupon: CouponDto, index: number) {
+  async onRowEditSave(coupon: CouponDto, index: number) {
     if (coupon.couponName?.trim().length !== 0) {
-      //this.editSupplier(coupon);
-      delete this.clonedCoupons[coupon.coupon_Code as string];
+      try {
+        const response = await firstValueFrom(this.couponService.updateCoupon(coupon));
+        if (response.isSuccess && response.result) {
+          this.coupons[index] = response.result;
+          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật mã giảm giá thành công', life: 3000 });
+          delete this.clonedCoupons[coupon.coupon_Code as string];
+        } else {
+          throw new Error('Cập nhật thất bại');
+        }
+      } catch (error) {
+        this.coupons[index] = this.clonedCoupons[coupon.coupon_Code as string];
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật mã giảm giá', life: 3000 });
+        console.error('Error updating coupon', error);
+      }
     } else {
       this.coupons[index] = this.clonedCoupons[coupon.coupon_Code as string];
-      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ', life: 3000 });
     }
   }
 
@@ -116,5 +128,27 @@ export class ManageCouponComponent implements OnInit {
     }
   }
 
+  async saveCoupon(): Promise<void> {
+    try {
+      const response = await firstValueFrom(this.couponService.createCoupon(this.createCoupon));
+      if (response.isSuccess) {
+        if (response.result) {
+          this.coupons.push(response.result);
+        }
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm mã giảm giá', life: 3000 });
+        this.visible = false;
+      } else {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm mã giảm giá', life: 3000 });
+      }
+    } catch (error) {
+      console.error('Error creating coupon', error);
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm mã giảm giá', life: 3000 });
+    }
+  }
+
+  unitOptions = [
+    { label: '%', value: '%' },
+    { label: 'nghìn đồng', value: 'nghìn đồng' }
+  ];
 
 }
