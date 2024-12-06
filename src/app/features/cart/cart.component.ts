@@ -22,7 +22,7 @@ import { ToastModule } from 'primeng/toast';
     FooterComponent,
     CommonModule,
     FormsModule,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css'],
@@ -37,7 +37,7 @@ export class CartComponent implements OnInit {
     private cookieService: CookieService,
     private tokenStorageService: TokenStorageService,
     protected router: Router,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit() {
@@ -108,6 +108,28 @@ export class CartComponent implements OnInit {
       this.updateItemPrice(item, {
         target: { value: item.quantity },
       } as unknown as Event);
+
+      console.log(item);
+
+      const userId = this.tokenStorageService.getUser()?.id;
+      if (userId) {
+        const cartDto: CartDto = {
+          item_Id: item.item_Id,
+          cus_Id: userId,
+          price: item.price,
+          quantity: item.quantity,
+          productVariation: item.productVariation,
+        };
+
+        this.cartService.updateCart(cartDto).subscribe({
+          next: (response) => {
+            console.log('Cart updated successfully', response);
+          },
+          error: (error) => {
+            console.error('Error updating cart', error);
+          },
+        });
+      }
     }
   }
 
@@ -122,6 +144,27 @@ export class CartComponent implements OnInit {
       this.updateItemPrice(item, {
         target: { value: item.quantity },
       } as unknown as Event);
+      console.log(item);
+
+      const userId = this.tokenStorageService.getUser()?.id;
+      if (userId) {
+        const cartDto: CartDto = {
+          item_Id: item.item_Id,
+          cus_Id: userId,
+          price: item.price,
+          quantity: item.quantity,
+          productVariation: item.productVariation,
+        };
+
+        this.cartService.updateCart(cartDto).subscribe({
+          next: (response) => {
+            console.log('Cart updated successfully', response);
+          },
+          error: (error) => {
+            console.error('Error updating cart', error);
+          },
+        });
+      }
     }
   }
 
@@ -155,7 +198,7 @@ export class CartComponent implements OnInit {
 
   checkout() {
     const checkedItems = this.cartItems.filter((item) => item.status);
-    if(checkedItems.length === 0) {
+    if (checkedItems.length === 0) {
       this.messageService.add({
         severity: 'info',
         summary: 'Thông báo',

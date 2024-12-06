@@ -45,7 +45,7 @@ export class SignUpComponent {
       Validators.required,
       Validators.minLength(8),
       Validators.maxLength(20),
-      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{1,}$/) // Yêu cầu chữ hoa, chữ thường và ký tự đặc biệt
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,20}$/)
     ]),
     re_password: new FormControl('', [Validators.required]),
   }, { validators: mustMatch('password', 're_password') });

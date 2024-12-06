@@ -22,10 +22,12 @@ export class SignInComponent {
   isLoading: boolean = false;
   loginF: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required,
-    Validators.minLength(8),
-    Validators.maxLength(20),
-    Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{1,}$/)])
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(20),
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,20}$/)
+    ])
   });
 
   constructor(

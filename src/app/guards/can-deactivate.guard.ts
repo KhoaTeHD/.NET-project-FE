@@ -13,9 +13,7 @@ import { CartService } from '../core/services/cart.service';
   providedIn: 'root',
 })
 export class CanDeactivateGuard implements CanDeactivate<PaymentComponent> {
-
-    constructor(private cartService: CartService) {}
-
+  constructor(private cartService: CartService) {}
 
   canDeactivate(
     component: PaymentComponent,
@@ -26,7 +24,7 @@ export class CanDeactivateGuard implements CanDeactivate<PaymentComponent> {
     const targetUrl = nextState?.url || '';
     console.log('Target URL:', targetUrl);
 
-    const exemptUrls = ['record', 'shop'];
+    const exemptUrls = ['my-orders'];
     const isExempt = exemptUrls.some((url) => targetUrl.includes(url));
 
     if (!isExempt && component.hasUnsavedChanges()) {
@@ -38,6 +36,7 @@ export class CanDeactivateGuard implements CanDeactivate<PaymentComponent> {
       }
       return confirmLeave;
     }
+
     return true;
   }
 }

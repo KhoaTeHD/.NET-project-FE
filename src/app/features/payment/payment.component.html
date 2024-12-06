@@ -1,3 +1,5 @@
+<!-- Toast sẽ hiển thị ở đây trong 1s, mặc định là top-right -->
+<p-toast [life]="1000"></p-toast>
 <app-header />
 <div class="container" style="margin-top: 80px;">
     <div class="payment-container-parent">
@@ -16,7 +18,45 @@
                 <div class="divided-section"></div>
 
                 <div class="pb-0" style="padding: 16px 16px 16px 0;">
-                    <p class="me-3">Võ Quang Đăng Khoa - 0907604514 - 273 An Dương Vương, P3, Q5, TP Hồ Chí Minh&nbsp; <a href="">Thay đổi</a></p>
+                    <p *ngIf="selectedAddress" class="me-3">{{selectedAddress!.name}} - {{selectedAddress!.phone}} -
+                        {{selectedAddress!.addressLine}}, {{ selectedAddress!.ward!.split('#')[1]}},
+                        {{ selectedAddress!.district!.split('#')[1]}},
+                        {{ selectedAddress!.province!.split('#')[1]}}&nbsp;
+                        <!-- Button to Open the Modal -->
+                        <a class="text-decoration" data-bs-toggle="modal" data-bs-target="#myModal">
+                            Thay đổi
+                        </a>
+                    </p>
+                    <p *ngIf="!selectedAddress" class="text-decoration">
+                        Vui lòng thêm một địa chỉ nhận hàng
+                    </p>
+                </div>
+
+                <!-- The Modal -->
+                <div class="modal" id="myModal">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <!-- Modal body -->
+                            <div class="modal-body px-4 mx-4">
+                                <div class="form-check my-4" *ngFor="let address of address_book; let i = index">
+                                    <input type="radio" class="form-check-input" id="radio{{i}}" name="optradio"
+                                        [value]="address" (change)="selectAddress(address)"
+                                        [checked]="selectedAddress === address"
+                                        style="cursor: pointer;">{{address.name}} - {{address.phone}} -
+                                    {{address.addressLine}}, {{ address!.ward!.split('#')[1]}},
+                                    {{ address!.district!.split('#')[1]}},
+                                    {{ address!.province!.split('#')[1]}}
+                                    <label class="form-check-label" for="radio1"></label>
+                                </div>
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">OK</button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
 
                 <div class="divided-section"></div>
@@ -28,7 +68,8 @@
 
                 <div style="padding: 16px 32px;" class="method-container">
                     <div class="row justify-content-between">
-                        <div class="col-4 col-sm-4 col-md-3 card-item" *ngFor="let method of paymentMethods; let i = index"
+                        <div class="col-4 col-sm-4 col-md-3 card-item"
+                            *ngFor="let method of paymentMethods; let i = index"
                             [ngClass]="{'selected-method': selectedMethodIndex === i}" (click)="selectMethod(i)">
                             <div class="text-center">
                                 <img [src]="method.icon" class="my-2" style="height: 20px;" />
@@ -41,8 +82,10 @@
 
                 <div class="divided-section"></div>
 
-                <div class="row justify-content-between align-items-center coupon-container" style="padding: 16px 40px;">
-                    <p class="col-4 col-sm-4 col-md-3 text-center mb-0 mx-2" style="background-color: #ccc; border-radius: 20px;">
+                <!-- <div class="row justify-content-between align-items-center coupon-container"
+                    style="padding: 16px 40px;">
+                    <p class="col-4 col-sm-4 col-md-3 text-center mb-0 mx-2"
+                        style="background-color: #ccc; border-radius: 20px;">
                         Mừng lễ 20/4
                     </p>
                     <div class="col-1" style="cursor: pointer;">
@@ -58,26 +101,63 @@
                             <button class="btn btn-dark btn-apply">Áp dụng</button>
                         </div>
                     </div>
+                </div> -->
+
+                <div class="row justify-content-between align-items-center coupon-container"
+                    style="padding: 16px 40px;">
+                    <!-- Mã giảm giá đã áp dụng -->
+                    <p *ngIf="currentCoupon" class="col-4 col-sm-4 col-md-3 text-center mb-0 mx-2"
+                        style="background-color: #ccc; border-radius: 20px;">
+                        {{ currentCoupon.coupon_Code }}
+                    </p>
+                    <!-- Xóa mã giảm giá -->
+                    <div *ngIf="currentCoupon" class="col-1" style="cursor: pointer;" (click)="removeCoupon()">
+                        <i class="fa-solid fa-trash-can" style="font-size: 14px;"></i>
+                    </div>
+                    <!-- Hiển thị giảm giá -->
+                    <p *ngIf="currentCoupon" class="col-5 col-sm-5 col-md-2 text-center mb-0" style="color: #F03B13;">
+                        -{{ voucher | currency:"VND" }} đ
+                    </p>
+                    <!-- Nhập mã giảm giá -->
+                    <div *ngIf="!currentCoupon"
+                        class="col-md-6 row align-items-center justify-content-between input-coupon-container">
+                        <div class="col-7">
+                            <input type="text" class="form-control" [(ngModel)]="couponCode"
+                                placeholder="Nhập mã giảm giá" />
+                        </div>
+                        <div class="col-5">
+                            <button class="btn btn-dark btn-apply" (click)="applyCoupon()">Áp dụng</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-flex justify-content-center btn-payment-container" style="margin: 16px 40px;">
-                    <button class="btn btn-dark" style="width: 100%;">Thanh toán</button>
+                <!-- Hiển thị thông báo lỗi -->
+                <p *ngIf="errorMessage" style="color: red; margin-top: -8px; padding-left: 41px;">{{ errorMessage }}</p>
+
+                <div class="d-flex justify-content-center btn-payment-container row" style="margin: 16px 40px;">
+                    <div id="paypal-button-container" class="col-12 px-0 mb-2"></div>
+                    <button class="btn btn-dark col-12" style="width: 100%;" (click)="confirmPlaceAnOrder(paymentMethods[selectedMethodIndex].name, 'Chờ xác nhận')">Thanh toán</button>
                 </div>
             </div>
         </div>
         <div class="payment-container right">
             <p class="bg-dark text-light infor-payment-title mb-0">Danh sách sản phẩm</p>
-            <div class="row payment-container-left-below" >
+            <div class="row payment-container-left-below">
                 <div class="scrollable-products">
                     <div class="row mt-4" *ngFor="let item of checkedItems">
                         <div class="col-2 d-flex align-items-center justify-content-center">
-                            <img width="100%" [src]="item.productVariation?.pic" alt="áo mẫu" style="height: 60px; width: 60px;">
+                            <img width="100%" [src]="item.productVariation?.pic" alt="áo mẫu"
+                                style="height: 60px; width: 60px;">
                         </div>
                         <div class="col-10">
-                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">{{item.productVariation?.product?.name}}</p>
+                            <p class="mb-0" style="font-weight: 500; color: rgba(0, 0, 0, 0.7);">
+                                {{item.productVariation?.product?.name}}</p>
                             <div class="row" style="font-size: 14px; margin-top: 12px;">
-                                <p class="col-7 mb-0">{{item.productVariation?.color?.name}},{{item.productVariation?.size?.name}}</p>
-                                <p class="col-5 mb-0" style="color: #F03B13;">{{item.productVariation?.price - (item.productVariation?.price * item.productVariation?.discount / 100) | currency : "VND" : "symbol"}} x {{item.quantity}}</p>
+                                <p class="col-7 mb-0">
+                                    {{item.productVariation?.color?.name}},{{item.productVariation?.size?.name}}</p>
+                                <p class="col-5 mb-0" style="color: #F03B13;">{{item.productVariation?.price -
+                                    (item.productVariation?.price * item.productVariation?.discount / 100) | currency :
+                                    "VND" : "symbol"}} x {{item.quantity}}</p>
                             </div>
                         </div>
                     </div>
@@ -93,19 +173,22 @@
 
                     <div class="row px-2 py-3">
                         <p class="col-6 mb-0" style="font-weight: 500;">Phí vận chuyển:</p>
-                        <p class="col-6 mb-0 text-end" style="color: #184AFA;">+ {{delivery | currency : "VND" : "symbol"}}</p>
+                        <p class="col-6 mb-0 text-end" style="color: #184AFA;">+ {{delivery | currency : "VND" :
+                            "symbol"}}</p>
                     </div>
 
                     <div class="row px-2 pb-3">
                         <p class="col-6 mb-0" style="font-weight: 500;">Tổng khuyến mãi:</p>
-                        <p class="col-6 mb-0 text-end" style="color: #F03B13;">- {{voucher | currency : "VND" : "symbol"}}</p>
+                        <p class="col-6 mb-0 text-end" style="color: #F03B13;">- {{voucher | currency : "VND" :
+                            "symbol"}}</p>
                     </div>
 
                     <div class="divided-section"></div>
 
                     <div class="row px-2 mt-3">
                         <p class="col-6 mb-0" style="font-weight: 500;">Tổng thanh toán:</p>
-                        <p class="col-6 mb-0 text-end" style="color: green; font-weight: 500;">{{totalAmount() | currency : "VND" : "symbol"}}</p>
+                        <p class="col-6 mb-0 text-end" style="color: green; font-weight: 500;">{{totalAmount() |
+                            currency : "VND" : "symbol"}}</p>
                     </div>
                 </div>
             </div>

@@ -3,8 +3,8 @@ import { SidebarPersonalInfoComponent } from '../../../shared/components/sidebar
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
-import { OrderDto } from '../../../core/models/order_v2.model';
-import { firstValueFrom } from 'rxjs';
+import { OrderDto } from '../../../core/models/order.model';
+import { firstValueFrom, Observable } from 'rxjs';
 import { OrderService } from '../../../core/services/order.service';
 import { UserDto } from '../../../core/models/auth/user-dto.model';
 import { TokenStorageService } from '../../../core/services/auth/token-storage.service';
@@ -12,16 +12,24 @@ import { MessageService } from 'primeng/api'; // Import MessageService
 import { ToastModule } from 'primeng/toast';
 // npm install sweetalert2
 import Swal from 'sweetalert2';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanDeactivate } from '@angular/router';
 
 @Component({
   selector: 'app-my-orders',
   standalone: true,
-  imports: [SidebarPersonalInfoComponent, CommonModule, FormsModule, HeaderComponent, ToastModule],
+  imports: [
+    SidebarPersonalInfoComponent,
+    CommonModule,
+    FormsModule,
+    HeaderComponent,
+    ToastModule,
+  ],
   templateUrl: './my-orders.component.html',
   styleUrl: './my-orders.component.css',
   providers: [MessageService],
 })
-export class MyOrdersComponent {
+export class MyOrdersComponent implements CanDeactivate<MyOrdersComponent> {
   orderList: OrderDto[] = [];
   user: UserDto | null = null;
   filteredOrders: OrderDto[] = [];
@@ -29,15 +37,16 @@ export class MyOrdersComponent {
   selectedOrder: OrderDto = {
     order_ID: 0,
     customer_ID: '',
-    coupon_Code: 0,
-    address: "",
+    coupon_Code: '',
+    address: '',
     datetime: new Date(),
     discount_amount: 0,
     total: 0,
-    orderStatus: "",
+    orderStatus: '',
+    formOfPayment: '',
+    shipping_Charge: 0,
     detailOrders: [],
   };
-  
 
   constructor(
     private orderService: OrderService,
@@ -47,8 +56,8 @@ export class MyOrdersComponent {
 
   async ngOnInit() {
     this.user = this.tokenStorageService.getUser();
-    
-    if(this.user) {
+
+    if (this.user) {
       await this.loadOrders();
     }
   }
@@ -65,15 +74,23 @@ export class MyOrdersComponent {
     if (status === 'Tất cả') {
       this.filteredOrders = [...this.orderList]; // Hiện tất cả đơn hàng
     } else {
-      this.filteredOrders = this.orderList.filter(order => order.orderStatus === status);
+      this.filteredOrders = this.orderList.filter(
+        (order) => order.orderStatus === status
+      );
     }
   }
 
   async loadOrders(): Promise<void> {
     try {
-      const data = await firstValueFrom(this.orderService.getOrdersByCustomerId(this.user!.id));
+      const data = await firstValueFrom(
+        this.orderService.getOrdersByCustomerId(this.user!.id)
+      );
       if (data.isSuccess && Array.isArray(data.result)) {
-        this.orderList = data.result;
+        this.orderList = data.result.sort((a, b) => {
+          const dateA = a.datetime ? new Date(a.datetime).getTime() : 0; // Gán giá trị 0 nếu undefined
+          const dateB = b.datetime ? new Date(b.datetime).getTime() : 0; // Gán giá trị 0 nếu undefined
+          return dateB - dateA; // Sắp xếp giảm dần
+        });
       }
     } catch (error) {
       console.error('Error fetching orders', error);
@@ -116,5 +133,25 @@ export class MyOrdersComponent {
         console.error(error);
       }
     }
+  }
+
+  canDeactivate(
+    component: MyOrdersComponent,
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState?: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    const targetUrl = nextState?.url || '';
+    console.log('Target URL:', targetUrl);
+
+    const exemptUrls = ['my-orders', 'address-book'];
+    const isExempt = exemptUrls.some((url) => targetUrl.includes(url));
+
+    return true;
+  }
+
+  hasUnsavedChanges(): boolean {
+    // Implement your logic to check for unsaved changes
+    return true; // Example return value
   }
 }
