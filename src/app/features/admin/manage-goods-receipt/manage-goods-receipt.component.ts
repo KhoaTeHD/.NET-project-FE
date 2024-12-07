@@ -19,6 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { SupplierService } from '../../../core/services/supplier.service';
 import { ProductVariationService } from '../../../core/services/productVariation.service';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-manage-goods-receipt',
@@ -48,7 +49,7 @@ export class ManageGoodsReceiptComponent implements OnInit {
 
   DialogTitle: string = 'Thêm';
 
-  constructor(private messageService: MessageService, private confirmationService: ConfirmationService,
+  constructor(private productService: ProductService, private messageService: MessageService, private confirmationService: ConfirmationService,
     private goodsReceiptService: GoodsReceiptService, private supplierService: SupplierService, private productVariationService: ProductVariationService
   ) { }
 
@@ -230,11 +231,16 @@ formatDateToYYYYMMDD(date: Date): string {
       this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng chọn nhà cung cấp' });
       return;
     }
-    console.log(this.selectedGoodsReceipt);
     this.goodsReceiptService.createGoodsReceipt(this.selectedGoodsReceipt).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           this.messageService.add({severity:'success', summary: 'Thành công', detail: 'Phiếu nhập đã được lưu.'});
+          this.selectedGoodsReceipt.detailGoodsReceipts?.forEach((detail) => {
+            if (detail.product_ID !== undefined && detail.quantity !== undefined) {
+              this.updateQuantity(detail.product_ID, detail.quantity);
+            }
+          });
+
           this.visible = false;
           this.loadReceipts();
         } else {
@@ -247,23 +253,36 @@ formatDateToYYYYMMDD(date: Date): string {
     });
   }
 
-  UpdateReceipt(){
-    this.goodsReceiptService.updateGoodsReceipt(this.selectedGoodsReceipt).subscribe({
+  // UpdateReceipt(){
+  //   this.goodsReceiptService.updateGoodsReceipt(this.selectedGoodsReceipt).subscribe({
+  //     next: (response) => {
+  //       if (response.isSuccess) {
+  //         this.messageService.add({severity:'success', summary: 'Thành công', detail: 'Phiếu nhập đã được lưu.'});
+  //         this.visible = false;
+  //         this.loadReceipts();
+  //       } else {
+  //         this.messageService.add({severity:'error', summary: 'Lỗi', detail: response.message || 'Lưu phiếu nhập thất bại.'});
+  //       }
+  //     },
+  //     error: (err) => {
+  //       this.messageService.add({severity:'error', summary: 'Lỗi', detail: 'Có lỗi xảy ra khi lưu phiếu nhập.'});
+  //       //console.error(err);
+  //     }
+  //   });
+  // }
+
+  updateQuantity(id: number, quantity: number): boolean {
+    let result = false;
+    this.productVariationService.addProductQuantity(id, quantity).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          this.messageService.add({severity:'success', summary: 'Thành công', detail: 'Phiếu nhập đã được lưu.'});
-          this.visible = false;
-          this.loadReceipts();
-        } else {
-          this.messageService.add({severity:'error', summary: 'Lỗi', detail: response.message || 'Lưu phiếu nhập thất bại.'});
+          result = true;
         }
-      },
-      error: (err) => {
-        this.messageService.add({severity:'error', summary: 'Lỗi', detail: 'Có lỗi xảy ra khi lưu phiếu nhập.'});
-        //console.error(err);
       }
     });
+    return result;
   }
+
 }
 
 

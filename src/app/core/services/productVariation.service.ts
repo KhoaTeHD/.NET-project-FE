@@ -36,4 +36,12 @@ export class ProductVariationService {
   deleteProductVariation(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
   }
+
+  addProductQuantity(id: number, quantity: number): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(`${this.baseUrl}/addQuantity/${id}/${quantity}`, null);
+  }
+
+  subProductQuantity(id: number, quantity: number): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(`${this.baseUrl}/subQuantity/${id}/${quantity}`, null);
+  }
 }
