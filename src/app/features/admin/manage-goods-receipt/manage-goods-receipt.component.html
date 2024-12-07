@@ -147,18 +147,22 @@
                 <td>{{ detail.product_ID }}</td>
                 <td class=" text-truncate" style="max-width: 270px;">{{ detail.productVariation?.product?.name }}</td>
                 <td>{{ detail.unit_Price | currency:'VND'  }}</td>
-                <td>
+                <td *ngIf="DialogTitle === 'Thêm'">
                     <p-inputNumber  
                         [(ngModel)]="detail.quantity" 
                         (ngModelChange)="updateTotals()" 
                         [min]="1"
                     />
                 </td>
+                <td *ngIf="DialogTitle !== 'Thêm'">
+                    {{ detail.quantity }}
+                </td>
                 <td>{{ (detail.quantity ?? 0) * (detail.unit_Price ?? 0) | currency:'VND' }}</td>
             </tr>
         </tbody>
     </table>
     <div class="d-flex justify-content-end gap-2 mt-4">
-        <p-button label="Lưu" (onClick)=" DialogTitle === 'Thêm' ? saveGoodsReceipt() : UpdateReceipt()" />
+        <p-button *ngIf="DialogTitle === 'Thêm'" label="Lưu" (onClick)="saveGoodsReceipt()" />
+        <p-button *ngIf="DialogTitle !== 'Thêm'" label="Đóng" severity="secondary" (onClick)="visible = false" />
     </div>
 </p-dialog>
