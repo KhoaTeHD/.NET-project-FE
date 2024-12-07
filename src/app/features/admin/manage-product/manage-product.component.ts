@@ -22,6 +22,7 @@ import { SupplierService } from '../../../core/services/supplier.service';
 import { NationService } from '../../../core/services/nation.service';
 import { BrandService } from '../../../core/services/brand.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { CloudinaryService } from '../../../core/upload_images/upload_image';
 
 @Component({
   selector: 'app-manage-product',
@@ -46,7 +47,7 @@ export class ManageProductComponent implements OnInit {
   variation: ProductVariationDto = {};
 
   // process product images
-  avatarUrl: string | ArrayBuffer | null = null;
+  imgUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
 
   productForm: FormGroup;
@@ -63,6 +64,7 @@ export class ManageProductComponent implements OnInit {
   }
 
   constructor(
+    private cloudService: CloudinaryService,
     private supplierService: SupplierService,
     private nationService: NationService,
     private brandService: BrandService,
@@ -97,7 +99,7 @@ export class ManageProductComponent implements OnInit {
 
   private createVariationForm(): FormGroup {
     return this.fb.group({
-      id: [{ value: null, disabled: true }],
+      id: [{ value: 0, disabled: true }],
       pro_Id: [{ value: 0, disabled: true }],
       col_Id: [null, Validators.required],
       siz_Id: [null, Validators.required],
@@ -106,7 +108,7 @@ export class ManageProductComponent implements OnInit {
       importPrice: [null, Validators.required],
       quantity: [{ value: 0, disabled: true }],
       status: [true],
-      pic: ['', Validators.required], // Thêm trường pic
+      pic: [''], // Thêm trường pic
       desc: ['', Validators.required]
     });
   }
@@ -129,12 +131,12 @@ export class ManageProductComponent implements OnInit {
 
       try {
         // Đọc file và gán URL để hiển thị trước
-        this.avatarUrl = await this.readFileAsDataURL(file);
+        this.imgUrl = await this.readFileAsDataURL(file);
 
         // Ghi nhận file được chọn
         this.selectedFile = file;
       } catch (error) {
-        console.error('Lỗi khi đọc file:', error);
+        //console.error('Lỗi khi đọc file:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Thất bại!',
@@ -167,12 +169,17 @@ export class ManageProductComponent implements OnInit {
   }
 
   showDialogVariation(action: string, variation: ProductVariationDto) {
-    this.dialogTitle = action === 'Add' ? 'Thêm' : 'Chỉnh sửa';
+    this.dialogTitle = (action === 'Add' ? 'Thêm' : 'Chỉnh sửa');
     if (action === 'Add') {
-      this.variationForm.reset({ status: true }); // Reset và set trạng thái mặc định
+      this.createVariationForm(); // Reset form
+      this.variationForm.get('pro_Id')?.patchValue(variation.pro_Id); // Gán giá trị pro_Id vào form
+      this.variationForm.get('col_Id')?.patchValue(variation.col_Id); // Gán giá trị col_Id vào form
+      this.variationForm.get('siz_Id')?.patchValue(variation.siz_Id); // Gán giá trị siz_Id vào form
+      
+      this.imgUrl = null;
     } else {
       this.variationForm.patchValue(variation); // Gán giá trị vào form
-      //console.log(this.variationForm);
+      this.imgUrl = variation.pic ?? null; // Hiển thị ảnh đã có
     }
     this.visibleDialogVariation = true;
   }
@@ -326,9 +333,15 @@ export class ManageProductComponent implements OnInit {
     this.visibleDialogProduct = false;
   }
 
-  createNewVariation(): void {
+  async createNewVariation(): Promise<void> {
     if (this.variationForm.invalid) return;
     const variationData = this.variationForm.getRawValue(); // Lấy dữ liệu từ form
+
+    await this.saveImage();
+    variationData.pic = this.imgUrl as string; // Gán URL ảnh vào dữ liệu biến thể
+
+    console.log(variationData);
+
     this.productVariationService.createProductVariation(variationData).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Biến thể đã được tạo' });
@@ -340,9 +353,13 @@ export class ManageProductComponent implements OnInit {
     this.visibleDialogVariation = false;
   }
 
-  editVariation(): void {
+  async editVariation(): Promise<void> {
     if (this.variationForm.invalid) return;
     const variationData = this.variationForm.getRawValue(); // Lấy dữ liệu từ form
+
+    await this.saveImage();
+    variationData.pic = this.imgUrl as string; // Gán URL ảnh vào dữ liệu biến thể
+
     this.productVariationService.updateProductVariation(variationData).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Biến thể đã được cập nhật' });
@@ -354,5 +371,27 @@ export class ManageProductComponent implements OnInit {
     this.visibleDialogVariation = false;
   }
 
-  
+  saveImage(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const folder = 'user_avatar'; // Thư mục Cloudinary
+      const publicId = `product_${this.variationForm.value.id}_${Date.now()}`; // Tên định danh duy nhất
+
+      this.cloudService
+        .uploadImage(this.selectedFile!, folder, publicId)
+        .then((result) => {
+          // Cập nhật URL ảnh sau khi upload
+          this.imgUrl = this.cloudService.getOptimizedImageUrl(result.public_id, {});
+          resolve(); // Báo hiệu hoàn tất
+        })
+        .catch((error) => {
+          console.error('Lỗi khi lưu ảnh:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Thất bại!',
+            detail: 'Lỗi xảy ra khi lưu ảnh!',
+          });
+          reject(error); // Báo hiệu lỗi
+        });
+    });
+  }
 }

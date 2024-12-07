@@ -71,14 +71,6 @@
                       (click)="showDialogProduct('Edit', product)"
                       class="p-button-rounded p-button-text"
                     ></button>
-                    <button
-                      pButton
-                      pRipple
-                      type="button"
-                      icon="pi pi-trash"
-                      (click)="deleteProduct(product)"
-                      class="p-button-rounded p-button-text p-button-danger"
-                    ></button>
                   </div>
                 </td>
               </tr>
@@ -123,14 +115,6 @@
                               icon="pi pi-pencil"
                               (click)="showDialogVariation('Edit', variation)"
                               class="p-button-rounded p-button-text"
-                            ></button>
-                            <button
-                              pButton
-                              pRipple
-                              type="button"
-                              icon="pi pi-trash"
-                              (click)="deleteVariation(variation)"
-                              class="p-button-rounded p-button-text p-button-danger"
                             ></button>
                           </div>
                         </td>
@@ -251,6 +235,7 @@
     />
     <p-button
       label="Lưu"
+      [disabled]="productForm.invalid"
       (onClick)="dialogTitle === 'Thêm' ? createNewProduct() : editProduct()"
     />
   </div>
@@ -274,9 +259,9 @@
           <div class="avatar">
             <!-- Hiển thị ảnh đã chọn hoặc ảnh mặc định -->
             <img
-              [src]="variationForm.get('pic')?.value || '../../../../assets/images/record/avatar.png'"
+              [src]="imgUrl || '../../../../assets/images/record/avatar.png'"
               alt="Preview"
-              style="width: 100%; height: auto; object-fit: cover;"
+              class="right-hand-side-avatar"
             />
           </div>
           <!-- Nút chọn ảnh -->
@@ -357,6 +342,11 @@
             name="quantity"
           />
         </div>
+        <div class="col-md-12">
+          <label for="desc" class="form-label">Mô tả</label>
+          <textarea id="desc" formControlName="desc" class="form-control" rows="4"
+            placeholder="Nhập mô tả"></textarea>
+        </div>
         <div class="col-md-4 mt-3">
           <div class="form-check">
             <input
@@ -379,6 +369,7 @@
     ></p-button>
     <p-button
       label="Lưu"
+      [disabled]="variationForm.invalid"
       (onClick)="
         dialogTitle === 'Thêm' ? createNewVariation() : editVariation()
       "
