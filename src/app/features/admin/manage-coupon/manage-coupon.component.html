@@ -55,24 +55,24 @@
                                 </td>
                                 <td>
                                     <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="coupon.startDate" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{ coupon.startDate }}
-                                        </ng-template>
+                                      <ng-template pTemplate="input">
+                                        <p-calendar [(ngModel)]="coupon.startDate" required></p-calendar>
+                                      </ng-template>
+                                      <ng-template pTemplate="output">
+                                        {{ coupon.startDate | date }}
+                                      </ng-template>
                                     </p-cellEditor>
-                                </td>
+                                  </td>
                                 <td>
                                     <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="coupon.expirationDate" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{ coupon.expirationDate }}
-                                        </ng-template>
+                                      <ng-template pTemplate="input">
+                                        <p-calendar [(ngModel)]="coupon.expirationDate" required></p-calendar>
+                                      </ng-template>
+                                      <ng-template pTemplate="output">
+                                        {{ coupon.expirationDate | date }}
+                                      </ng-template>
                                     </p-cellEditor>
-                                </td>
+                                  </td>
                                 <td>
                                     <p-cellEditor>
                                         <ng-template pTemplate="input">
@@ -85,14 +85,19 @@
                                 </td>
                                 <td>
                                     <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="coupon.unit" />
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{ coupon.unit }}
-                                        </ng-template>
+                                      <ng-template pTemplate="input">
+                                        <p-dropdown
+                                          [options]="unitOptions"
+                                          [(ngModel)]="coupon.unit"
+                                          placeholder="Chọn đơn vị"
+                                          required
+                                        ></p-dropdown>
+                                      </ng-template>
+                                      <ng-template pTemplate="output">
+                                        {{ coupon.unit }}
+                                      </ng-template>
                                     </p-cellEditor>
-                                </td>
+                                  </td>
                                 <td>
                                     <p-cellEditor>
                                         <ng-template pTemplate="input">
@@ -129,28 +134,45 @@
     <app-admin-footer></app-admin-footer>
 </div>
 
-<!-- <p-dialog header="Thêm nhà cung cấp" [modal]="true" [(visible)]="visible" [style]="{ width: '30rem' }" styleClass="p-fluid">
-    <form (ngSubmit) = "createNewSupplier()">
-        <div class="mb-4">
-          <label for="name" class="form-label">Tên nhà cung cấp</label>
-          <input type="text" class="form-control" id="name" [(ngModel)]="createSupplier.supplierName" placeholder="Nhập tên" name="name">
-        </div>
-        <div class="mb-4">
-          <label for="address" class="form-label">Địa chỉ</label>
-          <textarea class="form-control" id="address" [(ngModel)]="createSupplier.address" placeholder="Nhập mô tả" name="address" rows="3"></textarea>
-        </div>
-        <div class="mb-4">
-            <label for="phoneNumber" class="form-label">Số điện thoại</label>
-            <input type="text" class="form-control" id="phoneNumber" [(ngModel)]="createSupplier.phoneNumber" placeholder="Nhập số điện thoại" name="phoneNumber">
-          </div>
-        <div class="mb-4">
-            <label class="form-check-label me-2" for="active">Trạng thái:</label>  
-            <input class="form-check-input" type="radio" name="active" id="visible" [value]="true" [(ngModel)]="createSupplier.status"> Hoạt động
-            <input class="form-check-input ms-2" type="radio" name="active" id="disable" [value]="false" [(ngModel)]="createSupplier.status"> Ngừng bán
-          </div>
-          <div class="d-flex justify-content-end gap-2 mt-4">
-            <p-button label="Hủy" severity="secondary" (onClick)="visible = false" />
-            <p-button label="Lưu" (onClick)="visible = false" type="submit" />
-        </div>
-      </form>
-</p-dialog> -->
+<p-dialog header="Thêm Mã Giảm Giá" [(visible)]="visible" modal="modal" [closable]="false" [responsive]="true" [style]="{width: '400px'}">
+    <div class="p-fluid">
+      <div class="p-field">
+        <label for="couponCode">Mã Giảm Giá</label>
+        <input id="couponCode" type="text" pInputText [(ngModel)]="createCoupon.coupon_Code" required />
+      </div>
+      <div class="p-field">
+        <label for="couponName">Tên Mã Giảm Giá</label>
+        <input id="couponName" type="text" pInputText [(ngModel)]="createCoupon.couponName" required />
+      </div>
+      <div class="p-field">
+        <label for="startDate">Ngày Áp Dụng</label>
+        <input id="startDate" type="date" pInputText [(ngModel)]="createCoupon.startDate" required />
+      </div>
+      <div class="p-field">
+        <label for="endDate">Ngày Kết Thúc</label>
+        <input id="endDate" type="date" pInputText [(ngModel)]="createCoupon.expirationDate" required />
+      </div>
+      <div class="p-field">
+        <label for="value">Giá Trị</label>
+        <input id="value" type="number" pInputText [(ngModel)]="createCoupon.discount" required />
+      </div>
+      <div class="p-field">
+        <label for="unit">Đơn Vị</label>
+        <p-dropdown
+          id="unit"
+          [options]="unitOptions"
+          [(ngModel)]="createCoupon.unit"
+          placeholder="Chọn đơn vị"
+          required
+        ></p-dropdown>
+      </div>
+      <div class="p-field">
+        <label for="status">Trạng Thái</label>
+        <p-dropdown [options]="statuses" [(ngModel)]="createCoupon.status" placeholder="Chọn trạng thái"></p-dropdown>
+      </div>
+    </div>
+    <p-footer>
+      <button pButton label="Hủy" icon="pi pi-times" (click)="visible=false" class="p-button-text"></button>
+      <button pButton label="Lưu" icon="pi pi-check" (click)="saveCoupon()" [disabled]="!createCoupon.coupon_Code || !createCoupon.couponName || !createCoupon.startDate || !createCoupon.expirationDate || !createCoupon.discount || !createCoupon.unit"></button>
+    </p-footer>
+</p-dialog>

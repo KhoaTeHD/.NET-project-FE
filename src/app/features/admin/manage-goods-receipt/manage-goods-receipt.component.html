@@ -98,7 +98,13 @@
                 </p-dropdown>
             </p>
             <p>Tổng tiền:
-                <input type="text" pInputText id="total" [value]="selectedGoodsReceipt.total| currency:'VND'" disabled>
+                <input 
+                    type="text" 
+                    pInputText 
+                    id="total" 
+                    [value]="selectedGoodsReceipt.total | currency:'VND'" 
+                    disabled
+                >
             </p>
         </div>
         <div>
@@ -134,13 +140,21 @@
             <tr *ngFor="let detail of selectedGoodsReceipt?.detailGoodsReceipts">
                 <td>{{ detail.product_ID }}</td>
                 <td class=" text-truncate" style="max-width: 270px;">{{ detail.productVariation?.product?.name }}</td>
-                <td>{{ detail.unit_Price | currency }}</td>
-                <td>{{ detail.quantity }}</td>
-                <td>{{ (detail.quantity ?? 0) * (detail.unit_Price ?? 0) | currency }}</td>
+                <td>{{ detail.unit_Price | currency:'VND'  }}</td>
+                <td>
+                    <input 
+                        type="number" 
+                        pInputText 
+                        [(ngModel)]="detail.quantity" 
+                        (ngModelChange)="updateTotals()" 
+                        min="1"
+                    />
+                </td>
+                <td>{{ (detail.quantity ?? 0) * (detail.unit_Price ?? 0) | currency:'VND' }}</td>
             </tr>
         </tbody>
     </table>
     <div class="d-flex justify-content-end gap-2 mt-4">
-        <p-button label="Ok" severity="secondary" (onClick)="visible = false" />
+        <p-button label="Ok" severity="secondary" (onClick)="saveGoodsReceipt()" />
     </div>
 </p-dialog>
