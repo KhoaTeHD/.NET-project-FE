@@ -27,6 +27,7 @@ import { OrderDto } from '../../core/models/order.model';
 import { CartDto } from '../../core/models/cart.model';
 import { loadScript, PayPalScriptOptions } from '@paypal/paypal-js';
 import { PaymentService } from '../../core/services/payment.service';
+import { ProductVariationService } from '../../core/services/productVariation.service';
 
 @Component({
   selector: 'app-payment',
@@ -90,7 +91,8 @@ export class PaymentComponent
     private couponService: CouponService,
     private messageService: MessageService,
     private orderService: OrderService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private productVariationService: ProductVariationService
   ) { }
 
   async ngOnInit() {
@@ -300,8 +302,9 @@ export class PaymentComponent
       this.orderService.createOrder(newOrder).subscribe({
         next: async (response) => {
           for (const item of this.checkedItems) {
-            console.log('Deleting item with ID:', item.item_Id);
             await firstValueFrom(this.cartService.deleteCart(item.item_Id));
+            // Trừ số lượng sản phẩm trong kho
+            await firstValueFrom(this.productVariationService.subProductQuantity(item.productVariation.id, item.quantity));
           }
           this.messageService.add({
             severity: 'success',
