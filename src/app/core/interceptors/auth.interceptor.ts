@@ -18,7 +18,7 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.tokenStorageService.getToken();
 
-    if (token && !req.url.includes('https://esgoo.net')) {
+    if (token && !req.url.includes('https://esgoo.net') && !req.url.includes('https://api.cloudinary.com')) {
       const clonedReq = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`)
       });
