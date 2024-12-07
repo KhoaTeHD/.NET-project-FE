@@ -47,7 +47,7 @@ export class RelatedProductsComponent implements OnInit {
   }
 
   private fetchProductById(productId: number): void {
-    this.productService.getProductById(productId).subscribe({
+    this.productService.getProductByIdWithStatusTrue(productId).subscribe({
       next: (product) => {
         if (product && product.result && product.result.cat_Id) {
           this.fetchRelatedProducts(product.result.cat_Id);
@@ -62,7 +62,7 @@ export class RelatedProductsComponent implements OnInit {
   }
 
   private fetchRelatedProducts(catId: number): void {
-    this.products$ = this.productService.getAllProducts().pipe(
+    this.products$ = this.productService.getAllProductsWithStatusTrue().pipe(
       map((response) => response.result ?? []),
       map((products) => products.filter((product) => product.cat_Id === catId).slice(0, 8))
     );

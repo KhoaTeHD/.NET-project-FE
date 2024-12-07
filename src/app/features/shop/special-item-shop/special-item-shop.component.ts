@@ -28,22 +28,29 @@ export class SpecialItemShopComponent implements OnInit {
     private productService: ProductService
   ) {}
   ngOnInit() {
-    this.fetchProduct(2);
+    this.fetchProducts();
     console.log(this.products$);
   }
 
-  private fetchProduct(id: number): void {
-    this.productService.getProductById(id).subscribe({
-      next: (response) => {
-        this.product = response.result || null; // Cập nhật dữ liệu sản phẩm
-        console.log(this.product);
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
+  fetchProducts(): void {
+    this.productService
+      .getAllProductsWithStatusTrue()
+      .subscribe(response => {
+        if (response && response.result) {
+          const products = response.result;
+          const sortedProducts = products.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+          let latestProduct = null;
+          for (let i = 0; i < sortedProducts.length; i++) {
+            if (sortedProducts[i].productVariations?.length === 0) {
+              latestProduct = sortedProducts[i+1];
+              break;
+            }
+          }
+          console.log(latestProduct);
+          this.product = latestProduct;
+        }
+      });
   }
-
 
 
   handleCartBtnClicked() {

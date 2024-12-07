@@ -65,7 +65,7 @@ export class SidebarShopComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.initializeFiltersFromParams(params);
     });
-    this.productService.getAllProducts().subscribe((response) => {
+    this.productService.getAllProductsWithStatusTrue().subscribe((response) => {
       const products = response.result || [];
       this.categories = this.getCategoriesFromObjects(products);
       this.brands = this.getBrandsFromObjects(products);

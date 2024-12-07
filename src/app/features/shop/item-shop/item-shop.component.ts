@@ -108,7 +108,7 @@ export class ItemShopComponent implements OnInit, OnDestroy {
 
   fetchProducts(): void {
     this.productService
-      .getAllProducts_cache(this.page)
+      .getAllProductsWithStatusTrueSortIdDesc_cache(this.page)
       .pipe(map((response) => response.result ?? []))
       .subscribe({
         next: (products) => {

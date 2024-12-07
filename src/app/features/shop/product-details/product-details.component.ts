@@ -129,7 +129,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private fetchProduct(id: number): void {
-    this.productService.getProductById(id).subscribe({
+    this.productService.getProductByIdWithStatusTrue(id).subscribe({
       next: (response) => {
         this.product = response.result || null; // Cập nhật dữ liệu sản phẩm
         console.log(this.product);
