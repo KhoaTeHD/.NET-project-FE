@@ -56,20 +56,22 @@
                                 <td>
                                     <p-cellEditor>
                                       <ng-template pTemplate="input">
-                                        <p-calendar [(ngModel)]="coupon.startDate" />
+                                        <input type="date" class="form-control" [ngModel]="coupon.startDate | date:'yyyy-MM-dd'"
+                                        (ngModelChange)="coupon.startDate = $event" />
                                       </ng-template>
                                       <ng-template pTemplate="output">
-                                        {{ coupon.startDate | date }}
+                                        {{ coupon.startDate | date:'yyyy-MM-dd' }}
                                       </ng-template>
                                     </p-cellEditor>
                                   </td>
                                 <td>
                                     <p-cellEditor>
                                       <ng-template pTemplate="input">
-                                        <p-calendar [(ngModel)]="coupon.expirationDate" />
+                                        <input type="date" class="form-control" [ngModel]="coupon.expirationDate | date:'yyyy-MM-dd'"
+                                        (ngModelChange)="coupon.expirationDate = $event" />
                                       </ng-template>
                                       <ng-template pTemplate="output">
-                                        {{ coupon.expirationDate | date }}
+                                        {{ coupon.expirationDate | date:'yyyy-MM-dd' }}
                                       </ng-template>
                                     </p-cellEditor>
                                   </td>
