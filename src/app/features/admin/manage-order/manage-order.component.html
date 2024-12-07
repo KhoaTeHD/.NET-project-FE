@@ -4,40 +4,49 @@
             <h1 class="mt-4">Đơn hàng</h1>
             <div class="mb-3 mt-4 d-flex align-items-center">
                 <label for="date-from">Ngày Lọc</label>
-                <input name="date-from" type="date" class="ms-3 me-3 w-auto form-control">
+                <input id="date-from" type="date" class="ms-3 me-3 w-auto form-control" [(ngModel)]="dateFrom">
                 <i class="fa-solid fa-arrow-right"></i>
-                <input name="date-to" type="date" class="ms-3 me-3 w-auto form-control">
+                <input id="date-to" type="date" class="ms-3 me-3 w-auto form-control" [(ngModel)]="dateTo">
             </div>
             <div class="mb-3 d-flex align-items-center">
                 <label for="province">Tỉnh (Thành)</label>
-                <select id="order-province" name="province" class="ms-3 me-3 w-auto form-select">
-                    <option disable value="">-- Chọn --</option>
+                <select id="order-province" name="province" class="ms-3 me-3 w-auto form-select" [(ngModel)]="selectedProvince" (change)="onProvinceChange()">
+                    <option disable value="0">-- Chọn --</option>
+                    <option *ngFor="let province of provinces" [value]="province.id">{{ province.name }}</option>
                 </select>
 
-                <label for="">Quận (Huyện)</label>
-                <select id="order-district" name="district" class="ms-3 me-3 w-auto form-select">
-                    <option disable value="">-- Chọn --</option>
+                <label for="district">Quận (Huyện)</label>
+                <select id="order-district" name="district" class="ms-3 me-3 w-auto form-select" [(ngModel)]="selectedDistrict" (change)="onDistrictChange()">
+                    <option disable value="0">-- Chọn --</option>
+                    <option *ngFor="let district of districts" [value]="district.id">{{ district.name }}</option>
                 </select>
 
-                <label for="">Xã (Phường, Thị Trấn)</label>
-                <select id="order-ward" name="ward" class="ms-3 me-3 w-auto form-select">
-                    <option disable value="">-- Chọn --</option>
+                <label for="ward">Xã (Phường, Thị Trấn)</label>
+                <select id="order-ward" name="ward" class="ms-3 me-3 w-auto form-select" [(ngModel)]="selectedWard">
+                    <option disable value="0">-- Chọn --</option>
+                    <option *ngFor="let ward of wards" [value]="ward.id">{{ ward.name }}</option>
                 </select>
             </div>
             <div class="mb-4 d-flex align-items-center">
-                <label for="">Tình Trạng</label>
-
-                <select name="order-status" id="status" class="ms-3 me-3 w-auto form-select">
+                <label for="status">Tình Trạng</label>
+                <select name="order-status" id="status" class="ms-3 me-3 w-auto form-select" [(ngModel)]="status">
                     <option value="">-- Tất cả --</option>
+                    <option>Chờ xác nhận</option>
+                    <option>Đã xác nhận</option>
+                    <option>Đã thanh toán</option>
+                    <option>Đang giao</option>
+                    <option>Đã giao</option>
+                    <option>Đã hủy</option>
                 </select>
-
-                <button type="submit" name="submit" class="btn btn-dark">Lọc</button>
+                <button type="submit" name="submit" class="btn btn-dark" (click)="filterOrders()">Lọc</button>
             </div>
+        
+              
             <div class="card mb-4">
                 <p-toast></p-toast>
                 <p-confirmDialog></p-confirmDialog>
                 <div class="card-body">
-                    <p-table #dt [value]="orders" [paginator]="true" [rows]="10"  [globalFilterFields]="['order_ID', 'customer_ID', 'coupon_Code', 'address']"  dataKey="order_ID" responsiveLayout="scroll">
+                    <p-table #dt [value]="filteredOrders" [paginator]="true" [rows]="10"  [globalFilterFields]="['order_ID', 'customer_ID', 'coupon_Code', 'address']"  dataKey="order_ID" responsiveLayout="scroll">
                         <ng-template pTemplate="caption">
                             <div class="d-flex">
                                 <span class="p-input-icon-left ml-auto">
@@ -67,9 +76,16 @@
                                 <td>{{ order.coupon_Code }}</td>
                                 <td>{{ order.address }}</td>
                                 <td>{{ order.datetime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td>{{ order.discount_amount | currency:'VND' }}</td>
-                                <td>{{ order.total | currency:'VND' }}</td>
-                                <td>{{ order.orderStatus }}</td>
+                                <td>{{ order.discount_amount | currency: 'VND' }}</td>
+                                <td>{{ order.total | currency: 'VND' }}</td>
+                                <td *ngIf="order.orderStatus === 'Đã hủy'">{{ order.orderStatus }}</td>
+                                <td *ngIf="order.orderStatus !== 'Đã hủy'"><p-dropdown 
+                                    [options]="statuses" 
+                                    [(ngModel)]="order.orderStatus" 
+                                    optionLabel="value" 
+                                    optionValue="value"
+                                    (onChange)="editOrder(order)"
+                                    placeholder="Chọn trạng thái" /></td>
                                 <td>
                                     <button pButton type="button" class="btn btn-dark" (click)="showDialog(order)">Xem</button>
                                 </td>
@@ -103,8 +119,8 @@
                 <td>{{ orderDetail.product_ID }}</td>
                 <td  class=" text-truncate" style="max-width: 270px;">{{ orderDetail.productVariation?.product?.name }}</td>
                 <td>{{ orderDetail.quantity }}</td>
-                <td>{{ orderDetail.unit_Price | currency }}</td>
-                <td>{{ (orderDetail?.quantity ?? 0) * (orderDetail?.unit_Price ?? 0) | currency }}</td>
+                <td>{{ orderDetail.unit_Price | currency: 'VND' }}</td>
+                <td>{{ (orderDetail?.quantity ?? 0) * (orderDetail?.unit_Price ?? 0) | currency: 'VND' }}</td>
             </tr>
         </tbody>
     </table>

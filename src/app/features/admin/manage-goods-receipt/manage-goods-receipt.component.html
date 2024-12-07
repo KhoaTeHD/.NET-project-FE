@@ -3,7 +3,7 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4">Phiếu nhập</h1>
             <div class="mb-3 d-flex flex-row-reverse">
-                <button type="button" class="btn btn-dark" (click)="showDialog(null)">Thêm phiếu nhập</button>
+                <button type="button" class="btn btn-dark" (click)="showDialog('add', null)">Thêm phiếu nhập</button>
             </div>
             <div class="card mb-4">
                 <p-toast></p-toast>
@@ -63,16 +63,8 @@
                                             pRipple 
                                             type="button"
                                             icon="pi pi-pencil" 
-                                            (click)="editProduct(goodsReceipt)"
+                                            (click)="editReceipt(goodsReceipt)"
                                             class="p-button-rounded p-button-text">
-                                        </button>
-                                        <button 
-                                            pButton 
-                                            pRipple 
-                                            type="button" 
-                                            icon="pi pi-trash"
-                                            (click)="deleteGoodsReceipt(goodsReceipt)"
-                                            class="p-button-rounded p-button-text p-button-danger">
                                         </button>
                                     </div>
                                 </td>
@@ -86,7 +78,7 @@
     <app-admin-footer></app-admin-footer>
 </div>
 
-<p-dialog header="Thêm phiếu nhập" [modal]="true" [(visible)]="visible" [style]="{ width: '55rem' }"
+<p-dialog header="{{ DialogTitle }} phiếu nhập" [modal]="true" [(visible)]="visible" [style]="{ width: '55rem' }"
     styleClass="p-fluid">
     <div class="d-flex justify-content-between">
         <div>
@@ -106,7 +98,13 @@
                 </p-dropdown>
             </p>
             <p>Tổng tiền:
-                <input type="text" pInputText id="total" [value]="selectedGoodsReceipt.total| currency:'VND'" disabled>
+                <input 
+                    type="text" 
+                    pInputText 
+                    id="total" 
+                    [value]="selectedGoodsReceipt.total | currency:'VND'" 
+                    disabled
+                >
             </p>
         </div>
         <div>
@@ -115,13 +113,19 @@
                 [suggestions]="filteredProducts"
                 (completeMethod)="filterCountry($event)" 
                 (onSelect)="addProductToSelected($event)" 
+                placeholder="Tìm kiếm sản phẩm"
                 optionLabel="product.name">
                 <ng-template let-productVar pTemplate="item">
                     <div class="d-flex align-items-center gap-2">
                         <img 
-                            src="https://placehold.co/40x40" 
+                            [src]="productVar.pic"
                             style="width: 40px" />
-                        <div>{{ productVar.product.name }}</div>
+                        <div>
+                            <div>{{ productVar.product.name }}</div>
+                            <div>
+                                {{ productVar.size.name }} - {{ productVar.color.name }}
+                            </div>
+                        </div>
                     </div>
                 </ng-template>
             </p-autoComplete>
@@ -142,13 +146,19 @@
             <tr *ngFor="let detail of selectedGoodsReceipt?.detailGoodsReceipts">
                 <td>{{ detail.product_ID }}</td>
                 <td class=" text-truncate" style="max-width: 270px;">{{ detail.productVariation?.product?.name }}</td>
-                <td>{{ detail.unit_Price | currency }}</td>
-                <td>{{ detail.quantity }}</td>
-                <td>{{ (detail.quantity ?? 0) * (detail.unit_Price ?? 0) | currency }}</td>
+                <td>{{ detail.unit_Price | currency:'VND'  }}</td>
+                <td>
+                    <p-inputNumber  
+                        [(ngModel)]="detail.quantity" 
+                        (ngModelChange)="updateTotals()" 
+                        [min]="1"
+                    />
+                </td>
+                <td>{{ (detail.quantity ?? 0) * (detail.unit_Price ?? 0) | currency:'VND' }}</td>
             </tr>
         </tbody>
     </table>
     <div class="d-flex justify-content-end gap-2 mt-4">
-        <p-button label="Ok" severity="secondary" (onClick)="visible = false" />
+        <p-button label="Lưu" (onClick)=" DialogTitle === 'Thêm' ? saveGoodsReceipt() : UpdateReceipt()" />
     </div>
 </p-dialog>

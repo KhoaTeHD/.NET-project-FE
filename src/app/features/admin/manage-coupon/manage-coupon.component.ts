@@ -3,7 +3,7 @@ import { AdminFooterComponent } from '../../../shared/components/admin-footer/ad
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
@@ -15,12 +15,12 @@ import { DialogModule } from 'primeng/dialog';
 import { firstValueFrom } from 'rxjs';
 import { CouponDto } from '../../../core/models/coupon.model';
 import { CouponService } from '../../../core/services/coupon.service';
-
+import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'app-manage-coupon',
   standalone: true,
-  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule],
+  imports: [AdminFooterComponent, CommonModule, TableModule, TagModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, ToastModule, InputIconModule, ConfirmDialogModule, DialogModule, ReactiveFormsModule, CalendarModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-coupon.component.html',
   styleUrl: './manage-coupon.component.css'
@@ -33,7 +33,15 @@ export class ManageCouponComponent implements OnInit {
 
   statuses!: SelectItem[];
 
-  createCoupon: CouponDto = {};
+  couponForm: FormGroup = new FormGroup({
+    coupon_Code: new FormControl('', [Validators.required]),
+    startDate: new FormControl('', [Validators.required]),
+    expirationDate: new FormControl('', [Validators.required]),
+    couponName: new FormControl('', [Validators.required]),
+    discount: new FormControl('', [Validators.required]),
+    unit: new FormControl('', [Validators.required]),
+    status: new FormControl(true)
+  });
 
   clonedCoupons: { [id: string]: CouponDto } = {};
 
@@ -56,6 +64,7 @@ export class ManageCouponComponent implements OnInit {
       const data = await firstValueFrom(this.couponService.getAllCoupons());
       if (data.isSuccess && Array.isArray(data.result)) {
         this.coupons = data.result;
+        console.log(this.coupons);
       }
     } catch (error) {
       console.error('Error fetching suppliers', error);
@@ -64,7 +73,6 @@ export class ManageCouponComponent implements OnInit {
 
   showDialog() {
     this.visible = true;
-    this.createCoupon = { status: true };
   }
 
   handleInput(event: Event, dt: any): void {
@@ -76,15 +84,28 @@ export class ManageCouponComponent implements OnInit {
 
   onRowEditInit(coupon: CouponDto) {
     this.clonedCoupons[coupon.coupon_Code as string] = { ...coupon };
+    //console.log(this.clonedCoupons);
   }
 
-  onRowEditSave(coupon: CouponDto, index: number) {
+  async onRowEditSave(coupon: CouponDto, index: number) {
     if (coupon.couponName?.trim().length !== 0) {
-      //this.editSupplier(coupon);
-      delete this.clonedCoupons[coupon.coupon_Code as string];
+      try {
+        const response = await firstValueFrom(this.couponService.updateCoupon(coupon));
+        if (response.isSuccess && response.result) {
+          this.coupons[index] = response.result;
+          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật mã giảm giá thành công', life: 3000 });
+          delete this.clonedCoupons[coupon.coupon_Code as string];
+        } else {
+          throw new Error('Cập nhật thất bại');
+        }
+      } catch (error) {
+        this.coupons[index] = this.clonedCoupons[coupon.coupon_Code as string];
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật mã giảm giá', life: 3000 });
+        console.error('Error updating coupon', error);
+      }
     } else {
       this.coupons[index] = this.clonedCoupons[coupon.coupon_Code as string];
-      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ' });
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Tên không hợp lệ', life: 3000 });
     }
   }
 
@@ -116,5 +137,30 @@ export class ManageCouponComponent implements OnInit {
     }
   }
 
+  async saveCoupon(): Promise<void> {
+    try {
+      if(this.couponForm.invalid) return;
+      const coupon: CouponDto = this.couponForm.value;
+      const response = await firstValueFrom(this.couponService.createCoupon(coupon));
+      if (response.isSuccess) {
+        if (response.result) {
+          this.coupons.push(response.result);
+        }
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm mã giảm giá', life: 3000 });
+        this.visible = false;
+      } else {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm mã giảm giá', life: 3000 });
+      }
+    } catch (error) {
+      console.error('Error creating coupon', error);
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm mã giảm giá', life: 3000 });
+    }
+    this.visible = false;
+  }
+
+  unitOptions = [
+    { label: '%', value: '%' },
+    { label: 'nghìn đồng', value: 'nghìn đồng' }
+  ];
 
 }
