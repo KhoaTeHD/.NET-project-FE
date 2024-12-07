@@ -281,7 +281,7 @@ export class PaymentComponent
         this.selectedAddress?.province?.split('#')[1],
       datetime: new Date(),
       discount_amount: this.voucher,
-      total: this.totalAmount_temp(),
+      total: this.totalAmount(),
       formOfPayment: formOfPayment,
       shipping_Charge: this.delivery,
       orderStatus: orderStatus,

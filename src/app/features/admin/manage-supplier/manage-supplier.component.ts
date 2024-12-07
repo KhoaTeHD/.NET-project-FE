@@ -120,6 +120,7 @@ export class ManageSupplierComponent {
     this.supplierService.createSupplier(this.createSupplier).subscribe({
       next: response => {
         // Toast
+        this.loadSuppliers(); 
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhà cung cấp đã được tạo' });
       },
       error: err => {

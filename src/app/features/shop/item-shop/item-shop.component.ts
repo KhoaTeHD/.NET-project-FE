@@ -112,7 +112,7 @@ export class ItemShopComponent implements OnInit, OnDestroy {
       .pipe(map((response) => response.result ?? []))
       .subscribe({
         next: (products) => {
-          this.products = products;
+          this.products = products.filter((product) => product.status === true);
           this.productsSubject.next(products); // Cập nhật BehaviorSubject
           this.loading = false;
           this.applyFilters(this.filters); // Lọc ngay sau khi tải xong
