@@ -346,6 +346,7 @@ export class PaymentComponent
     return parseFloat((amountInVND / exchangeRate).toFixed(2)); // Chuyển đổi và làm tròn 2 chữ số thập phân
   }
 
+  //Cần install thư viện @paypal/paypal-js
   async initPayPalButton(): Promise<void> {
     try {
       const scriptOptions: any = {
