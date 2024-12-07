@@ -27,12 +27,13 @@ import { ProductDto } from '../../../core/models/product.model';
 import { ProductVariationDto } from '../../../core/models/productVariation.model';
 
 import { CartService } from '../../../core/services/cart.service';
-import { CartDto } from '../../../core/models/cart.model';
+import { CartDto, CartDtoExtendStatus } from '../../../core/models/cart.model';
 import { CloudinaryService } from '../../../core/upload_images/upload_image';
 import { VirtualTryOnService } from '../../../core/services/virtual-try-on.service';
 
 import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
+import { TokenStorageService } from '../../../core/services/auth/token-storage.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -86,6 +87,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   timerValue = 0;
   private timerInterval: any;
 
+  cartItems: CartDtoExtendStatus[] = []; // Khởi tạo
+
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService,
@@ -94,7 +97,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     protected router: Router,
     private cloudinaryService: CloudinaryService,
     private virtualTryOnService: VirtualTryOnService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private tokenStorageService: TokenStorageService
   ) {}
 
   /**Xu ly item v2 */
@@ -115,6 +119,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    const userId = this.tokenStorageService.getUser()?.id;
+    if (userId) {
+      this.cartService.getCartItemsByCusId(userId).subscribe((response) => {
+        this.cartItems = response.result || [];
+      });
+    }
   }
 
   private fetchProduct(id: number): void {
@@ -307,11 +318,113 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  handleCartBtnClicked_v2(
+  // handleCartBtnClicked_v2(
+  //   product: any,
+  //   sizeId: number | null,
+  //   colorId: number | null
+  // ): any {
+  //   const userId = this.getCookieValue('user');
+
+  //   if (!userId) {
+  //     const confirmation = window.confirm(
+  //       'Vui lòng đăng nhập để tiếp tục mua hàng!'
+  //     );
+  //     if (confirmation) {
+  //       window.location.href = 'http://localhost:4200/sign-in';
+  //     } else {
+  //       return;
+  //     }
+  //   }
+
+  //   // Get the product variation based on size and color
+  //   const variation = this.getProductVariation(product, sizeId, colorId);
+  //   console.log(variation);
+  //   // console.log(
+  //   //   'Số lượng sản phẩm đang có: ',
+  //   //   variation.productVariations[0].quantity
+  //   // );
+
+  //   this.cartService.getCartItemsByCusId(userId).subscribe((response) => {
+  //     this.cartItems = response.result || [];
+  //     console.log(this.cartItems[0].quantity); //này là số lượng sp trong cart nè
+  //     console.log(
+  //       'Số lượng sản phẩm đang bán: ',
+  //       variation.productVariations[0].quantity
+  //     );
+  //     if (this.cartItems[0].quantity) {
+  //       const quantityInCart = this.cartItems[0].quantity + 1;
+  //       if (quantityInCart >= variation.productVariations[0].quantity) {
+  //         console.log(quantityInCart);
+  //         this.messageService.add({
+  //           severity: 'warn',
+  //           summary: 'Không thành công',
+  //           detail:
+  //             'Chỉ được thêm tối đa ' +
+  //             variation.productVariations[0].quantity +
+  //             ' sản phẩm',
+  //         });
+  //         return;
+  //       }
+  //     }
+  //   });
+
+  //   if (
+  //     !variation ||
+  //     !variation.productVariations ||
+  //     variation.productVariations.length === 0
+  //   ) {
+  //     console.error('Invalid product variation');
+  //     return;
+  //   }
+
+  //   const productVariation = variation.productVariations[0];
+
+  //   const ProductDto: ProductDto = {
+  //     id: variation.id,
+  //     cat_Id: variation.cat_Id,
+  //   };
+
+  //   productVariation.product = product;
+  //   console.log(variation);
+
+  //   const cartDto: CartDto = {
+  //     item_Id: productVariation.id,
+  //     cus_Id: userId,
+  //     price: productVariation.price,
+  //     quantity: 1,
+  //   };
+  //   console.log(cartDto);
+
+  //   // Call cartService to create cart
+  //   this.cartService.createCart(cartDto).subscribe({
+  //     next: (response) => {
+  //       console.log('Cart created successfully:', response);
+  //       this.messageService.add({
+  //         severity: 'success',
+  //         summary: 'Thành công',
+  //         detail: 'Bạn vừa thêm ' + variation.name + ' vào giỏ hàng!',
+  //       });
+  //     },
+  //     error: (error) => {
+  //       console.error('Error creating cart:', error);
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Thất bại',
+  //         detail:
+  //           'Đã có lỗi xảy ra khi thêm ' + variation.name + ' vào giỏ hàng!',
+  //       });
+  //     },
+  //   });
+
+  //   // Return the product variation
+  //   return this.getProductVariation(product, sizeId, colorId);
+  // }
+
+  async handleCartBtnClicked_v2(
     product: any,
     sizeId: number | null,
     colorId: number | null
-  ): any {
+  ): Promise<any> {
     const userId = this.getCookieValue('user');
 
     if (!userId) {
@@ -327,9 +440,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
     // Get the product variation based on size and color
     const variation = this.getProductVariation(product, sizeId, colorId);
-    console.log(variation);
 
-    // Ensure variation and productVariations are valid
     if (
       !variation ||
       !variation.productVariations ||
@@ -341,45 +452,54 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
     const productVariation = variation.productVariations[0];
 
-    const ProductDto: ProductDto = {
-      id: variation.id,
-      cat_Id: variation.cat_Id,
-    };
+    try {
+      const response = await this.cartService
+        .getCartItemsByCusId(userId)
+        .toPromise();
+      this.cartItems = response?.result || [];
 
-    productVariation.product = product;
-    console.log(variation);
+      // Tính tổng số lượng sản phẩm trong giỏ hàng
+      const quantityInCart = this.cartItems.reduce(
+        (sum, item) => sum + (item.quantity ?? 0), // Sử dụng nullish coalescing để tránh undefined
+        0
+      );
 
-    const cartDto: CartDto = {
-      item_Id: productVariation.id,
-      cus_Id: userId,
-      price: productVariation.price,
-      quantity: 1,
-    };
-    console.log(cartDto);
-
-    // Call cartService to create cart
-    this.cartService.createCart(cartDto).subscribe({
-      next: (response) => {
-        console.log('Cart created successfully:', response);
+      if (quantityInCart + 1 > productVariation.quantity) {
         this.messageService.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Bạn vừa thêm ' + variation.name + ' vào giỏ hàng!',
-        });
-      },
-      error: (error) => {
-        console.error('Error creating cart:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Thất bại',
+          severity: 'warn',
+          summary: 'Không thành công',
           detail:
-            'Đã có lỗi xảy ra khi thêm ' + variation.name + ' vào giỏ hàng!',
+            'Chỉ được thêm tối đa ' + productVariation.quantity + ' sản phẩm',
         });
-      },
-    });
+        return; // Ngắt hàm tại đây nếu vượt quá giới hạn
+      }
 
-    // Return the product variation
-    return this.getProductVariation(product, sizeId, colorId);
+      const cartDto: CartDto = {
+        item_Id: productVariation.id,
+        cus_Id: userId,
+        price: productVariation.price,
+        quantity: 1, // Đảm bảo quantity không undefined
+      };
+
+      // Call cartService to create cart
+      const createResponse = await this.cartService
+        .createCart(cartDto)
+        .toPromise();
+      console.log('Cart created successfully:', createResponse);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Thành công',
+        detail: 'Bạn vừa thêm ' + variation.name + ' vào giỏ hàng!',
+      });
+    } catch (error) {
+      console.error('Error creating cart:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Thất bại',
+        detail:
+          'Đã có lỗi xảy ra khi thêm ' + variation.name + ' vào giỏ hàng!',
+      });
+    }
   }
 
   // Function to get cookie value by name
