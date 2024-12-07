@@ -84,4 +84,8 @@ export class SignInComponent {
       }
     });
   }
+
+  navigateToSignUp(): void {
+    this.router.navigate(['/']);
+  }
 }

@@ -122,6 +122,7 @@
                         min="1"
                         [max]="item.productVariation?.quantity"
                         (change)="updateItemPrice(item, $event)"
+                        disabled
                       />
                     </div>
                     <button
