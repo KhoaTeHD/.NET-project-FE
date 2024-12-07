@@ -15,6 +15,7 @@ import { OrderDto } from '../../../core/models/order.model';
 import { AddressApiService } from '../../../core/services/address-api.service';
 import { FormsModule } from '@angular/forms';
 
+
 @Component({
   selector: 'app-manage-order',
   standalone: true,
@@ -36,12 +37,24 @@ export class ManageOrderComponent implements OnInit {
 
   createOrder: OrderDto = {};
 
+  statuses: any[] = [
+    {value: 'Chờ xác nhận'},
+    {value: 'Đã xác nhận'},
+    {value: 'Đã thanh toán'},
+    {value: 'Đang giao'},
+    {value: 'Đã giao'},
+    {value: 'Đã hủy'},
+  ];
+
+  selectedOrderstatus: string = '';
+
   searchValue: string = '';
   selectedProvince: number = 0;
   selectedDistrict: number = 0;
   selectedWard: number = 0;
   dateFrom: string = '';
   dateTo: string = '';
+  status: string = '';
 
   ngOnInit(): void {
     this.loadOrders();
@@ -72,7 +85,6 @@ export class ManageOrderComponent implements OnInit {
       if (data.isSuccess && Array.isArray(data.result)) {
         this.orders = data.result;
         this.filteredOrders = [...this.orders];
-        console.log(this.orders);
       }
     } catch (error) {
       console.error('Error fetching orders', error);
@@ -167,9 +179,11 @@ export class ManageOrderComponent implements OnInit {
       const isMatchingProvince = this.selectedProvince === 0 || (order.address && order.address.includes(this.provinces.find(p => p.id === this.selectedProvince)?.name || ''));
       const isMatchingDistrict = this.selectedDistrict === 0 || (order.address && order.address.includes(this.districts.find(d => d.id === this.selectedDistrict)?.name || ''));
       const isMatchingWard = this.selectedWard === 0 || (order.address && order.address.includes(this.wards.find(w => w.id === this.selectedWard)?.name || ''));
+
+      const isMatchingStatus = order.orderStatus?.includes(this.status);
   
       // Điều kiện lọc tổng
-      return isWithinDateRange && isMatchingProvince && isMatchingDistrict && isMatchingWard;
+      return isWithinDateRange && isMatchingProvince && isMatchingDistrict && isMatchingWard && isMatchingStatus;
     });
   
     if (this.filteredOrders.length === 0) {

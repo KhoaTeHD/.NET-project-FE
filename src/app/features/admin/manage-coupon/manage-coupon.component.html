@@ -56,7 +56,7 @@
                                 <td>
                                     <p-cellEditor>
                                       <ng-template pTemplate="input">
-                                        <p-calendar [(ngModel)]="coupon.startDate" required></p-calendar>
+                                        <p-calendar [(ngModel)]="coupon.startDate" />
                                       </ng-template>
                                       <ng-template pTemplate="output">
                                         {{ coupon.startDate | date }}
@@ -66,7 +66,7 @@
                                 <td>
                                     <p-cellEditor>
                                       <ng-template pTemplate="input">
-                                        <p-calendar [(ngModel)]="coupon.expirationDate" required></p-calendar>
+                                        <p-calendar [(ngModel)]="coupon.expirationDate" />
                                       </ng-template>
                                       <ng-template pTemplate="output">
                                         {{ coupon.expirationDate | date }}
@@ -134,45 +134,51 @@
     <app-admin-footer></app-admin-footer>
 </div>
 
-<p-dialog header="Thêm Mã Giảm Giá" [(visible)]="visible" modal="modal" [closable]="false" [responsive]="true" [style]="{width: '400px'}">
-    <div class="p-fluid">
-      <div class="p-field">
-        <label for="couponCode">Mã Giảm Giá</label>
-        <input id="couponCode" type="text" pInputText [(ngModel)]="createCoupon.coupon_Code" required />
+<p-dialog header="Thêm Mã Giảm Giá" 
+  [(visible)]="visible" 
+  [modal]="true" 
+  styleClass="p-fluid"
+  [responsive]="true" [style]="{width: '40rem'}">
+  <form [formGroup]="couponForm">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="couponCode" class="form-label">Mã Giảm Giá</label>
+        <input id="couponCode" class="form-control" type="text" pInputText formControlName="coupon_Code" />
       </div>
-      <div class="p-field">
-        <label for="couponName">Tên Mã Giảm Giá</label>
-        <input id="couponName" type="text" pInputText [(ngModel)]="createCoupon.couponName" required />
+      <div class="col-md-6 mb-3">
+        <label for="couponName" class="form-label">Tên Mã Giảm Giá</label>
+        <input id="couponName" class="form-control" type="text" pInputText formControlName="couponName"/>
       </div>
-      <div class="p-field">
-        <label for="startDate">Ngày Áp Dụng</label>
-        <input id="startDate" type="date" pInputText [(ngModel)]="createCoupon.startDate" required />
+      <div class="col-md-6 mb-3">
+        <label for="value" class="form-label">Giá Trị</label>
+        <input id="value" class="form-control" type="number" pInputText formControlName="discount"/>
       </div>
-      <div class="p-field">
-        <label for="endDate">Ngày Kết Thúc</label>
-        <input id="endDate" type="date" pInputText [(ngModel)]="createCoupon.expirationDate" required />
-      </div>
-      <div class="p-field">
-        <label for="value">Giá Trị</label>
-        <input id="value" type="number" pInputText [(ngModel)]="createCoupon.discount" required />
-      </div>
-      <div class="p-field">
-        <label for="unit">Đơn Vị</label>
+      <div class="col-md-6 mb-3">
+        <label for="unit" class="form-label">Đơn Vị</label>
         <p-dropdown
           id="unit"
           [options]="unitOptions"
-          [(ngModel)]="createCoupon.unit"
+          formControlName="unit"
           placeholder="Chọn đơn vị"
-          required
         ></p-dropdown>
       </div>
-      <div class="p-field">
-        <label for="status">Trạng Thái</label>
-        <p-dropdown [options]="statuses" [(ngModel)]="createCoupon.status" placeholder="Chọn trạng thái"></p-dropdown>
+      <div class="col-md-6 mb-3">
+        <label for="startDate" class="form-label">Ngày Áp Dụng</label>
+        <input id="startDate" class="form-control" type="date" pInputText formControlName="startDate"/>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label for="endDate" class="form-label">Ngày Kết Thúc</label>
+        <input id="endDate" class="form-control" type="date" pInputText formControlName="expirationDate"/>
+      </div>
+      <div class="col-md-12">
+          <label class="form-check-label me-2" for="status">Trạng thái:</label>
+          <input class="form-check-input" type="radio" name="status" [value]="true" formControlName="status"> Hoạt động
+          <input class="form-check-input ms-2" type="radio" name="status" [value]="false" formControlName="status"> Ngừng hoạt động
       </div>
     </div>
-    <p-footer>
-      <button pButton label="Hủy" icon="pi pi-times" (click)="visible=false" class="p-button-text"></button>
-      <button pButton label="Lưu" icon="pi pi-check" (click)="saveCoupon()" [disabled]="!createCoupon.coupon_Code || !createCoupon.couponName || !createCoupon.startDate || !createCoupon.expirationDate || !createCoupon.discount || !createCoupon.unit"></button>
-    </p-footer>
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <p-button label="Hủy" severity="secondary" (click)="visible=false" ></p-button>
+      <p-button label="Lưu" (click)="saveCoupon()" [disabled]="this.couponForm.invalid" type="submit"></p-button>
+    </div>
+  </form>
 </p-dialog>

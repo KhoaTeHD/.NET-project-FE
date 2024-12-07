@@ -13,17 +13,17 @@ import { TagModule } from 'primeng/tag';
 import { AutoCompleteSelectEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { DetailGoodsReceiptDto, GoodsReceiptDto } from '../../../core/models/goodsReceipt.model';
 import { SupplierDto } from '../../../core/models/supplier.model';
-import { ProductDto } from '../../../core/models/product.model';
 import { ProductVariationDto } from '../../../core/models/productVariation.model';
 import { GoodsReceiptService } from '../../../core/services/goodsReceipt.service';
 import { firstValueFrom } from 'rxjs';
 import { SupplierService } from '../../../core/services/supplier.service';
 import { ProductVariationService } from '../../../core/services/productVariation.service';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-manage-goods-receipt',
   standalone: true,
-  imports: [AdminFooterComponent, TagModule, TableModule, DropdownModule, ToastModule, ConfirmDialogModule, InputTextModule, CommonModule, FormsModule, DialogModule, AutoCompleteModule],
+  imports: [AdminFooterComponent, TagModule, TableModule, DropdownModule, ToastModule, ConfirmDialogModule, InputTextModule, CommonModule, FormsModule, DialogModule, AutoCompleteModule, InputNumberModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './manage-goods-receipt.component.html',
   styleUrl: './manage-goods-receipt.component.css'
@@ -46,14 +46,19 @@ export class ManageGoodsReceiptComponent implements OnInit {
 
   filteredProducts!: ProductVariationDto[];
 
+  DialogTitle: string = 'Thêm';
+
   constructor(private messageService: MessageService, private confirmationService: ConfirmationService,
     private goodsReceiptService: GoodsReceiptService, private supplierService: SupplierService, private productVariationService: ProductVariationService
   ) { }
 
-  showDialog(goodsReceipt: GoodsReceiptDto | null): void {
-    this.visible = true;
-    if (goodsReceipt!) this.selectedGoodsReceipt = goodsReceipt
-    else this.selectedGoodsReceipt = {};
+  showDialog(type: string ,goodsReceipt: GoodsReceiptDto | null): void {
+    if(type === 'add') {
+      if (goodsReceipt!) this.selectedGoodsReceipt = goodsReceipt
+      else this.selectedGoodsReceipt = {};
+      this.DialogTitle = 'Thêm';
+      this.visible = true;
+    }
   }
 
   ngOnInit(): void {
@@ -188,8 +193,9 @@ addProductToSelected(event: AutoCompleteSelectEvent){
   }
 }
 
-editProduct(goodsReceipt: GoodsReceiptDto) {
+editReceipt(goodsReceipt: GoodsReceiptDto) {
   this.selectedGoodsReceipt = { ...goodsReceipt };
+  this.DialogTitle = 'Sửa';
   this.visible = true;
 }
 
@@ -220,33 +226,44 @@ formatDateToYYYYMMDD(date: Date): string {
   }
 
   saveGoodsReceipt() {
+    if (!this.selectedGoodsReceipt.supplier_ID) {
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng chọn nhà cung cấp' });
+      return;
+    }
+    console.log(this.selectedGoodsReceipt);
     this.goodsReceiptService.createGoodsReceipt(this.selectedGoodsReceipt).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           this.messageService.add({severity:'success', summary: 'Thành công', detail: 'Phiếu nhập đã được lưu.'});
           this.visible = false;
-          this.getAllGoodsReceipts();
+          this.loadReceipts();
         } else {
           this.messageService.add({severity:'error', summary: 'Lỗi', detail: response.message || 'Lưu phiếu nhập thất bại.'});
         }
       },
       error: (err) => {
         this.messageService.add({severity:'error', summary: 'Lỗi', detail: 'Có lỗi xảy ra khi lưu phiếu nhập.'});
-        console.error(err);
       }
     });
   }
 
-  getAllGoodsReceipts() {
-    this.goodsReceiptService.getAllGoodsReceipts().subscribe(response => {
-      if (response.isSuccess) {
-        if (response.result) {
-          this.goodsReceipts = response.result;
+  UpdateReceipt(){
+    this.goodsReceiptService.updateGoodsReceipt(this.selectedGoodsReceipt).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.messageService.add({severity:'success', summary: 'Thành công', detail: 'Phiếu nhập đã được lưu.'});
+          this.visible = false;
+          this.loadReceipts();
+        } else {
+          this.messageService.add({severity:'error', summary: 'Lỗi', detail: response.message || 'Lưu phiếu nhập thất bại.'});
         }
+      },
+      error: (err) => {
+        this.messageService.add({severity:'error', summary: 'Lỗi', detail: 'Có lỗi xảy ra khi lưu phiếu nhập.'});
+        //console.error(err);
       }
     });
   }
-
 }
 
 
