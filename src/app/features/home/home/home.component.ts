@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit {
     this.vipItems = this.getVipItems();
     this.vipItems_v2 = this.getVipItems_v2();
 
-    this.productService.getAllProducts().subscribe((response) => {
+    this.productService.getAllProductsWithStatusTrue().subscribe((response) => {
       this.products = response.result || [];
       this.vipProducts = this.getVipProducts();
       this.uniqueBrandItems_v2 = this.getUniqueBrandsItems_v2();

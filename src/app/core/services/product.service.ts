@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, Observable, of, tap } from 'rxjs';
 import { ProductDto } from '../models/product.model'; // Đường dẫn tới ProductDto interface
 import { ApiResponse } from '../models/auth/api-resonse.model'; // Đường dẫn tới ApiResponse interface
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -32,9 +33,103 @@ export class ProductService {
     }
   }
 
+  getAllProductsWithStatusTrue_cache(page: number): Observable<ApiResponse<ProductDto[]>> {
+    if (this.productCache[page]) {
+      return of({
+        isSuccess: true,
+        message: '',
+        result: this.productCache[page],
+      });
+    } else {
+      return this.http
+        .get<ApiResponse<ProductDto[]>>(`${this.baseUrl}?page=${page}`)
+        .pipe(
+          map(response => {
+            if (response.result) {
+              response.result = response.result
+                .filter(product => product.status)
+                .map(product => ({
+                  ...product,
+                  productVariations: product.productVariations?.filter(variation => variation.status) || []
+                }));
+            }
+            return response;
+          }),
+          tap(filteredResponse => {
+            if (filteredResponse.result) {
+              this.productCache[page] = filteredResponse.result;
+            }
+          })
+        );
+    }
+  }
+
+  getAllProductsWithStatusTrueSortIdDesc_cache(page: number): Observable<ApiResponse<ProductDto[]>> {
+    if (this.productCache[page]) {
+      return of({
+        isSuccess: true,
+        message: '',
+        result: this.productCache[page],
+      });
+    } else {
+      return this.http
+        .get<ApiResponse<ProductDto[]>>(`${this.baseUrl}?page=${page}`)
+        .pipe(
+          map(response => {
+            if (response.result) {
+              response.result = response.result
+                .filter(product => product.status)
+                .map(product => ({
+                  ...product,
+                  productVariations: product.productVariations?.filter(variation => variation.status) || []
+                }))
+                .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+            }
+            return response;
+          }),
+          tap(filteredResponse => {
+            if (filteredResponse.result) {
+              this.productCache[page] = filteredResponse.result;
+            }
+          })
+        );
+    }
+  }
+
+
+  getAllProductsWithStatusTrue(): Observable<ApiResponse<ProductDto[]>> {
+    return this.http.get<ApiResponse<ProductDto[]>>(`${this.baseUrl}`).pipe(
+      map(response => {
+        if (response.result) {
+          response.result = response.result
+            .filter(product => product.status)
+            .map(product => ({
+              ...product,
+              productVariations: product.productVariations?.filter(variation => variation.status) || []
+            }));
+        }
+        return response;
+      })
+    );
+  }
+
+
   // Lấy danh sách tất cả các Product (GET /api/Product)
   getAllProducts(): Observable<ApiResponse<ProductDto[]>> {
     return this.http.get<ApiResponse<ProductDto[]>>(`${this.baseUrl}`);
+  }
+
+  getProductByIdWithStatusTrue(id: number): Observable<ApiResponse<ProductDto>> {
+    return this.http.get<ApiResponse<ProductDto>>(`${this.baseUrl}/${id}`).pipe(
+      map(response => {
+        if (response.result && response.result.status) {
+          response.result.productVariations = response.result.productVariations?.filter(variation => variation.status) || [];
+        } else {
+          response.result = undefined;
+        }
+        return response;
+      })
+    );
   }
 
   // Lấy thông tin một Product theo ID (GET /api/Product/{id})

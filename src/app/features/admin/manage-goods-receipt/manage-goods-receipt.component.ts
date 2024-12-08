@@ -88,6 +88,7 @@ export class ManageGoodsReceiptComponent implements OnInit {
       //console.log(data.result)
       if (data.isSuccess && Array.isArray(data.result)) {
         this.goodsReceipts = data.result;
+        //console.log(this.goodsReceipts);
       }
     } catch (error) {
       console.error('Error fetching goodreceipt', error);
@@ -170,7 +171,8 @@ addProductToSelected(event: AutoCompleteSelectEvent){
       let detailedGoodsReceipt: DetailGoodsReceiptDto = {
         product_ID: productVar.id,
         quantity: 1,
-        unit_Price: productVar.price
+        unit_Price: productVar.price,
+        productVariation: productVar
       };
 
       if(this.selectedGoodsReceipt.detailGoodsReceipts == null){
@@ -189,7 +191,7 @@ addProductToSelected(event: AutoCompleteSelectEvent){
       if (detailedGoodsReceipt.unit_Price !== undefined) {
         this.selectedGoodsReceipt.total = (this.selectedGoodsReceipt.total || 0) + detailedGoodsReceipt.unit_Price * (detailedGoodsReceipt.quantity ?? 0);
       }
-      //console.log(this.selectedGoodsReceipt);
+      console.log(this.selectedGoodsReceipt);
     }
   }
 }
@@ -198,6 +200,7 @@ editReceipt(goodsReceipt: GoodsReceiptDto) {
   this.selectedGoodsReceipt = { ...goodsReceipt };
   this.DialogTitle = 'Sửa';
   this.visible = true;
+  console.log(this.selectedGoodsReceipt);
 }
 
 formatDateToYYYYMMDD(date: Date): string {
@@ -231,6 +234,7 @@ formatDateToYYYYMMDD(date: Date): string {
       this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng chọn nhà cung cấp' });
       return;
     }
+    console.log(this.selectedGoodsReceipt);
     this.goodsReceiptService.createGoodsReceipt(this.selectedGoodsReceipt).subscribe({
       next: (response) => {
         if (response.isSuccess) {

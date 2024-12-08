@@ -99,7 +99,7 @@ export class ManageProductComponent implements OnInit {
 
   private createVariationForm(): FormGroup {
     return this.fb.group({
-      id: [{ value: 0, disabled: true }],
+      id: [{ value: 0}],
       pro_Id: [{ value: 0, disabled: true }],
       col_Id: [null, Validators.required],
       siz_Id: [null, Validators.required],
@@ -180,6 +180,8 @@ export class ManageProductComponent implements OnInit {
     } else {
       this.variationForm.patchValue(variation); // Gán giá trị vào form
       this.imgUrl = variation.pic ?? null; // Hiển thị ảnh đã có
+     
+      console.log(this.variationForm.value);
     }
     this.visibleDialogVariation = true;
   }
@@ -340,8 +342,6 @@ export class ManageProductComponent implements OnInit {
     await this.saveImage();
     variationData.pic = this.imgUrl as string; // Gán URL ảnh vào dữ liệu biến thể
 
-    console.log(variationData);
-
     this.productVariationService.createProductVariation(variationData).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Biến thể đã được tạo' });
@@ -357,8 +357,10 @@ export class ManageProductComponent implements OnInit {
     if (this.variationForm.invalid) return;
     const variationData = this.variationForm.getRawValue(); // Lấy dữ liệu từ form
 
-    await this.saveImage();
-    variationData.pic = this.imgUrl as string; // Gán URL ảnh vào dữ liệu biến thể
+    if(this.selectedFile !== null) { 
+      await this.saveImage();
+      variationData.pic = this.imgUrl as string; // Gán URL ảnh vào dữ liệu biến thể
+    }
 
     this.productVariationService.updateProductVariation(variationData).subscribe({
       next: () => {
@@ -375,16 +377,18 @@ export class ManageProductComponent implements OnInit {
     return new Promise((resolve, reject) => {
       const folder = 'user_avatar'; // Thư mục Cloudinary
       const publicId = `product_${this.variationForm.value.id}_${Date.now()}`; // Tên định danh duy nhất
+      console.log(this.variationForm.value);
 
       this.cloudService
         .uploadImage(this.selectedFile!, folder, publicId)
         .then((result) => {
           // Cập nhật URL ảnh sau khi upload
           this.imgUrl = this.cloudService.getOptimizedImageUrl(result.public_id, {});
+          this.selectedFile = null; // Reset file đã chọn
           resolve(); // Báo hiệu hoàn tất
         })
         .catch((error) => {
-          console.error('Lỗi khi lưu ảnh:', error);
+          //console.error('Lỗi khi lưu ảnh:', error);
           this.messageService.add({
             severity: 'error',
             summary: 'Thất bại!',
